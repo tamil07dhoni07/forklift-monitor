@@ -130,7 +130,7 @@ body,.topnav,.sc,.cam-card,.kpi-card,.alerts-panel,.alert-pill{
 
 /* Top-sensors: Battery + Motor stacked */
 .top-sensors{
-  display:flex;flex-direction:row;gap:.7vw;min-height:0;
+  display:flex;flex-direction:column;gap:.7vw;min-height:0;
 }
 .top-sensors .sc{flex:1;min-height:0}
 
