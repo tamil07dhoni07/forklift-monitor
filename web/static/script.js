@@ -4,7 +4,7 @@
 // ================================================================
 
 // ── ① CONFIGURE ────────────────────────────────────────────────
-const API           = 'http://localhost:5000/api';
+const API           = 'http://localhost:5001/api';
 const CAM_STREAM    = 'http://127.0.0.1:8080/?action=stream';
 const REFRESH_MS    = 5000;
 const CLOUD_API_URL = 'https://your-cloud-api.com/api/v1/ingest'; // ← change this
