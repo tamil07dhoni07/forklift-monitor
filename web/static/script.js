@@ -67,15 +67,42 @@ function updateBattery(raw) {
     ['bat1','bat2','bat3','bat4'].forEach(id=>txt(id,'-- V'));
     badge('bat-badge','Offline','orange'); return null;
   }
-  const cells=[0,0,0,0]; let cur=0, pwr=0, enrg=0, on=0;
-  raw.forEach(r=>{
-    const i=parseInt(r.sensor_id)-1;
-    if(i>=0&&i<4){ cells[i]=parseFloat(r.voltage)||0; }
-    cur  += parseFloat(r.current)||0;
-    pwr  += parseFloat(r.power)  ||0;
-    enrg += parseFloat(r.energy) ||0;
-    if(r.status==='online') on++;
-  });
+  // const cells=[0,0,0,0]; let cur=0, pwr=0, enrg=0, on=0;
+  // raw.forEach(r=>{
+  //   const i=parseInt(r.sensor_id)-1;
+  //   if(i>=0&&i<4){ cells[i]=parseFloat(r.voltage)||0; }
+  //   cur  += parseFloat(r.current)||0;
+  //   pwr  += parseFloat(r.power)  ||0;
+  //   enrg += parseFloat(r.energy) ||0;
+  //   if(r.status==='online') on++;
+  // });
+
+  const sensorMap = {
+  2: 0,
+  3: 1,
+  4: 2,
+  6: 3
+};
+
+const cells = [0, 0, 0, 0];
+let cur = 0, pwr = 0, enrg = 0, on = 0;
+
+raw.forEach(r => {
+  const idx = sensorMap[r.sensor_id];
+
+  if (idx !== undefined) {
+    cells[idx] = parseFloat(r.voltage) || 0;
+  }
+
+  cur += parseFloat(r.current) || 0;
+  pwr += parseFloat(r.power) || 0;
+  enrg += parseFloat(r.energy) || 0;
+
+  if (r.status === "online") on++;
+});
+
+console.log(cells);
+
   const avg=cells.reduce((a,c)=>a+c,0)/4;
   const pct=voltToPercent(avg), pctR=Math.round(pct);
   txt('battery-percent',pctR+'%'); txt('bat-pct',pctR+'%');
