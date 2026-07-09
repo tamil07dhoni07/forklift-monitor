@@ -1,0 +1,8 @@
+#!/bin/bash
+pkill -f "api_server.py" 2>/dev/null
+pkill -f "dual_sensor_logger.py" 2>/dev/null
+cd /usr/local/share/forklift-monitor
+python3 lib/api_server.py > /dev/null 2>&1 &
+python3 lib/dual_sensor_logger.py > /dev/null 2>&1 &
+sleep 3
+xdg-open http://localhost:5000

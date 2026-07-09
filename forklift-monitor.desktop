@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Forklift Monitor
+Comment=Forklift Monitoring System
+Exec=/usr/local/bin/forklift-monitor
+Icon=/usr/local/share/forklift-monitor/icons/forklift-icon.png
+Terminal=false
+Categories=Utility;
+StartupNotify=true
