@@ -144,15 +144,21 @@
           <text x="65" y="76" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9" font-family="Inter">°C</text>
         </svg>
       </div>
-      <div class="pair-grid">
-        <div class="pair">
+      <div class="arc-wrap">
+      <div class="pair-row">
+         <div class="arc-wrap">
+        <div class="pair" >
           <div class="pair-lbl">Vibration</div>
           <div class="pair-val" id="motor-vib-total">-- <span class="u">mm/s</span></div>
         </div>
+        </div>
+        <div class="arc-wrap">
         <div class="pair">
           <div class="pair-lbl">X · Y · Z</div>
-          <div class="pair-val sm" id="motor-velocity">--·--·-- <span class="u">mm/s</span></div>
+          <div class="pair-val sm" id="motor-velocity">-·-·- <span class="u">mm/s</span></div>
         </div>
+        </div>
+      </div>
       </div>
       <!-- <div class="bar-label"><span>Health</span><span id="motor-health-score">--/100</span></div> -->
       <!-- <div class="bar"><div class="bar-fill" id="motor-health-bar" style="width:0%"></div></div> -->
