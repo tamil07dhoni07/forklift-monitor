@@ -19,16 +19,26 @@ html,body{width:100%;height:100%}
   --peach-s: rgba(240,168,112,.5);
 
   /* Dark dashboard base */
-  --bg:      #05070f;
+  /* --bg:      #05070f;
   --nav-bg:  rgba(4,6,14,.95);
   --cam-bg:  #030508;
   --alert-bg:rgba(4,6,14,.85);
   --border:  rgba(56,130,246,.12);
   --glow:    rgba(56,130,246,.2);
-  --tp:      #dce8ff;
+  --bar:     rgba(255,255,255,.2); */
+
+  --bg:#f0f4f8;
+  --nav-bg:rgba(255,255,255,.95);
+  --cam-bg:#0a0e18;
+  --alert-bg:#ffffff;
+  --border:#e2e8f0;
+  --glow:#e2e8f0;
+  --tp:#0f172a; --ts:#475569; --tm:#94a3b8;
+  --bar:rgba(0,0,0,.08);
+
+   --tp:      #dce8ff;
   --ts:      #5a7090;
   --tm:      #2e4060;
-  --bar:     rgba(255,255,255,.2);
 
   --nav: 40px;
 }
