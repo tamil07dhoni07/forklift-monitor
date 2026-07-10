@@ -74,7 +74,7 @@
   document.getElementById('themeToggle').addEventListener('click',function(){
     var l=document.documentElement.getAttribute('data-theme')==='light';
     l?document.documentElement.removeAttribute('data-theme'):document.documentElement.setAttribute('data-theme','light');
-    try{localStorage.setItem('geariq-theme',l?'dark':'light');}catch(e){}
+    try{localStorage.setItem('geariq-theme',l?'light':'light');}catch(e){}
   });
   (function tick(){
     var e=document.getElementById('navTime');
