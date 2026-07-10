@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gear IQ</title>
 <script>
-  (function(){try{if(localStorage.getItem('geariq-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}}());
+  (function(){try{
+    if(localStorage.getItem('geariq-theme')==='light')
+  {
+     document.documentElement.setAttribute('data-theme','light');
+  }
+  else
+  {
+     document.documentElement.setAttribute('data-theme','light');
+  }
+   
+  }
+    catch(e){}}());
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../static/style.css">
@@ -112,8 +123,8 @@
         <div class="volt-row"><span>Power</span><span id="bat-power">-- W</span></div>
         <div class="volt-row"><span>Energy</span><span id="bat-energy">-- Wh</span></div>
       </div>
-      <div class="bar-label"><span>Charge</span><span id="bat-pct">--%</span></div>
-      <div class="bar"><div class="bar-fill" id="batt-bar" style="width:72%"></div></div>
+      <!-- <div class="bar-label"><span>Charge</span><span id="bat-pct">--%</span></div> -->
+      <!-- <div class="bar"><div class="bar-fill" id="batt-bar" style="width:72%"></div></div> -->
     </div>
 
     <!-- MOTOR -->
@@ -143,8 +154,8 @@
           <div class="pair-val sm" id="motor-velocity">--·--·-- <span class="u">mm/s</span></div>
         </div>
       </div>
-      <div class="bar-label"><span>Health</span><span id="motor-health-score">--/100</span></div>
-      <div class="bar"><div class="bar-fill" id="motor-health-bar" style="width:0%"></div></div>
+      <!-- <div class="bar-label"><span>Health</span><span id="motor-health-score">--/100</span></div> -->
+      <!-- <div class="bar"><div class="bar-fill" id="motor-health-bar" style="width:0%"></div></div> -->
     </div>
 
   </div><!-- /top-sensors -->
@@ -185,10 +196,10 @@
             <div class="pair-val"><span id="hyd-temp">--</span><span class="u"> °C</span></div>
             <div class="hyd-tag" id="hyd-temp-tag">--</div>
           </div>
-          <div style="margin-top:auto">
+          <!-- <div style="margin-top:auto">
             <div class="bar-label"><span>Quality</span><span id="hyd-quality-lbl">--%</span></div>
             <div class="bar"><div class="bar-fill" id="hyd-quality-bar" style="width:0%"></div></div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>

@@ -21,11 +21,15 @@ html,body{width:100%;height:100%}
   /* Dark dashboard base */
   /* --bg:      #05070f;
   --nav-bg:  rgba(4,6,14,.95);
-  --cam-bg:  #030508;
+  --cam-bg:  #ffffff;
   --alert-bg:rgba(4,6,14,.85);
   --border:  rgba(56,130,246,.12);
   --glow:    rgba(56,130,246,.2);
+  --tp:      #dce8ff;
+  --ts:      #5a7090;
+  --tm:      #2e4060;
   --bar:     rgba(255,255,255,.2); */
+
 
   --bg:#f0f4f8;
   --nav-bg:rgba(255,255,255,.95);
@@ -33,15 +37,12 @@ html,body{width:100%;height:100%}
   --alert-bg:#ffffff;
   --border:#e2e8f0;
   --glow:#e2e8f0;
-  --tp:#0f172a; --ts:#475569; --tm:#94a3b8;
+  --tp:#002c93; --ts:#004099; --tm:#0043a1;
   --bar:rgba(0,0,0,.08);
-
-   --tp:      #dce8ff;
   --ts:      #5a7090;
   --tm:      #2e4060;
-
   --nav: 40px;
-}
+} 
 /* Light override */
 :root[data-theme="light"]{
   --bg:#f0f4f8;
@@ -58,7 +59,7 @@ body{
   width:100vw;height:100vh;overflow:hidden;
   font-family:'Inter',sans-serif;font-size:clamp(11px,1.55vw,14px);
   background:var(--bg);color:var(--tp);
-  background-image:radial-gradient(ellipse at center,#070b18 0%,#04060e 100%);
+  background-image:radial-gradient(ellipse at center,#065f46,#10b981 100%);
 }
 :root[data-theme="light"] body{background-image:none}
 
@@ -183,8 +184,8 @@ body{
 /* ── CARD TEXT (all white on pastel) ─────────── */
 .sc .sc-head,.sc .sc-lbl,.sc .sc-big,.sc .sc-sub,
 .sc .volt-row,.sc .bar-label,.sc .pair-lbl,.sc .pair-val,
-.sc .hyd-row *,.sc .hyd-tag{color:rgba(255,255,255,.92) !important}
-.sc .volt-row span:last-child{color:rgba(255,255,255,.75) !important;font-family:'Roboto Mono',monospace}
+.sc .hyd-row *,.sc .hyd-tag{color:rgba(255, 255, 255, 0.92) !important}
+.sc .volt-row span:last-child{color:rgba(255, 255, 255, 0.75) !important;font-family:'Roboto Mono',monospace}
 .sc .bar{background:rgba(255,255,255,.22) !important;height:3px;border-radius:2px;overflow:hidden;flex-shrink:0}
 .sc .bar-fill{background:rgba(255,255,255,.85) !important;height:100%;border-radius:2px;transition:width .5s}
 .badge{
