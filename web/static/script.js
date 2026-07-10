@@ -65,7 +65,7 @@ function updateBattery(raw) {
     txt('bat-pct','--%'); txt('bat-power','-- W'); txt('bat-energy','-- Wh');
     style_('battery-fill','height','0%'); style_('batt-bar','width','0%');
     ['bat1','bat2','bat3','bat4'].forEach(id=>txt(id,'-- V'));
-    badge('bat-badge','Offline','orange'); return null;
+    badge('bat-badge','Offline','red'); return null;
   }
   // const cells=[0,0,0,0]; let cur=0, pwr=0, enrg=0, on=0;
   // raw.forEach(r=>{
@@ -110,7 +110,7 @@ console.log(cells);
   txt('battery-status', cur.toFixed(1)+' A');
   txt('bat-power', pwr.toFixed(1)+' W'); txt('bat-energy', enrg.toFixed(2)+' Wh');
   cells.forEach((v,i)=>txt(`bat${i+1}`,v>0?v.toFixed(2)+' V':'-- V'));
-  if(!on)         badge('bat-badge','Offline','orange');
+  if(!on)         badge('bat-badge','Offline','red');
   else if(pct<THRESHOLDS.battery.levelCrit) badge('bat-badge','Critical','orange');
   else if(pct<THRESHOLDS.battery.levelLow)  badge('bat-badge','Low','orange');
   else badge('bat-badge','Normal','green');
@@ -128,7 +128,7 @@ function updateMotor(raw) {
     txt('motor-health-score','--/100');
     style_('motor-health-bar','width','0%');
     attr_('motor-arc','stroke-dasharray','0 166');
-    badge('motor-badge','Offline','orange'); return null;
+    badge('motor-badge','Offline','red'); return null;
   }
   const temp=parseFloat(raw.temperature||0);
   const vib =parseFloat(raw.total_vibration||0);
@@ -153,7 +153,7 @@ function updateMotor(raw) {
 //  HYDRAULIC OIL  — no endpoint yet
 // ════════════════════════════════════════════════════════════════
 function updateHydraulic() {
-  badge('hyd-badge','No Data','orange');
+  badge('hyd-badge','No Data','red');
   html_('hyd-level','--<span class="u">%</span>');
   txt('hyd-temp','--'); txt('hyd-quality-lbl','--');
   style_('hyd-quality-bar','width','0%');

@@ -115,11 +115,11 @@ body{
   border:1px solid;transition:.3s;white-space:nowrap;
 }
 .net-pill.online  {background:rgba(16,185,129,.1); color:#10b981;border-color:rgba(16,185,129,.3);box-shadow:0 0 8px rgba(16,185,129,.15)}
-.net-pill.offline {background:rgba(239,68,68,.1);  color:#f87171;border-color:rgba(239,68,68,.3); box-shadow:0 0 8px rgba(239,68,68,.15)}
+.net-pill.offline {background:#dc2626; color:#fff;border-color:#dc2626; box-shadow:0 0 8px rgba(220,38,38,.3)}
 .net-pill.checking{background:rgba(245,158,11,.1); color:#fbbf24;border-color:rgba(245,158,11,.3);box-shadow:0 0 8px rgba(245,158,11,.12)}
 :root[data-theme="light"] .net-pill{box-shadow:none}
 :root[data-theme="light"] .net-pill.online {color:#059669;border-color:rgba(16,185,129,.25)}
-:root[data-theme="light"] .net-pill.offline{color:#dc2626;border-color:rgba(239,68,68,.25)}
+:root[data-theme="light"] .net-pill.offline{color:#fff;border-color:#dc2626}
 :root[data-theme="light"] .net-pill.checking{color:#d97706;border-color:rgba(245,158,11,.25)}
 .net-dot{width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block}
 .net-pill.online .net-dot{animation:blink 2s infinite}
@@ -130,8 +130,17 @@ body{
   font-size:clamp(11.5px,1.2vw,13.8px);color:var(--ts);font-weight:600;
   padding:1.5px clamp(4px,.55vw,7px);border-radius:10px;
   border:1px solid var(--border);background:rgba(255,255,255,.02);white-space:nowrap;
+  transition:background .3s,border-color .3s,color .3s;
 }
 :root[data-theme="light"] .sensor-chip{background:rgba(0,0,0,.03)}
+/* script.js sets the offline/online class on the .sensor-dot itself (id dotMotor / dotBattery / cloudDot),
+   so we use :has() to color the whole chip red when its dot goes offline */
+.sensor-chip:has(.sensor-dot.offline){
+  background:#dc2626;border-color:#dc2626;color:#fff;
+}
+.sensor-chip:has(.sensor-dot.offline) .sensor-dot{
+  background:#fff;box-shadow:none;animation:none;
+}
 .sensor-dot{width:5px;height:5px;border-radius:50%;background:var(--tm);display:inline-block;transition:background .3s}
 .sensor-dot.online {background:#10b981;box-shadow:0 0 6px rgba(16,185,129,.6);animation:blink 2s infinite}
 .sensor-dot.offline{background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,.5)}
@@ -190,18 +199,11 @@ body{
 .sc .bar-fill{background:rgba(255,255,255,.85) !important;height:100%;border-radius:2px;transition:width .5s}
 .badge{
   font-size:clamp(11.5px,1.2vw,13.1px);font-weight:700;padding:2px clamp(6px,.7vw,9px);border-radius:20px;
-  background:rgba(255,255,255,.32);color:#fff;border:1px solid rgba(255,255,255,.55);
-  text-shadow:0 1px 2px rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.55);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25);
 }
-.badge.offline,.badge.disconnected,.badge.error{
-  background:rgba(127,29,29,.55);border-color:rgba(255,255,255,.6);color:#fff;
-}
-.badge.online,.badge.ok,.badge.normal,.badge.connected{
-  background:rgba(6,78,59,.5);border-color:rgba(255,255,255,.6);color:#fff;
-}
-.badge.warn,.badge.warning{
-  background:rgba(120,53,15,.55);border-color:rgba(255,255,255,.6);color:#fff;
-}
+.badge-green{ background:rgba(22,163,74,.9); }
+.badge-orange{ background:rgba(217,119,6,.9); }
+.badge-red{ background:rgba(220,38,38,.9); }
 
 /* Card shared helpers */
 .sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(4px,.55vw,8px);flex-shrink:0}
