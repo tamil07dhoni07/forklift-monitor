@@ -36,6 +36,14 @@ def start_services():
         os.path.join(BASE_DIR, "lib", "dual_sensor_logger.py")
     ])
 
+    time.sleep(1)
+
+    print("Starting Cloud Sync...")
+    subprocess.Popen([
+        "python3",
+        os.path.join(BASE_DIR, "lib", "cloud_sync.py")
+    ])
+
 def start_camera():
     result = subprocess.run(
         ["pgrep", "-f", "mjpg_streamer"],

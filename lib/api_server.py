@@ -2,11 +2,13 @@
 # ============================================
 # FORKLIFT MONITOR - API SERVER (Multi-voltage)
 # ============================================
-
+from cloud_sync import build_payload, enqueue
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import psycopg2
 from datetime import datetime, timedelta
+
+from lib.kpi_logic import calculate_kpi_today
 
 app = Flask(__name__, 
             static_folder='../web/static',
@@ -83,14 +85,31 @@ def health():
 @app.route('/api/vibration')
 def vibration():
     rec = get_latest_vibration()
+    volt = get_latest_voltages()
+    data = calculate_kpi_today() 
+
     if rec and (datetime.now() - rec['timestamp']) < timedelta(seconds=10):
-        return jsonify({
+
+        # ── existing response ──
+        response = {
             'status': 'online',
             'total_vibration': rec['total_vibration'],
             'temperature': rec['temperature'],
             'velocity': rec['velocity'],
             'timestamp': rec['timestamp'].isoformat()
-        })
+        }
+
+        # ── add this: queue for cloud ──
+        payload = build_payload(
+            vib_rows  = [rec],
+            volt_rows = volt,
+            oil_rows  = [],      # empty until oil sensor ready
+            kpi       = data     # or pass kpi dict if you have it
+        )
+        enqueue(payload)         # saves to DB queue, daemon does the rest
+
+        return jsonify(response)
+
     else:
         return jsonify({'status': 'offline', 'total_vibration': 0, 'temperature': 0, 'velocity': {'x':0,'y':0,'z':0}})
 
