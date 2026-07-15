@@ -21,7 +21,7 @@ from datetime import datetime, timezone, timedelta
 
 # ── ① CONFIG — change these ──────────────────────────────────────
 CLOUD_API_URL = 'https://your-cloud-api.com/api/v1/ingest'  # ← set
-CLOUD_API_KEY = 'your-api-key-here'                          # ← set
+CLOUD_API_KEY = 'geariq-edge-secret-2024'                          # ← set
 DEVICE_ID     = 'FL-2024'
 LOCATION      = 'Warehouse A — Bay 3'
 
@@ -179,7 +179,7 @@ def post_to_cloud(payload: dict) -> bool:
     """POST payload. Returns True only on HTTP 200/201/202."""
     headers = {
         'Content-Type':  'application/json',
-        'Authorization': f'Bearer {CLOUD_API_KEY}',
+        'X-API-Key': f'{CLOUD_API_KEY}',
         'X-Device-Id':   DEVICE_ID,
     }
     for attempt in range(1, RETRY_MAX + 1):
