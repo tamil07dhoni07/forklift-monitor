@@ -8,7 +8,7 @@ from flask_cors import CORS
 import psycopg2
 from datetime import datetime, timedelta
 
-from lib.kpi_logic import calculate_kpi_today
+from kpi_logic import calculate_kpi_today
 
 app = Flask(__name__, 
             static_folder='../web/static',
