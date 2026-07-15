@@ -163,7 +163,7 @@ def init_all_tables():
     """Initialize all required tables if they don't exist"""
     tables = {
         'vibration_sensor_data': """
-            CREATE TABLE vibration_sensor_data (
+            CREATE TABLE IF NOT EXISTS vibration_sensor_data (
                 id SERIAL PRIMARY KEY,
                 acceleration_x FLOAT,
                 acceleration_y FLOAT,
@@ -182,7 +182,7 @@ def init_all_tables():
             )
         """,
         'voltage_data': """
-            CREATE TABLE voltage_data (
+            CREATE TABLE IF NOT EXISTS voltage_data (
                 id SERIAL PRIMARY KEY,
                 sensor_id INTEGER,
                 voltage FLOAT,
@@ -195,7 +195,7 @@ def init_all_tables():
             )
         """,
         'temperature_data': """
-            CREATE TABLE temperature_data (
+            CREATE TABLE IF NOT EXISTS temperature_data (
                 id SERIAL PRIMARY KEY,
                 sensor_id INTEGER,
                 temperature FLOAT,
@@ -205,7 +205,7 @@ def init_all_tables():
             )
         """,
         'current_sensor_data': """
-            CREATE TABLE current_sensor_data (
+            CREATE TABLE IF NOT EXISTS current_sensor_data (
                 id SERIAL PRIMARY KEY,
                 raw_adc INTEGER,
                 voltage_v FLOAT,
@@ -216,7 +216,7 @@ def init_all_tables():
             )
         """,
         'status_details': """
-            CREATE TABLE status_details (
+            CREATE TABLE IF NOT EXISTS status_details (
                 id SERIAL PRIMARY KEY,
                 sensor_id VARCHAR(50) NOT NULL,
                 status VARCHAR(10) NOT NULL,
@@ -225,7 +225,7 @@ def init_all_tables():
             )
         """,
         'alerts': """
-            CREATE TABLE alerts (
+            CREATE TABLE IF NOT EXISTS alerts (
                 id SERIAL PRIMARY KEY,
                 type VARCHAR(10) NOT NULL,
                 sensor VARCHAR(20) NOT NULL,
@@ -237,6 +237,14 @@ def init_all_tables():
                 is_sync INTEGER NOT NULL DEFAULT 0,
                 sync_time TIMESTAMP
             )
+        """,
+
+        'cloud_queue': """
+           CREATE TABLE IF NOT EXISTS cloud_sync_queue (
+                id          SERIAL       PRIMARY KEY,
+                payload     JSONB        NOT NULL,
+                is_sync     INTEGER      NOT NULL DEFAULT 0,
+                created_at  TIMESTAMP    NOT NULL DEFAULT NOW())
         """
     }
  
