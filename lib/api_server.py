@@ -79,8 +79,8 @@ def health():
 @app.route('/api/vibration')
 def vibration():
     rec  = get_latest_vibration()
-    #volt = get_latest_voltages()
-    #data = calculate_kpi_today()
+    volt = get_latest_voltages()
+    data = calculate_kpi_today()
 
     if rec and (datetime.now() - rec['timestamp']) < timedelta(seconds=10):
 
@@ -93,16 +93,16 @@ def vibration():
         }
 
         # Queue for cloud — wrapped so it never crashes the API
-        # try:
-        #     payload = build_payload(
-        #         vib_rows  = [rec],
-        #         volt_rows = volt,
-        #         oil_rows  = [],
-        #         kpi       = data
-        #     )
-        #     enqueue(payload)
-        # except Exception as e:
-        #     print(f'[cloud_sync] enqueue failed: {e}')  # log but don't crash
+        try:
+            payload = build_payload(
+                vib_rows  = [rec],
+                volt_rows = volt,
+                oil_rows  = [],
+                kpi       = data
+            )
+            enqueue(payload)
+        except Exception as e:
+            print(f'[cloud_sync] enqueue failed: {e}')  # log but don't crash
 
         return jsonify(response)
 
