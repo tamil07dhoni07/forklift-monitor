@@ -7,6 +7,7 @@ from kpi_logic  import calculate_kpi_today
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import psycopg2
+from db import get_db_connection
 from datetime import datetime, timedelta
 
 app = Flask(__name__, 
@@ -23,12 +24,6 @@ DB_CONFIG = {
     'password': 'root'
 }
 
-def get_db_connection():
-    try:
-        return psycopg2.connect(**DB_CONFIG)
-    except Exception as e:
-        print(f"⚠️ DB connection error: {e}")
-        return None
 
 def get_latest_vibration():
     conn = get_db_connection()
@@ -89,7 +84,7 @@ def vibration():
 
     if rec and (datetime.now() - rec['timestamp']) < timedelta(seconds=10):
 
-        response = {
+        response = { 
             'status':          'online',
             'total_vibration': rec['total_vibration'],
             'temperature':     rec['temperature'],

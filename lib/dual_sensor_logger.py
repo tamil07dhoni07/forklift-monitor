@@ -17,6 +17,7 @@ from datetime import datetime
 import smbus          # for ADS1115 current sensor
 import socket
 import subprocess
+from db import get_db_connection
  
 # ========== CONFIGURATION ==========
 PORT = "/dev/ttyUSB0"
@@ -115,13 +116,6 @@ def create_database_if_not_exists():
         print(f"âš ï¸ Database creation/check error: {e}")
         return False
  
-def get_db_connection():
-    """Get database connection to the specific database"""
-    try:
-        return psycopg2.connect(**DB_CONFIG_WITH_DB)
-    except Exception as e:
-        print(f"âš ï¸ DB error: {e}")
-        return None
  
 # ========== TABLE CREATION ==========
 def ensure_table_exists(table_name, create_query):

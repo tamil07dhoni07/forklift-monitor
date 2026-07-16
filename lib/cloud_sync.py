@@ -9,6 +9,7 @@ import time
 import psycopg2
 import requests
 from datetime import datetime, timezone, timedelta
+from db import get_db_connection
 
 # ── CONFIG ───────────────────────────────────────────────────────
 CLOUD_API_URL     = 'https://your-cloud-api.com/api/v1/ingest'

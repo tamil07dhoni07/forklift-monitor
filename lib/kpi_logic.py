@@ -14,7 +14,7 @@
 
 from datetime import datetime, date
 
-from dual_sensor_logger import get_db_connection
+from db import get_db_connection, DB_CONFIG
 
 # ── Tunable thresholds ─────────────────────────────────────────
 VIB_OPERATING_THRESHOLD = 0.3   # mm/s  — above this = "operating"
