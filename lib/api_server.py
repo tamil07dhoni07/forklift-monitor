@@ -3,12 +3,11 @@
 # FORKLIFT MONITOR - API SERVER (Multi-voltage)
 # ============================================
 from cloud_sync import build_payload, enqueue
+from kpi_logic  import calculate_kpi_today
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import psycopg2
 from datetime import datetime, timedelta
-
-from kpi_logic import calculate_kpi_today
 
 app = Flask(__name__, 
             static_folder='../web/static',
@@ -84,34 +83,42 @@ def health():
 
 @app.route('/api/vibration')
 def vibration():
-    rec = get_latest_vibration()
-    #volt = get_latest_voltages()
-    data = calculate_kpi_today() 
+    rec  = get_latest_vibration()
+    volt = get_latest_voltages()
+    data = calculate_kpi_today()
 
     if rec and (datetime.now() - rec['timestamp']) < timedelta(seconds=10):
 
-        # ── existing response ──
         response = {
-            'status': 'online',
+            'status':          'online',
             'total_vibration': rec['total_vibration'],
-            'temperature': rec['temperature'],
-            'velocity': rec['velocity'],
-            'timestamp': rec['timestamp'].isoformat()
+            'temperature':     rec['temperature'],
+            'velocity':        rec['velocity'],
+            'timestamp':       rec['timestamp'].isoformat()
         }
 
-        # ── add this: queue for cloud ──
-        payload = build_payload(
-            vib_rows  = [rec],
-            volt_rows = [],
-            oil_rows  = [],      # empty until oil sensor ready
-            kpi       = data     # or pass kpi dict if you have it
-        )
-        enqueue(payload)         # saves to DB queue, daemon does the rest
+        # Queue for cloud — wrapped so it never crashes the API
+        try:
+            payload = build_payload(
+                vib_rows  = [rec],
+                volt_rows = volt,
+                oil_rows  = [],
+                kpi       = data
+            )
+            enqueue(payload)
+        except Exception as e:
+            print(f'[cloud_sync] enqueue failed: {e}')  # log but don't crash
 
         return jsonify(response)
 
     else:
-        return jsonify({'status': 'offline', 'total_vibration': 0, 'temperature': 0, 'velocity': {'x':0,'y':0,'z':0}})
+        return jsonify({
+            'status': 'offline',
+            'total_vibration': 0,
+            'temperature': 0,
+            'velocity': {'x': 0, 'y': 0, 'z': 0}
+        })
+    
 
 @app.route('/api/voltages')
 def voltages():
