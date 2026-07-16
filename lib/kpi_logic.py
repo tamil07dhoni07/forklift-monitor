@@ -14,7 +14,9 @@
 
 from datetime import datetime, date
 
-from dual_sensor_logger import get_db_connection
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from api_server import get_db_connection   # ← borrow from api_server
 
 # ── Tunable thresholds ─────────────────────────────────────────
 VIB_OPERATING_THRESHOLD = 0.3   # mm/s  — above this = "operating"
