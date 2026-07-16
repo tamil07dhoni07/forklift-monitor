@@ -291,7 +291,7 @@ async function fetchAll() {
     updateBattery([]); updateMotor(null); updateHydraulic(); updateKPI(null);
     renderAlerts(generateAlerts(null,null)); setCloudDot(false); return;
   }
-  const [vibRaw,voltRaw]=await Promise.all([safeFetch(`${API}/voltages`),safeFetch(`${API}/vibration`)]);
+  const [voltRaw,vibRaw]=await Promise.all([safeFetch(`${API}/voltages`),safeFetch(`${API}/vibration`)]);
   setSensorDot('dotMotor',  !!(vibRaw&&vibRaw.status==='online'));
   setSensorDot('dotBattery',!!(voltRaw&&voltRaw.some(r=>r.status==='online')));
   const batt  = updateBattery(voltRaw||[]);
