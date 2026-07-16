@@ -14,6 +14,8 @@
 
 from datetime import datetime, date
 
+from dual_sensor_logger import get_db_connection
+
 # ── Tunable thresholds ─────────────────────────────────────────
 VIB_OPERATING_THRESHOLD = 0.3   # mm/s  — above this = "operating"
 MIN_CYCLE_DURATION_SEC  = 30    # sec   — burst must last ≥ 30s to count as a cycle
