@@ -86,7 +86,7 @@ def health():
 def vibration():
     rec = get_latest_vibration()
     volt = get_latest_voltages()
-    data = calculate_kpi_today() 
+    #data = calculate_kpi_today() 
 
     if rec and (datetime.now() - rec['timestamp']) < timedelta(seconds=10):
 
