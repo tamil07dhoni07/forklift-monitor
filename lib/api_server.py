@@ -86,7 +86,7 @@ def health():
 def vibration():
     rec = get_latest_vibration()
     #volt = get_latest_voltages()
-    #data = calculate_kpi_today() 
+    data = calculate_kpi_today() 
 
     if rec and (datetime.now() - rec['timestamp']) < timedelta(seconds=10):
 
@@ -100,13 +100,13 @@ def vibration():
         }
 
         # ── add this: queue for cloud ──
-        # payload = build_payload(
-        #     vib_rows  = [rec],
-        #     volt_rows = volt,
-        #     oil_rows  = [],      # empty until oil sensor ready
-        #     kpi       = data     # or pass kpi dict if you have it
-        # )
-        # enqueue(payload)         # saves to DB queue, daemon does the rest
+        payload = build_payload(
+            vib_rows  = [rec],
+            volt_rows = [],
+            oil_rows  = [],      # empty until oil sensor ready
+            kpi       = data     # or pass kpi dict if you have it
+        )
+        enqueue(payload)         # saves to DB queue, daemon does the rest
 
         return jsonify(response)
 
