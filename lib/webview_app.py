@@ -44,6 +44,12 @@ def start_services():
         os.path.join(BASE_DIR, "lib", "cloud_sync.py")
     ])
 
+    print("Starting version Update...")
+    subprocess.Popen([
+        "python3",
+        os.path.join(BASE_DIR, "lib", "update_checker.py")
+    ])
+
 def start_camera():
     result = subprocess.run(
         ["pgrep", "-f", "mjpg_streamer"],
