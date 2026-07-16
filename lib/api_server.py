@@ -83,39 +83,11 @@ def health():
 
 @app.route('/api/vibration')
 def vibration():
-    print("\n" + "="*50)
-    print("[/api/vibration] Request received")
+    rec  = get_latest_vibration()
+    volt = voltages()
+    data = kpi()
 
-    # Step 1 — DB connection
-    try:
-        rec = get_latest_vibration()
-        print(f"[Step 1] get_latest_vibration → {rec}")
-    except Exception as e:
-        print(f"[Step 1] FAILED → {e}")
-        import traceback; traceback.print_exc()
-        return jsonify({'error': f'vibration fetch failed: {e}'}), 500
-
-    # Step 2 — Voltages
-    try:
-        volt = get_latest_voltages()
-        print(f"[Step 2] get_latest_voltages → {len(volt)} records")
-    except Exception as e:
-        print(f"[Step 2] FAILED → {e}")
-        import traceback; traceback.print_exc()
-        volt = []   # don't crash, continue
-
-    # Step 3 — KPI
-    try:
-        data = calculate_kpi_today()
-        print(f"[Step 3] calculate_kpi_today → {data}")
-    except Exception as e:
-        print(f"[Step 3] FAILED → {e}")
-        import traceback; traceback.print_exc()
-        data = None   # don't crash, continue
-
-    # Step 4 — Check sensor online
     if rec and (datetime.now() - rec['timestamp']) < timedelta(seconds=10):
-        print(f"[Step 4] Sensor ONLINE")
 
         response = {
             'status':          'online',
@@ -125,7 +97,7 @@ def vibration():
             'timestamp':       rec['timestamp'].isoformat()
         }
 
-        # Step 5 — Cloud queue
+        # Queue for cloud — wrapped so it never crashes the API
         try:
             payload = build_payload(
                 vib_rows  = [rec],
@@ -133,25 +105,13 @@ def vibration():
                 oil_rows  = [],
                 kpi       = data
             )
-            print(f"[Step 5] build_payload → OK")
             enqueue(payload)
-            print(f"[Step 5] enqueue → OK")
         except Exception as e:
-            print(f"[Step 5] Cloud queue FAILED (non-critical) → {e}")
-            import traceback; traceback.print_exc()
+            print(f'[cloud_sync] enqueue failed: {e}')  # log but don't crash
 
-        print(f"[/api/vibration] Returning ONLINE response")
-        print("="*50 + "\n")
         return jsonify(response)
 
     else:
-        if not rec:
-            print(f"[Step 4] Sensor OFFLINE → no record in DB")
-        else:
-            age = (datetime.now() - rec['timestamp']).total_seconds()
-            print(f"[Step 4] Sensor OFFLINE → last record {age:.1f}s ago")
-
-        print("="*50 + "\n")
         return jsonify({
             'status': 'offline',
             'total_vibration': 0,
@@ -159,7 +119,7 @@ def vibration():
             'velocity': {'x': 0, 'y': 0, 'z': 0}
         })
     
-    
+
 @app.route('/api/voltages')
 def voltages():
     recs = get_latest_voltages()
