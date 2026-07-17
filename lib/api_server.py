@@ -11,6 +11,8 @@ from db import delete_old_vibration_records, delete_old_voltage_records, get_db_
 from datetime import datetime, timedelta
 from config import DEVICE_ID, HOSTNAME, LOCATION  # ← add
 from constants import VERSION  # ← add
+from fault_codes import detect_faults, fault_summary
+import logging
 
 app = Flask(__name__, 
             static_folder='../web/static',
@@ -25,6 +27,51 @@ DB_CONFIG = {
     'user': 'postgres',
     'password': 'root'
 }
+
+
+# ════════════════════════════════════════════════════════════════
+#  COLORED LOGGER
+# ════════════════════════════════════════════════════════════════
+ 
+class ColorFormatter(logging.Formatter):
+    RESET  = '\033[0m'
+    BOLD   = '\033[1m'
+    COLORS = {
+        logging.DEBUG:    '\033[36m',   # Cyan
+        logging.INFO:     '\033[32m',   # Green
+        logging.WARNING:  '\033[33m',   # Yellow
+        logging.ERROR:    '\033[31m',   # Red
+        logging.CRITICAL: '\033[35m',   # Magenta
+    }
+    def format(self, record):
+        color = self.COLORS.get(record.levelno, self.RESET)
+        record.levelname = f'{color}{self.BOLD}{record.levelname:<8}{self.RESET}'
+        return super().format(record)
+ 
+def setup_logger():
+    logger = logging.getLogger('api_server')
+    logger.setLevel(logging.DEBUG)
+ 
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(ColorFormatter(
+        fmt='%(asctime)s  %(levelname)s  %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    ))
+ 
+    fh = logging.FileHandler('api_server.log')
+    fh.setLevel(logging.INFO)
+    fh.setFormatter(logging.Formatter(
+        fmt='%(asctime)s [%(levelname)s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    ))
+ 
+    logger.addHandler(ch)
+    logger.addHandler(fh)
+    return logger
+ 
+log = setup_logger()
+ 
 
 
 def get_latest_vibration():
@@ -192,6 +239,35 @@ def temperature():
         status = 'online' if age < 10 else 'offline'
         result.append({**r, 'status': status, 'timestamp': r['timestamp'].isoformat()})
     return jsonify(result)
+
+
+
+@app.route('/api/faults')
+def faults():
+    log.info('⚠️   GET /api/faults  →  running detection ...')
+ 
+    vib_data  = get_latest_vibration()
+    volt_data = get_latest_voltages()
+ 
+    active_faults = detect_faults(
+        vib_data  = vib_data,
+        volt_data = volt_data,
+    )
+ 
+    summary = fault_summary(active_faults)
+ 
+    log.info(f'⚠️   Faults detected  →  '
+             f'total={summary["total"]}  '
+             f'critical={summary["critical"]}  '
+             f'warning={summary["warning"]}  '
+             f'status={summary["status"]}')
+ 
+    if active_faults:
+        for f in active_faults:
+            log.warning(f'    [{f["severity"]}] {f["code"]}  {f["oem_desc"]}  →  {f["value"]}')
+ 
+    return jsonify(summary)
+ 
 
 
 if __name__ == '__main__':

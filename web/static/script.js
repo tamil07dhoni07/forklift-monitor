@@ -343,7 +343,10 @@ async function fetchAll() {
   if(!ok) {
     setSensorDot('dotMotor',false); setSensorDot('dotBattery',false);
     updateBattery([]); updateMotor(null); updateHydraulic(); updateKPI(null);
-    renderAlerts(generateAlerts(null,null)); setCloudDot(false); return;
+    renderAlerts(generateAlerts(null,null)); setCloudDot(false); 
+    await updateFaults(); 
+    await updateTemperature();
+     return;
   }
   const [voltRaw,vibRaw]=await Promise.all([safeFetch(`${API}/voltages`),safeFetch(`${API}/vibration`)]);
   setSensorDot('dotMotor',  !!(vibRaw&&vibRaw.status==='online'));
@@ -354,8 +357,79 @@ async function fetchAll() {
   updateKPI(batt);
   await updateTemperature(); 
   renderAlerts(generateAlerts(motor,batt));
+  await updateFaults(); 
   await syncToCloud(vibRaw,voltRaw,batt,motor);
 }
+
+// SVG icons
+const CRIT_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#ef4444">
+  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+  <line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/>
+  <line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/>
+</svg>`;
+ 
+const WARN_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b">
+  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+  <line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/>
+  <line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/>
+</svg>`;
+ 
+const OK_SVG = `<svg width="15" height="15" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" fill="#10b981"/>
+  <polyline points="9,12 11,14 15,10" stroke="#fff" stroke-width="1.8"
+    stroke-linecap="round" fill="none"/>
+</svg>`;
+ 
+// ── Fetch and render faults ──────────────────────────────────────
+async function updateFaults() {
+    const data = await safeFetch(`${API}/faults`);
+    if (!data) return;
+ 
+    const container = $('alerts-pills');
+    if (!container) return;
+ 
+    // Update fault status indicator in navbar (optional)
+    const statusEl = $('faultStatus');
+    if (statusEl) {
+        statusEl.textContent  = data.status;
+        statusEl.style.color  = data.status === 'CRITICAL' ? '#ef4444'
+                               : data.status === 'WARNING'  ? '#f59e0b'
+                               : '#10b981';
+    }
+ 
+    // No faults → show all clear
+    if (!data.faults || data.faults.length === 0) {
+        container.innerHTML = `
+          <div class="alert-pill a-ok">
+            ${OK_SVG}
+            <div class="alert-body">
+              <div class="alert-msg">All systems normal</div>
+              <div class="alert-sub">No active fault codes · ${timeNow()}</div>
+            </div>
+          </div>`;
+        return;
+    }
+ 
+    // Render each fault as a pill
+    container.innerHTML = data.faults.map(f => {
+        const isCrit = f.severity === 'CRITICAL';
+        const icon   = isCrit ? CRIT_SVG : WARN_SVG;
+        const cls    = isCrit ? 'a-crit' : 'a-warn';
+        return `
+          <div class="alert-pill ${cls}" title="${f.gear_iq}">
+            ${icon}
+            <div class="alert-body">
+              <div class="alert-msg">
+                <span class="fault-code">${f.code}</span>
+                ${f.oem_desc}
+              </div>
+              <div class="alert-sub">${f.value} · ${f.type} · ${f.time}</div>
+            </div>
+          </div>`;
+    }).join('');
+}
+ 
+
 
 // ── Bootstrap ───────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
