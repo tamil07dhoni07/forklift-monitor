@@ -7,8 +7,9 @@ from kpi_logic  import calculate_kpi_today
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import psycopg2
-from db import get_db_connection
+from db import delete_old_vibration_records, delete_old_voltage_records, get_db_connection
 from datetime import datetime, timedelta
+from config import DEVICE_ID, HOSTNAME, LOCATION  # ← add
 
 app = Flask(__name__, 
             static_folder='../web/static',
@@ -144,7 +145,20 @@ def kpi():
                         'cycles_today': 0,   'energy_used': 0})
     return jsonify(data)
 
+@app.route('/api/device')
+def device_info():
+    return jsonify({
+        'device_id': DEVICE_ID,
+        'location':  LOCATION,
+        'hostname':  HOSTNAME
+    })
+
 
 if __name__ == '__main__':
+    # ── Clean old records every time server starts ──
+    print('[Startup] Cleaning old records ...')
+    delete_old_voltage_records()
+    delete_old_vibration_records()
+    print('[Startup] Cleanup done ✅')
     print("🚀 Multi-Voltage API Server")
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)

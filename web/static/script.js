@@ -284,6 +284,34 @@ async function safeFetch(url) {
   } catch(e) { console.warn('[GearIQ]',url,e.message); return null; }
 }
 
+// ── DEVICE INFO ─────────────────────────────────────────────────
+async function loadDeviceInfo() {
+    try {
+        const res = await fetch(`${API}/device`, { signal: AbortSignal.timeout(4000) });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        const data = await res.json();
+
+        // Update navbar elements
+        const idEl  = document.getElementById('nav-id');
+        const locEl = document.getElementById('nav-loc');
+
+        if (idEl)  idEl.textContent  = data.device_id || '--';
+        if (locEl) locEl.textContent = data.location  || 'Not Set';
+
+        // Also store globally for cloud sync payload
+        window.DEVICE_ID = data.device_id;
+        window.LOCATION  = data.location;
+
+        console.log(`[Device] ID=${data.device_id}  Location=${data.location}`);
+
+    } catch (e) {
+        console.warn('[Device] Failed to load device info →', e.message);
+    }
+}
+
+
+
 async function fetchAll() {
   const ok=await checkApiHealth();
   if(!ok) {
@@ -304,6 +332,7 @@ async function fetchAll() {
 
 // ── Bootstrap ───────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
+  loadDeviceInfo();  
   initCamera();
   window.addEventListener('offline',()=>setNetPill('offline','No Network'));
   window.addEventListener('online', ()=>setNetPill('checking','Reconnecting…'));

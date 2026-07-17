@@ -18,6 +18,7 @@ import smbus          # for ADS1115 current sensor
 import socket
 import subprocess
 from db import get_db_connection
+from config import DEVICE_ID, HOSTNAME, LOCATION  # ← add
  
 # ========== CONFIGURATION ==========
 PORT = "/dev/ttyUSB0"

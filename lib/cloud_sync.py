@@ -10,12 +10,11 @@ import psycopg2
 import requests
 from datetime import datetime, timezone, timedelta
 from db import get_db_connection
+from config import DEVICE_ID, LOCATION  # ← add
 
 # ── CONFIG ───────────────────────────────────────────────────────
 CLOUD_API_URL     = 'https://your-cloud-api.com/api/v1/ingest'
 CLOUD_API_KEY     = 'geariq-edge-secret-2024'
-DEVICE_ID         = 'FL-2024'
-LOCATION          = 'Warehouse A — Bay 3'
 SYNC_INTERVAL_SEC = 60
 BATCH_SIZE        = 20
 RETRY_MAX         = 3
