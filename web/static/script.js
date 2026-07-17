@@ -56,6 +56,29 @@ function setCloudDot(ok) {
   if(l) l.textContent=ok?'Cloud':'Cloud ✗';
 }
 
+async function updateTemperature() {
+    try {
+        const res  = await safeFetch(`${API}/temperature`);
+        if (!res || !res.length) return;
+
+        res.forEach(r => {
+            const el = document.getElementById(`bat${r.sensor_id}-temp`);
+            if (!el) return;
+
+            const temp   = parseFloat(r.temperature).toFixed(1);
+            el.textContent = `${temp} °C`;
+
+            // Color code: green normal / orange warm / red hot
+            if      (r.temperature > 45) el.style.color = '#ef4444';  // red
+            else if (r.temperature > 35) el.style.color = '#f97316';  // orange
+            else                         el.style.color = 'rgba(255,255,255,.6)'; // normal
+        });
+
+    } catch (e) {
+        console.warn('[Temperature] fetch failed →', e.message);
+    }
+}
+
 // ════════════════════════════════════════════════════════════════
 //  BATTERY  ← /api/voltages
 // ════════════════════════════════════════════════════════════════
@@ -65,6 +88,7 @@ function updateBattery(raw) {
     txt('bat-pct','--%'); txt('bat-power','-- W'); txt('bat-energy','-- Wh');
     style_('battery-fill','height','0%'); style_('batt-bar','width','0%');
     ['bat1','bat2','bat3','bat4'].forEach(id=>txt(id,'-- V'));
+    ['bat1tmp','bat2tmp','bat3tmp','bat4tmp'].forEach(id=>txt(id,'-- °C'));
     badge('bat-badge','Offline','red'); return null;
   }
   // const cells=[0,0,0,0]; let cur=0, pwr=0, enrg=0, on=0;
@@ -328,6 +352,7 @@ async function fetchAll() {
   const motor = updateMotor(vibRaw);
   updateHydraulic();
   updateKPI(batt);
+  await updateTemperature(); 
   renderAlerts(generateAlerts(motor,batt));
   await syncToCloud(vibRaw,voltRaw,batt,motor);
 }

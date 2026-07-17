@@ -65,6 +65,33 @@ def get_latest_voltages():
         'timestamp': r[5]
     } for r in rows]
 
+def get_latest_temperatures():
+    conn = get_db_connection()
+    if not conn: return []
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT DISTINCT ON (sensor_id)
+                   sensor_id, temperature, status, timestamp
+            FROM   temperature_data
+            ORDER  BY sensor_id, id DESC
+        """)
+        rows = cur.fetchall()
+        cur.close()
+        return [{
+            'sensor_id':   r[0],
+            'temperature': r[1],
+            'status':      r[2],
+            'timestamp':   r[3]
+        } for r in rows]
+    except Exception as e:
+        print(f'[DB] get_latest_temperatures ERROR → {e}')
+        return []
+    finally:
+        conn.close()
+
+
+
 # ---------- Routes ----------
 @app.route('/')
 def index():
@@ -154,6 +181,17 @@ def device_info():
         'hostname':  HOSTNAME,
         'version':   VERSION
     })
+
+@app.route('/api/temperature')
+def temperature():
+    recs = get_latest_temperatures()
+    now  = datetime.now()
+    result = []
+    for r in recs:
+        age    = (now - r['timestamp']).total_seconds()
+        status = 'online' if age < 10 else 'offline'
+        result.append({**r, 'status': status, 'timestamp': r['timestamp'].isoformat()})
+    return jsonify(result)
 
 
 if __name__ == '__main__':
