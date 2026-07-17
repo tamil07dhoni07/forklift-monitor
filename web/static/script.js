@@ -62,7 +62,7 @@ async function updateTemperature() {
         if (!res || !res.length) return;
 
         res.forEach(r => {
-            const el = document.getElementById(`bat${r.sensor_id}temp`);
+            const el = document.getElementById(`bat${r.sensor_id}tmp`);
             if (!el) return;
 
             const temp   = parseFloat(r.temperature).toFixed(1);
