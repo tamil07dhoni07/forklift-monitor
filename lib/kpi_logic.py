@@ -1,247 +1,188 @@
+#!/usr/bin/env python3
 # ================================================================
-#  KPI CALCULATION LOGIC  (add to api_server.py)
-#  
-#  Tables used:
-#    vibration_sensor_data  → total_vibration, timestamp
-#    voltage_data           → sensor_id, power, energy, timestamp
-#
-#  KPIs calculated:
-#    operating_time  — hours vibration was above threshold
-#    idle_time       — hours system was on but not operating
-#    cycles_today    — count of distinct work cycles
-#    energy_used     — kWh consumed (power × time integration)
+#  kpi_logic.py  —  Gear IQ KPI Calculations
 # ================================================================
 
-from datetime import datetime, date
+import logging
+from datetime import datetime, date, timezone, timedelta
+from db import get_db_connection
 
-from db import get_db_connection, DB_CONFIG
+log = logging.getLogger('kpi_logic')
 
-# ── Tunable thresholds ─────────────────────────────────────────
-VIB_OPERATING_THRESHOLD = 0.3   # mm/s  — above this = "operating"
-MIN_CYCLE_DURATION_SEC  = 30    # sec   — burst must last ≥ 30s to count as a cycle
-SENSOR_TIMEOUT_SEC      = 30    # sec   — gap > 30s means sensor was offline (don't count)
+# ── Tunable constants ────────────────────────────────────────────
+VIB_THRESHOLD      = 0.3    # mm/s — above = operating, below = idle
+MIN_CYCLE_SECS     = 30     # sec  — burst must last ≥ 30s to count as cycle
+SENSOR_TIMEOUT_SEC = 60     # sec  — gap larger than this = sensor was offline
+
+IST = timezone(timedelta(hours=5, minutes=30))
 
 
-# ─────────────────────────────────────────────────────────────────
-#  CORE CALCULATION FUNCTION
-# ─────────────────────────────────────────────────────────────────
 def calculate_kpi_today():
-    """
-    Query today's sensor data and return KPI dictionary:
-    {
-        operating_time : float  (hours)
-        idle_time      : float  (hours)
-        cycles_today   : int
-        energy_used    : float  (kWh)
-    }
-    """
+    log.info('📊  calculate_kpi_today  →  starting ...')
+
     conn = get_db_connection()
     if not conn:
+        log.error('📊  calculate_kpi_today  →  no DB connection')
         return None
 
-    cur = conn.cursor()
-    today_start = datetime.combine(date.today(), datetime.min.time())
+    try:
+        cur = conn.cursor()
 
-    # ── 1. VIBRATION READINGS FOR TODAY ───────────────────────
-    cur.execute("""
-        SELECT total_vibration, timestamp
-        FROM   vibration_sensor_data
-        WHERE  timestamp >= %s
-        ORDER  BY timestamp ASC
-    """, (today_start,))
-    vib_rows = cur.fetchall()   # [(vib_float, datetime), ...]
+        # ── Get today's date boundary in DB's timezone ───────────
+        # Use DB current_date to avoid timezone mismatch
+        cur.execute("SELECT CURRENT_DATE, NOW()")
+        db_date, db_now = cur.fetchone()
+        today_start = datetime.combine(db_date, datetime.min.time())
 
-    # ── 2. VOLTAGE / POWER READINGS FOR TODAY ─────────────────
-    cur.execute("""
-        SELECT sensor_id, power, energy, timestamp
-        FROM   voltage_data
-        WHERE  timestamp >= %s
-        ORDER  BY sensor_id, timestamp ASC
-    """, (today_start,))
-    volt_rows = cur.fetchall()  # [(sensor_id, power, energy, datetime), ...]
+        log.debug(f'📊  DB date={db_date}  DB now={db_now}  today_start={today_start}')
 
-    cur.close()
-    conn.close()
+        # ── Fetch today's vibration rows ─────────────────────────
+        cur.execute("""
+            SELECT total_vibration, timestamp
+            FROM   vibration_sensor_data
+            WHERE  timestamp >= %s
+            ORDER  BY timestamp ASC
+        """, (today_start,))
+        vib_rows = cur.fetchall()
 
-    # ── 3. COMPUTE OPERATING TIME, IDLE TIME, CYCLES ──────────
-    operating_sec = 0.0
-    idle_sec      = 0.0
-    cycles        = 0
+        log.info(f'📊  vibration rows today  →  {len(vib_rows)} records')
 
-    in_cycle      = False
-    cycle_start   = None
-    prev_ts       = None
+        if not vib_rows:
+            log.warning('📊  NO vibration records found for today  →  KPI will be zero')
+            log.warning(f'📊  Check: does vibration_sensor_data have rows with timestamp >= {today_start} ?')
 
-    for vib, ts in vib_rows:
-        if prev_ts is not None:
-            gap_sec     = (ts - prev_ts).total_seconds()
-
-            # Skip large gaps (sensor was offline / not recording)
-            if gap_sec > SENSOR_TIMEOUT_SEC:
-                # Close any open cycle without counting (data gap)
-                if in_cycle:
-                    in_cycle = False
-                prev_ts = ts
-                continue
-
-            is_operating = vib > VIB_OPERATING_THRESHOLD
-
-            if is_operating:
-                operating_sec += gap_sec
-                if not in_cycle:
-                    # Vibration just crossed threshold → start of a new burst
-                    in_cycle    = True
-                    cycle_start = prev_ts
+            # ── Diagnostic: check latest row in DB ───────────────
+            cur.execute("SELECT total_vibration, timestamp FROM vibration_sensor_data ORDER BY id DESC LIMIT 1")
+            latest = cur.fetchone()
+            if latest:
+                log.warning(f'📊  Latest DB row: vib={latest[0]}  ts={latest[1]}')
             else:
-                idle_sec += gap_sec
-                if in_cycle:
-                    # Vibration dropped back down → end of burst
-                    burst_duration = (ts - cycle_start).total_seconds()
-                    if burst_duration >= MIN_CYCLE_DURATION_SEC:
-                        cycles += 1          # count only meaningful bursts
-                    in_cycle = False
+                log.error('📊  vibration_sensor_data table is EMPTY')
 
-        prev_ts = ts
+            return {'operating_time': 0, 'idle_time': 0, 'cycles_today': 0, 'energy_used': 0}
 
-    # Close any still-open cycle at the end of the data
-    if in_cycle and cycle_start and prev_ts:
-        burst_duration = (prev_ts - cycle_start).total_seconds()
-        if burst_duration >= MIN_CYCLE_DURATION_SEC:
-            cycles += 1
+        # ── Log sample of data ───────────────────────────────────
+        log.debug(f'📊  first row: vib={vib_rows[0][0]}  ts={vib_rows[0][1]}')
+        log.debug(f'📊  last  row: vib={vib_rows[-1][0]}  ts={vib_rows[-1][1]}')
 
-    # ── 4. COMPUTE ENERGY USED (power × time integration) ─────
-    #
-    #  Method: trapezoidal integration per sensor
-    #  power  is in Watts, time interval in hours → result in Wh
-    #  Divide by 1000 at the end to get kWh.
-    #
-    #  If your sensor stores CUMULATIVE energy (Wh meter style):
-    #  → use the alternative method at the bottom of this file.
-    #
-    total_energy_wh  = 0.0
-    sensor_prev      = {}   # {sensor_id: (power_W, timestamp)}
+        # ── Count operating/idle/cycles ──────────────────────────
+        operating_sec = 0.0
+        idle_sec      = 0.0
+        cycles        = 0
+        in_cycle      = False
+        cycle_start   = None
+        prev_ts       = None
 
-    for sensor_id, power, energy, ts in volt_rows:
-        power = float(power or 0)
+        above_thresh  = 0   # debug counters
+        below_thresh  = 0
+        skipped_gaps  = 0
 
-        if sensor_id in sensor_prev:
-            prev_power, prev_ts = sensor_prev[sensor_id]
-            gap_sec      = (ts - prev_ts).total_seconds()
+        for vib, ts in vib_rows:
+            # Strip timezone info if present to compare consistently
+            if hasattr(ts, 'tzinfo') and ts.tzinfo is not None:
+                ts = ts.replace(tzinfo=None)
 
-            # Skip large gaps
-            if gap_sec <= SENSOR_TIMEOUT_SEC:
-                interval_hr  = gap_sec / 3600
-                avg_power    = (power + prev_power) / 2   # trapezoidal rule
-                total_energy_wh += avg_power * interval_hr
+            vib_val = float(vib or 0)
 
-        sensor_prev[sensor_id] = (power, ts)
+            if prev_ts is not None:
+                gap_sec = (ts - prev_ts).total_seconds()
 
-    total_energy_kwh = total_energy_wh / 1000
+                # Skip gaps > SENSOR_TIMEOUT_SEC (sensor was offline)
+                if gap_sec > SENSOR_TIMEOUT_SEC:
+                    log.debug(f'📊  gap {gap_sec:.0f}s > {SENSOR_TIMEOUT_SEC}s → skipped (sensor offline)')
+                    skipped_gaps += 1
+                    if in_cycle:
+                        # close open cycle
+                        burst = (prev_ts - cycle_start).total_seconds() if cycle_start else 0
+                        if burst >= MIN_CYCLE_SECS:
+                            cycles += 1
+                            log.debug(f'📊  cycle closed on gap  →  burst={burst:.0f}s  total_cycles={cycles}')
+                        in_cycle = False
+                    prev_ts = ts
+                    continue
 
-    return {
-        'operating_time': round(operating_sec / 3600, 2),   # hours
-        'idle_time':      round(idle_sec      / 3600, 2),   # hours
-        'cycles_today':   cycles,
-        'energy_used':    round(total_energy_kwh, 3)        # kWh
-    }
+                if vib_val > VIB_THRESHOLD:
+                    operating_sec += gap_sec
+                    above_thresh  += 1
+                    if not in_cycle:
+                        in_cycle    = True
+                        cycle_start = prev_ts
+                else:
+                    idle_sec     += gap_sec
+                    below_thresh += 1
+                    if in_cycle:
+                        burst = (ts - cycle_start).total_seconds() if cycle_start else 0
+                        if burst >= MIN_CYCLE_SECS:
+                            cycles += 1
+                            log.debug(f'📊  cycle complete  →  burst={burst:.0f}s  total_cycles={cycles}')
+                        in_cycle = False
 
+            prev_ts = ts
 
-# ─────────────────────────────────────────────────────────────────
-#  FLASK ROUTE  — add this to api_server.py
-# ─────────────────────────────────────────────────────────────────
-# @app.route('/api/kpi')
-# def kpi():
-#     data = calculate_kpi_today()
-#     if not data:
-#         return jsonify({'operating_time': 0, 'idle_time': 0,
-#                         'cycles_today': 0,   'energy_used': 0})
-#     return jsonify(data)
+        # Close any still-open cycle at end of data
+        if in_cycle and cycle_start and prev_ts:
+            burst = (prev_ts - cycle_start).total_seconds()
+            if burst >= MIN_CYCLE_SECS:
+                cycles += 1
+                log.debug(f'📊  last cycle closed  →  burst={burst:.0f}s  total_cycles={cycles}')
 
+        log.info(f'📊  vibration analysis  →  '
+                 f'above_threshold={above_thresh}  '
+                 f'below_threshold={below_thresh}  '
+                 f'skipped_gaps={skipped_gaps}')
 
-# ─────────────────────────────────────────────────────────────────
-#  ALTERNATIVE: CUMULATIVE ENERGY METER
-#  Use this instead of the trapezoidal method if your voltage
-#  sensor's "energy" column is a running Wh counter (like a
-#  smart meter that keeps incrementing).
-# ─────────────────────────────────────────────────────────────────
-def energy_from_cumulative_meter(volt_rows):
-    """
-    If energy column = cumulative Wh counter per sensor:
-    today's energy = last_value - first_value  per sensor, then sum.
-    """
-    sensor_first = {}
-    sensor_last  = {}
+        if above_thresh == 0:
+            log.warning(f'📊  ALL vibration readings are ≤ {VIB_THRESHOLD} mm/s  →  '
+                        f'operating_time will be 0  |  try lowering VIB_THRESHOLD')
 
-    for sensor_id, power, energy, ts in volt_rows:
-        energy = float(energy or 0)
-        if sensor_id not in sensor_first:
-            sensor_first[sensor_id] = energy
-        sensor_last[sensor_id] = energy
+        # ── Energy from voltage data ─────────────────────────────
+        cur.execute("""
+            SELECT sensor_id, power, timestamp
+            FROM   voltage_data
+            WHERE  timestamp >= %s
+            ORDER  BY sensor_id, timestamp ASC
+        """, (today_start,))
+        volt_rows = cur.fetchall()
 
-    total_wh = sum(
-        sensor_last[sid] - sensor_first[sid]
-        for sid in sensor_last
-    )
-    return round(total_wh / 1000, 3)   # kWh
+        log.info(f'📊  voltage rows today  →  {len(volt_rows)} records')
 
+        if not volt_rows:
+            log.warning('📊  NO voltage records found for today  →  energy_used will be 0')
 
-# ─────────────────────────────────────────────────────────────────
-#  RAW SQL (PostgreSQL)  — run directly for debugging
-# ─────────────────────────────────────────────────────────────────
-"""
--- Operating time by bucket (1-minute intervals)
-WITH buckets AS (
-  SELECT
-    date_trunc('minute', timestamp)  AS minute,
-    MAX(total_vibration)             AS max_vib
-  FROM vibration_sensor_data
-  WHERE timestamp >= CURRENT_DATE
-  GROUP BY 1
-)
-SELECT
-  COUNT(*) FILTER (WHERE max_vib > 0.3) / 60.0  AS operating_hours,
-  COUNT(*) FILTER (WHERE max_vib <= 0.3) / 60.0  AS idle_hours
-FROM buckets;
+        energy_wh = 0.0
+        sprev     = {}
 
+        for sid, pwr, ts in volt_rows:
+            if hasattr(ts, 'tzinfo') and ts.tzinfo is not None:
+                ts = ts.replace(tzinfo=None)
+            pwr = float(pwr or 0)
+            if sid in sprev:
+                prev_p, prev_t = sprev[sid]
+                gap = (ts - prev_t).total_seconds()
+                if gap <= SENSOR_TIMEOUT_SEC:
+                    energy_wh += ((pwr + prev_p) / 2) * (gap / 3600)
+            sprev[sid] = (pwr, ts)
 
--- Cycles today (count vibration bursts using LAG window function)
-WITH states AS (
-  SELECT
-    timestamp,
-    total_vibration > 0.3                         AS is_operating,
-    LAG(total_vibration > 0.3) OVER (ORDER BY id) AS prev_operating
-  FROM vibration_sensor_data
-  WHERE timestamp >= CURRENT_DATE
-)
-SELECT COUNT(*) AS cycles_today
-FROM states
-WHERE is_operating = TRUE AND (prev_operating = FALSE OR prev_operating IS NULL);
+        cur.close()
 
+        result = {
+            'operating_time': round(operating_sec / 3600, 2),
+            'idle_time':      round(idle_sec      / 3600, 2),
+            'cycles_today':   cycles,
+            'energy_used':    round(energy_wh / 1000, 3)
+        }
 
--- Energy used today (integrate power × time per sensor, sum all)
-WITH intervals AS (
-  SELECT
-    sensor_id,
-    power,
-    timestamp,
-    LAG(power,     1) OVER w  AS prev_power,
-    LAG(timestamp, 1) OVER w  AS prev_ts,
-    EXTRACT(EPOCH FROM (timestamp - LAG(timestamp,1) OVER w)) AS gap_sec
-  FROM voltage_data
-  WHERE timestamp >= CURRENT_DATE
-  WINDOW w AS (PARTITION BY sensor_id ORDER BY timestamp)
-)
-SELECT
-  ROUND(
-    SUM(
-      CASE WHEN gap_sec <= 30                          -- skip offline gaps
-           THEN ((power + prev_power) / 2.0)           -- avg power (W)
-                * (gap_sec / 3600.0)                   -- × hours
-           ELSE 0
-      END
-    ) / 1000.0,                                        -- Wh → kWh
-    3
-  ) AS energy_kwh
-FROM intervals
-WHERE prev_ts IS NOT NULL;
-"""
+        log.info(f'📊  KPI result  →  '
+                 f'operating={result["operating_time"]}hrs  '
+                 f'idle={result["idle_time"]}hrs  '
+                 f'cycles={result["cycles_today"]}  '
+                 f'energy={result["energy_used"]}kWh')
+
+        return result
+
+    except Exception as e:
+        log.exception(f'📊  calculate_kpi_today ERROR  →  {e}')
+        return None
+    finally:
+        conn.close()
+        log.debug('📊  DB connection closed')

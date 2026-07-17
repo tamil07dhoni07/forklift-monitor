@@ -187,9 +187,28 @@ function updateHydraulic() {
 // ════════════════════════════════════════════════════════════════
 //  KPI
 // ════════════════════════════════════════════════════════════════
-function updateKPI(battResult) {
-  txt('kpi-optime','--'); txt('kpi-idletime','--'); txt('kpi-cycles','--');
-  txt('kpi-energy', battResult ? (battResult.totalEnergy/1000).toFixed(2) : '--');
+// function updateKPI(battResult) {
+//   txt('kpi-optime','--'); txt('kpi-idletime','--'); txt('kpi-cycles','--');
+//   txt('kpi-energy', battResult ? (battResult.totalEnergy/1000).toFixed(2) : '--');
+// }
+
+async function updateKPI() {
+  const data = await safeFetch(`${API}/kpi`);
+
+  if (!data) {
+    txt('kpi-optime',   '--');
+    txt('kpi-idletime', '--');
+    txt('kpi-cycles',   '--');
+    txt('kpi-energy',   '--');
+    return;
+  }
+
+  txt('kpi-optime',   parseFloat(data.operating_time).toFixed(2));
+  txt('kpi-idletime', parseFloat(data.idle_time).toFixed(2));
+  txt('kpi-cycles',   data.cycles_today);
+  txt('kpi-energy',   parseFloat(data.energy_used).toFixed(3));
+
+  console.log(`[KPI] ✅ op=${data.operating_time}hrs  idle=${data.idle_time}hrs  cycles=${data.cycles_today}  energy=${data.energy_used}kWh`);
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -391,7 +410,7 @@ async function fetchAll() {
     updateMotor(null);
     updateHydraulic();
     updateKPI(null);
-    renderAlerts(generateAlerts(null, null));
+   // renderAlerts(generateAlerts(null, null));
     setCloudDot(false);
     console.warn('[fetchAll] ⏳ Waiting for next cycle ...');
     return;
