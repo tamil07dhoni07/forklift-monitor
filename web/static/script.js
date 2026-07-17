@@ -195,8 +195,24 @@ function updateKPI(battResult) {
 // ════════════════════════════════════════════════════════════════
 //  ALERTS
 // ════════════════════════════════════════════════════════════════
-const WARN_SVG=`<svg width="16" height="16" viewBox="0 0 24 24" fill="#d97706"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/></svg>`;
-const OK_SVG  =`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#16a34a"/><polyline points="9,12 11,14 15,10" stroke="#fff" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>`;
+// SVG icons
+const CRIT_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#ef4444">
+  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+  <line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/>
+  <line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/>
+</svg>`;
+ 
+const WARN_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b">
+  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+  <line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/>
+  <line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/>
+</svg>`;
+ 
+const OK_SVG = `<svg width="15" height="15" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" fill="#10b981"/>
+  <polyline points="9,12 11,14 15,10" stroke="#fff" stroke-width="1.8"
+    stroke-linecap="round" fill="none"/>
+</svg>`;
 
 function generateAlerts(mR, bR) {
   const a=[], t=timeNow(), T=THRESHOLDS;
@@ -437,24 +453,6 @@ async function fetchAll() {
   console.log('─'.repeat(50));
 }
 
-// SVG icons
-const CRIT_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#ef4444">
-  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-  <line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/>
-  <line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/>
-</svg>`;
- 
-const WARN_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="#f59e0b">
-  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-  <line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/>
-  <line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/>
-</svg>`;
- 
-const OK_SVG = `<svg width="15" height="15" viewBox="0 0 24 24">
-  <circle cx="12" cy="12" r="10" fill="#10b981"/>
-  <polyline points="9,12 11,14 15,10" stroke="#fff" stroke-width="1.8"
-    stroke-linecap="round" fill="none"/>
-</svg>`;
  
 // ── Fetch and render faults ──────────────────────────────────────
 async function updateFaults() {
