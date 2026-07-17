@@ -34,21 +34,23 @@ html,body{width:100%;height:100%}
 }
 /* Dark override */
 :root[data-theme="dark"]{
-  --bg:#05070f;
-  --nav-bg:rgba(4,6,14,.95);
-  --cam-bg:#030508;
-  --alert-bg:rgba(4,6,14,.85);
-  --border:rgba(56,130,246,.12);
-  --glow:rgba(56,130,246,.2);
-  --tp:#dce8ff; --ts:#5a7090; --tm:#2e4060;
-  --bar:rgba(255,255,255,.2);
+  --bg:      #f0f4f8;
+  --nav-bg:  rgba(255,255,255,.95);
+  --cam-bg:  #0a0e18;
+  --alert-bg:#ffffff;
+  --border:  #e2e8f0;
+  --glow:    #e2e8f0;
+  --tp:      #0f172a;
+  --ts:      #475569;
+  --tm:      #94a3b8;
+  --bar:     rgba(0,0,0,.08);
 }
 
 body{
   width:100vw;height:100vh;overflow:hidden;
   font-family:'Inter',sans-serif;font-size:clamp(11px,1.55vw,14px);
   background:var(--bg);color:var(--tp);
-  background-image:radial-gradient(ellipse at center,#070b18 0%,#04060e 100%);
+  background-image:radial-gradient(ellipse at center,#ffffff 0%,#ffffff 100%);
 }
 :root[data-theme="dark"] body{background-image:none}
 
@@ -211,8 +213,8 @@ body{
 .pair-lbl{font-size:clamp(7px,.83vw,9.5px);font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.8}
 .pair-val{font-size:clamp(11px,1.6vw,16px);font-weight:700;font-family:'Roboto Mono',monospace;line-height:1.2}
 .pair-val.sm{font-size:clamp(9px,1.2vw,13px)}
-.pair-lbl_small{font-size:clamp(7px,.83vw,7px);font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.8}
-.pair-val_small{font-size:clamp(11px,1.6vw,7px);font-weight:700;font-family:'Roboto Mono',monospace;line-height:1.2}
+.pair-lbl_small{font-size:clamp(7px,.83vw,7px);font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.8;color:#ffffff}
+.pair-val_small{font-size:clamp(11px,1.6vw,7px);font-weight:700;font-family:'Roboto Mono',monospace;line-height:1.2;color:#ffffff}
 
 
 /* Hydraulic */
@@ -299,7 +301,7 @@ body{
   background:var(--cam-bg);border:1px solid var(--border);
   border-radius:clamp(10px,1.2vw,15px);overflow:hidden;
   display:flex;flex-direction:column;min-height:0;
-  box-shadow:0 0 0 1px var(--glow),0 8px 32px rgba(0,0,0,.5);
+  box-shadow:0 0 0 1px var(--glow),0 8px 32px rgba(255, 255, 255, 0.5);
 }
 .cam-header{
   display:flex;align-items:center;justify-content:space-between;
