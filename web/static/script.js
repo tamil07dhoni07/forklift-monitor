@@ -62,7 +62,7 @@ async function updateTemperature() {
         if (!res || !res.length) return;
 
         res.forEach(r => {
-            const el = document.getElementById(`bat${r.sensor_id}-temp`);
+            const el = document.getElementById(`bat${r.sensor_id}temp`);
             if (!el) return;
 
             const temp   = parseFloat(r.temperature).toFixed(1);
@@ -410,7 +410,9 @@ async function fetchAll() {
     updateMotor(null);
     updateHydraulic();
     updateKPI(null);
-   // renderAlerts(generateAlerts(null, null));
+    console.log('[fetchAll] 🌡️  Fetching temperature ...');
+    updateTemperature();
+    renderAlerts(generateAlerts(null, null));
     setCloudDot(false);
     console.warn('[fetchAll] ⏳ Waiting for next cycle ...');
     return;
