@@ -338,27 +338,103 @@ async function loadDeviceInfo() {
 
 
 
+// async function fetchAll() {
+//   const ok=await checkApiHealth();
+//   if(!ok) {
+//     setSensorDot('dotMotor',false); setSensorDot('dotBattery',false);
+//     updateBattery([]); updateMotor(null); updateHydraulic(); updateKPI(null);
+//     renderAlerts(generateAlerts(null,null)); setCloudDot(false); 
+//    // await updateFaults(); 
+//     //await updateTemperature();
+//      return;
+//   }
+//   const [voltRaw,vibRaw]=await Promise.all([safeFetch(`${API}/voltages`),safeFetch(`${API}/vibration`)]);
+//   setSensorDot('dotMotor',  !!(vibRaw&&vibRaw.status==='online'));
+//   setSensorDot('dotBattery',!!(voltRaw&&voltRaw.some(r=>r.status==='online')));
+//   const batt  = updateBattery(voltRaw||[]);
+//   const motor = updateMotor(vibRaw);
+//   updateHydraulic();
+//   updateKPI(batt);
+//   await updateTemperature(); 
+//   renderAlerts(generateAlerts(motor,batt));
+//   await updateFaults(); 
+//   await syncToCloud(vibRaw,voltRaw,batt,motor);
+// }
+
 async function fetchAll() {
-  const ok=await checkApiHealth();
-  if(!ok) {
-    setSensorDot('dotMotor',false); setSensorDot('dotBattery',false);
-    updateBattery([]); updateMotor(null); updateHydraulic(); updateKPI(null);
-    renderAlerts(generateAlerts(null,null)); setCloudDot(false); 
-    await updateFaults(); 
-    await updateTemperature();
-     return;
+  console.log('─'.repeat(50));
+  console.log(`[fetchAll] 🔄 Cycle started → ${new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })} IST`);
+
+  // ── API Health ──────────────────────────────────────
+  const ok = await checkApiHealth();
+  if (!ok) {
+    console.warn('[fetchAll] ❌ API offline → resetting all sensors');
+    setSensorDot('dotMotor',   false);
+    setSensorDot('dotBattery', false);
+    updateBattery([]);
+    updateMotor(null);
+    updateHydraulic();
+    updateKPI(null);
+    renderAlerts(generateAlerts(null, null));
+    setCloudDot(false);
+    console.warn('[fetchAll] ⏳ Waiting for next cycle ...');
+    return;
   }
-  const [voltRaw,vibRaw]=await Promise.all([safeFetch(`${API}/voltages`),safeFetch(`${API}/vibration`)]);
-  setSensorDot('dotMotor',  !!(vibRaw&&vibRaw.status==='online'));
-  setSensorDot('dotBattery',!!(voltRaw&&voltRaw.some(r=>r.status==='online')));
-  const batt  = updateBattery(voltRaw||[]);
+  console.log('[fetchAll] ✅ API online');
+
+  // ── Fetch sensors in parallel ───────────────────────
+  console.log('[fetchAll] 📡 Fetching voltages + vibration in parallel ...');
+  const [voltRaw, vibRaw] = await Promise.all([
+    safeFetch(`${API}/voltages`),
+    safeFetch(`${API}/vibration`)
+  ]);
+
+  console.log(`[fetchAll] 🔋 Voltages  → ${voltRaw ? voltRaw.length + ' sensor(s)' : 'null (fetch failed)'}`);
+  console.log(`[fetchAll] 📳 Vibration → ${vibRaw  ? 'status=' + vibRaw.status + '  vib=' + vibRaw.total_vibration + ' mm/s  temp=' + vibRaw.temperature + '°C' : 'null (fetch failed)'}`);
+
+  // ── Sensor status dots ──────────────────────────────
+  const motorOnline   = !!(vibRaw  && vibRaw.status === 'online');
+  const batteryOnline = !!(voltRaw && voltRaw.some(r => r.status === 'online'));
+  setSensorDot('dotMotor',   motorOnline);
+  setSensorDot('dotBattery', batteryOnline);
+  console.log(`[fetchAll] 🟢 Motor=${motorOnline}  Battery=${batteryOnline}`);
+
+  // ── Update cards ────────────────────────────────────
+  console.log('[fetchAll] 🔋 Updating Battery card ...');
+  const batt = updateBattery(voltRaw || []);
+  console.log(`[fetchAll] 🔋 Battery → pct=${batt ? Math.round(batt.pct) + '%' : 'N/A'}  current=${batt ? batt.totalCurrent.toFixed(1) + 'A' : 'N/A'}`);
+
+  console.log('[fetchAll] ⚙️  Updating Motor card ...');
   const motor = updateMotor(vibRaw);
+  console.log(`[fetchAll] ⚙️  Motor → health=${motor ? motor.health + '/100' : 'N/A'}  vib=${motor ? motor.vib.toFixed(2) + ' mm/s' : 'N/A'}`);
+
+  console.log('[fetchAll] 🛢️  Updating Hydraulic card ...');
   updateHydraulic();
+
+  console.log('[fetchAll] 📊 Updating KPI tiles ...');
   updateKPI(batt);
-  await updateTemperature(); 
-  renderAlerts(generateAlerts(motor,batt));
-  await updateFaults(); 
-  await syncToCloud(vibRaw,voltRaw,batt,motor);
+
+  // ── Temperature ─────────────────────────────────────
+  console.log('[fetchAll] 🌡️  Fetching temperature ...');
+  await updateTemperature();
+
+  // ── Alerts ──────────────────────────────────────────
+  console.log('[fetchAll] 🔔 Generating alerts ...');
+  const alerts = generateAlerts(motor, batt);
+  renderAlerts(alerts);
+  const warnCount = alerts.filter(a => a.type === 'warn').length;
+  console.log(`[fetchAll] 🔔 Alerts → total=${alerts.length}  warnings=${warnCount}`);
+
+  // ── Fault codes ─────────────────────────────────────
+  console.log('[fetchAll] ⚠️  Checking fault codes ...');
+  await updateFaults();
+
+  // ── Cloud sync ──────────────────────────────────────
+  console.log('[fetchAll] ☁️  Syncing to cloud ...');
+  await syncToCloud(vibRaw, voltRaw, batt, motor);
+
+  console.log('[fetchAll] ✅ Cycle complete');
+  console.log('─'.repeat(50));
 }
 
 // SVG icons
