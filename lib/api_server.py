@@ -10,6 +10,7 @@ import psycopg2
 from db import delete_old_vibration_records, delete_old_voltage_records, get_db_connection
 from datetime import datetime, timedelta
 from config import DEVICE_ID, HOSTNAME, LOCATION  # ← add
+from constants import VERSION  # ← add
 
 app = Flask(__name__, 
             static_folder='../web/static',
@@ -150,7 +151,8 @@ def device_info():
     return jsonify({
         'device_id': DEVICE_ID,
         'location':  LOCATION,
-        'hostname':  HOSTNAME
+        'hostname':  HOSTNAME,
+        'version':   VERSION
     })
 
 

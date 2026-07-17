@@ -295,9 +295,11 @@ async function loadDeviceInfo() {
         // Update navbar elements
         const idEl  = document.getElementById('nav-id');
         const locEl = document.getElementById('nav-loc');
+        const versionEl = document.getElementById('version');
 
         if (idEl)  idEl.textContent  = data.device_id || '--';
-        if (locEl) locEl.textContent = data.location  || 'Not Set';
+        if (locEl) locEl.textContent = data.location  || '--';
+        if (versionEl) versionEl.textContent = 'Version - ' + (data.version || '--');
 
         // Also store globally for cloud sync payload
         window.DEVICE_ID = data.device_id;
