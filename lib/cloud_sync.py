@@ -211,6 +211,7 @@ def post_to_cloud(payload: dict) -> bool:
     for attempt in range(1, RETRY_MAX + 1):
         try:
             log.debug(f'☁️   Attempt {attempt}/{RETRY_MAX}  →  sending request ...')
+            log.debug(f'☁️   payload {payload}  ')
 
             resp = requests.post(
                 CLOUD_API_URL,
