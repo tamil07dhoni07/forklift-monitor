@@ -144,10 +144,10 @@ body{
   pointer-events:auto;
 }
 .battery-panel .panel-head{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;
 }
 .battery-panel .panel-title{
-  font-size:clamp(10px,1.1vw,13px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
+  font-size:clamp(11px,1.2vw,14px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
 }
 .battery-panel .panel-badge{
   font-size:clamp(9px,1vw,11px);font-weight:700;padding:3px 10px;border-radius:10px;
@@ -221,10 +221,10 @@ body{
   pointer-events:auto;
 }
 .motor-panel .panel-head{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;
 }
 .motor-panel .panel-title{
-  font-size:clamp(10px,1.1vw,13px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
+  font-size:clamp(11px,1.2vw,14px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
 }
 .motor-panel .panel-badge{
   font-size:clamp(9px,1vw,11px);font-weight:700;padding:3px 10px;border-radius:10px;
@@ -281,10 +281,10 @@ body{
   pointer-events:auto;
 }
 .hydraulic-panel .panel-head{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;
 }
 .hydraulic-panel .panel-title{
-  font-size:clamp(10px,1.1vw,13px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
+  font-size:clamp(11px,1.2vw,14px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
 }
 .hydraulic-panel .panel-badge{
   font-size:clamp(9px,1vw,11px);font-weight:700;padding:3px 10px;border-radius:10px;
@@ -325,47 +325,48 @@ body{
 
 /* Status Bar - Bottom Right with KPIs inline */
 .status-bar{
-  bottom:clamp(8px,.8vw,12px);
-  right:clamp(8px,.8vw,12px);
-  left:auto;
-  transform:none;
+  bottom:clamp(12px,1.2vw,18px);
+  left:50%;
+  transform:translateX(-50%);
+  right:auto;
   background:rgba(15,23,42,.92);
   backdrop-filter:blur(16px);
-  border-radius:clamp(10px,1.2vw,14px);
-  padding:clamp(6px,.7vw,10px) clamp(12px,1.3vw,18px);
+  border-radius:clamp(12px,1.4vw,16px);
+  padding:clamp(8px,.9vw,12px) clamp(16px,1.6vw,22px);
   display:flex;
-  gap:clamp(6px,1vw,14px);
+  gap:clamp(10px,1.2vw,16px);
   box-shadow:0 4px 24px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.08);
   pointer-events:auto;
   align-items:center;
   flex-wrap:wrap;
-  justify-content:flex-end;
-  max-width:clamp(320px,42vw,520px);
+  justify-content:center;
+  max-width:clamp(380px,48vw,580px);
 }
 .status-bar .status-item{
-  display:flex;align-items:center;gap:clamp(4px,.4vw,6px);
-  font-size:clamp(8px,.9vw,11px);
-  color:rgba(255,255,255,.7);
+  display:flex;align-items:center;gap:clamp(5px,.5vw,8px);
+  font-size:clamp(11px,1.2vw,14px);
+  color:rgba(255,255,255,.75);
   white-space:nowrap;
 }
 .status-bar .status-dot{
-  width:clamp(5px,.5vw,7px);height:clamp(5px,.5vw,7px);border-radius:50%;background:#10b981;
-  box-shadow:0 0 8px rgba(16,185,129,.6);animation:blink 2s infinite;flex-shrink:0;
+  width:clamp(7px,.6vw,9px);height:clamp(7px,.6vw,9px);border-radius:50%;background:#10b981;
+  box-shadow:0 0 10px rgba(16,185,129,.6);animation:blink 2s infinite;flex-shrink:0;
 }
-.status-bar .status-dot.warn{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.6);}
-.status-bar .status-dot.crit{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.6);}
-.status-bar .status-dot.purple{background:#8b76e2;box-shadow:0 0 8px rgba(139,118,226,.6);}
-.status-bar .status-dot.teal{background:#2ab8b8;box-shadow:0 0 8px rgba(42,184,184,.6);}
-.status-bar .status-dot.pink{background:#f0789a;box-shadow:0 0 8px rgba(240,120,154,.6);}
-.status-bar .status-dot.peach{background:#f0a870;box-shadow:0 0 8px rgba(240,168,112,.6);}
+.status-bar .status-dot.warn{background:#f59e0b;box-shadow:0 0 10px rgba(245,158,11,.6);}
+.status-bar .status-dot.crit{background:#ef4444;box-shadow:0 0 10px rgba(239,68,68,.6);}
+.status-bar .status-dot.purple{background:#8b76e2;box-shadow:0 0 10px rgba(139,118,226,.6);}
+.status-bar .status-dot.teal{background:#2ab8b8;box-shadow:0 0 10px rgba(42,184,184,.6);}
+.status-bar .status-dot.pink{background:#f0789a;box-shadow:0 0 10px rgba(240,120,154,.6);}
+.status-bar .status-dot.peach{background:#f0a870;box-shadow:0 0 10px rgba(240,168,112,.6);}
 .status-bar .status-label{
   font-weight:600;letter-spacing:.3px;
 }
 .status-bar .status-val{
   font-family:'Roboto Mono',monospace;font-weight:700;color:#fff;
+  font-size:clamp(11px,1.2vw,14px);
 }
 .status-bar .status-sep{
-  color:rgba(255,255,255,.2);font-size:clamp(10px,1vw,12px);margin:0 2px;
+  color:rgba(255,255,255,.25);font-size:clamp(12px,1.2vw,14px);margin:0 3px;
 }
 
 /* ── CAMERA PANEL (40%) ─────────────────────── */
