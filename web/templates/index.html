@@ -82,7 +82,7 @@
       <canvas id="three-canvas"></canvas>
 
       <!-- Center Info Pills (top) -->
-      <div class="center-info" id="centerInfo">
+      <!-- <div class="center-info" id="centerInfo">
         <div class="info-pill">
           <span class="pill-dot" style="background:#a855f7;box-shadow:0 0 8px rgba(168,85,247,.5)"></span>
           <span>Battery</span>
@@ -98,7 +98,7 @@
           <span>Hydraulic</span>
           <span class="pill-val" id="center-hydraulic">--%</span>
         </div>
-      </div>
+      </div> -->
 
       <!-- LEFT: Battery Tank -->
       <div class="gauge-container left-cluster" id="batteryGauge">
@@ -115,14 +115,14 @@
         </div>
         <div class="tank-percent" id="battery-percent">--%</div>
         <div class="gauge-label">Battery</div>
-        <div class="gauge-sublabel" id="bat-gauge-status">-- A</div>
+        <div class="gauge-sublabel" id="battery-status">-- A</div>
 
         <!-- Cell details -->
         <div class="cell-list">
-          <div class="cell-item"><span class="cell-name">B1</span><span class="cell-volt" id="bat1v">-- V</span><span class="cell-temp" id="bat1t">-- °C</span></div>
-          <div class="cell-item"><span class="cell-name">B2</span><span class="cell-volt" id="bat2v">-- V</span><span class="cell-temp" id="bat2t">-- °C</span></div>
-          <div class="cell-item"><span class="cell-name">B3</span><span class="cell-volt" id="bat3v">-- V</span><span class="cell-temp" id="bat3t">-- °C</span></div>
-          <div class="cell-item"><span class="cell-name">B4</span><span class="cell-volt" id="bat4v">-- V</span><span class="cell-temp" id="bat4t">-- °C</span></div>
+          <div class="cell-item"><span class="cell-name">B1</span><span class="cell-volt" id="bat1">-- V</span><span class="cell-temp" id="bat1tmp">-- °C</span></div>
+          <div class="cell-item"><span class="cell-name">B2</span><span class="cell-volt" id="bat2">-- V</span><span class="cell-temp" id="bat2tmp">-- °C</span></div>
+          <div class="cell-item"><span class="cell-name">B3</span><span class="cell-volt" id="bat3">-- V</span><span class="cell-temp" id="bat3tmp">-- °C</span></div>
+          <div class="cell-item"><span class="cell-name">B4</span><span class="cell-volt" id="bat4">-- V</span><span class="cell-temp" id="bat4tmp">-- °C</span></div>
         </div>
         <div class="cell-list" style="border-top:1px solid rgba(255,255,255,.06);margin-top:6px;padding-top:6px;">
           <div class="cell-item"><span class="cell-name">Pwr</span><span class="cell-volt" id="bat-power">-- W</span></div>
@@ -151,7 +151,7 @@
           <span id="motor-gauge-val">--</span><span class="thermal-unit">°C</span>
         </div>
         <div class="gauge-label">Motor</div>
-        <div class="gauge-sublabel" id="motor-gauge-health">Health --/100</div>
+        <!-- <div class="gauge-sublabel" id="motor-gauge-health">Health --/100</div> -->
 
         <!-- Motor data -->
         <div class="motor-data-rows">
@@ -177,7 +177,7 @@
 
       <!-- BOTTOM DASH BAR -->
       <div class="dash-bar" id="dashBar">
-        <div class="dash-item">
+        <!-- <div class="dash-item">
           <span class="dash-dot" style="background:#2dd4bf;box-shadow:0 0 8px rgba(45,212,191,.5)"></span>
           <span class="dash-label">Motor</span>
           <span class="dash-val" id="statusMotorVal">--</span>
@@ -193,7 +193,7 @@
           <span class="dash-dot" style="background:#f472b6;box-shadow:0 0 8px rgba(244,114,182,.5)"></span>
           <span class="dash-label">Hydraulic</span>
           <span class="dash-val" id="statusHydraulicVal">--</span>
-        </div>
+        </div> -->
         <!-- <div class="dash-sep"></div>
         <div class="dash-item">
           <span class="dash-dot" style="background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.5)"></span>
@@ -355,8 +355,8 @@ function initThreeJS() {
   scene.add(floor);
 
   const gridHelper = new THREE.GridHelper(30, 30, 
-    isDark ? 0xcbd5e1 : 0x94a3b8, 
-    isDark ? 0xe2e8f0 : 0xf1f5f9
+    isDark ? 0xcbd5e1 : 0xffffff, 
+    isDark ? 0xe2e8f0 : 0xffffff
   );
   gridHelper.position.y = 0.01;
   scene.add(gridHelper);

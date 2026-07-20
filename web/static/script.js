@@ -170,6 +170,9 @@ function updateMotor(raw) {
   if(temp>T.tempCrit||vib>T.vibCrit) badge('motor-badge','Critical','orange');
   else if(temp>T.tempWarn||vib>T.vibWarn) badge('motor-badge','Warm','orange');
   else badge('motor-badge','Normal','green');
+
+  document.getElementById('motor-thermal-fill').style.height = `${(temp / 120) * 100}%`; // 45°C / 120°C
+  document.getElementById('motor-gauge-val').textContent = temp.toFixed(0);
   return { temp, vib, vx, vy, vz, health:h };
 }
 
@@ -180,7 +183,7 @@ function updateHydraulic() {
   badge('hyd-badge','No Data','red');
   html_('hyd-level','--<span class="u">%</span>');
   txt('hyd-temp','--'); txt('hyd-quality-lbl','--');
-  style_('hyd-quality-bar','width','0%');
+  style_('hyd-bar-fill','width','0%');
   attr_('hyd-fill','y','97'); attr_('hyd-fill','height','0');
 }
 
