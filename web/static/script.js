@@ -183,8 +183,8 @@ function updateHydraulic() {
   badge('hyd-badge','No Data','red');
   html_('hyd-level','--<span class="u">%</span>');
   txt('hyd-temp','--'); txt('hyd-quality-lbl','--');
-  style_('hyd-bar-fill','width','0%');
-  attr_('hyd-fill','y','97'); attr_('hyd-fill','height','0');
+  style_('hyd-fill','width','0%');
+  //attr_('hyd-fill','y','97'); attr_('hyd-fill','height','0');
 }
 
 // ════════════════════════════════════════════════════════════════
