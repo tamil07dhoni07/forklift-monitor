@@ -137,7 +137,7 @@ def build_payload(vib_rows, volt_rows, oil_rows, kpi) -> dict:
     motor_list = []
     for r in (vib_rows or []):
         motor_list.append({
-            'id':              r.get('id'),
+            'id':              r.get('id',1),
             'total_vibration': float(r.get('total_vibration', 0)),
             'temperature':     float(r.get('temperature', 0)),
             'velocity': {
@@ -152,8 +152,8 @@ def build_payload(vib_rows, volt_rows, oil_rows, kpi) -> dict:
     battery_list = []
     for r in (volt_rows or []):
         battery_list.append({
-            'id':          r.get('id'),
-            'sensor_id':   r.get('sensor_id'),
+            'id':          r.get('id',1),
+            'sensor_id':   r.get('sensor_id',1),
             'voltage':     float(r.get('voltage', 0)),
             'current':     float(r.get('current', 0)),
             'power':       float(r.get('power', 0)),
@@ -165,7 +165,7 @@ def build_payload(vib_rows, volt_rows, oil_rows, kpi) -> dict:
     oil_list = []
     for r in (oil_rows or []):
         oil_list.append({
-            'id':          r.get('id'),
+            'id':          r.get('id',1),
             'level':       float(r.get('level', 0)),
             'temperature': float(r.get('temperature', 0)),
             'oil_quality': float(r.get('oil_quality', 0)),
@@ -211,7 +211,7 @@ def post_to_cloud(payload: dict) -> bool:
     for attempt in range(1, RETRY_MAX + 1):
         try:
             log.debug(f'☁️   Attempt {attempt}/{RETRY_MAX}  →  sending request ...')
-            log.debug(f'☁️   payload {payload}  ')
+            log.debug("☁️ Payload:\n%s", json.dumps(payload, indent=4, sort_keys=True, default=str))
 
             resp = requests.post(
                 CLOUD_API_URL,
