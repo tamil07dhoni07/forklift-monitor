@@ -13,7 +13,7 @@ from db import get_db_connection
 from config import DEVICE_ID, LOCATION  # ← add
 
 # ── CONFIG ───────────────────────────────────────────────────────
-CLOUD_API_URL     = 'https://your-cloud-api.com/api/v1/ingest'
+CLOUD_API_URL     = 'https://192.168.0.3/api/v1/ingest'
 CLOUD_API_KEY     = 'geariq-edge-secret-2024'
 SYNC_INTERVAL_SEC = 60
 BATCH_SIZE        = 20

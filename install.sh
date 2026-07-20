@@ -237,6 +237,7 @@ PYTHON_PACKAGES=(
     minimalmodbus
     psycopg2-binary
     smbus
+	PyQt5
 )
 
 PIP_OK=0
