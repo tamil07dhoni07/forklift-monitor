@@ -312,7 +312,7 @@ body{
 }
 .hydraulic-panel .hyd-row{
   display:flex;justify-content:space-between;align-items:center;
-  font-size:clamp(7px,.85vw,10px);color:rgba(255,255,255,.9);
+  font-size:clamp(7px,.85vw,13px);color:rgba(255,255,255,.9);
   padding:2px 0;border-bottom:1px solid rgba(255,255,255,.1);
 }
 .hydraulic-panel .hyd-row .hyd-val{

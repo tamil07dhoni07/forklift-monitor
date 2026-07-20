@@ -1,49 +1,42 @@
 #!/usr/bin/env python3
 """
-BonBloc Technology - 3D Dashboard Splash Screen
+BonBloc Technology - 3D Dashboard Splash Screen (GTK3 + Cairo)
 Forklift Monitoring System
+Seamlessly integrates into existing GTK applications
 """
 
-import sys
-import os
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gtk, GLib, Gdk, GObject
+import cairo
 import math
 import random
+import os
 from datetime import datetime
 
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QProgressBar, QGraphicsDropShadowEffect, QFrame,
-    QGraphicsOpacityEffect
-)
-from PyQt5.QtCore import (
-    Qt, QTimer, QPropertyAnimation, QEasingCurve, QPoint, QSize,
-    pyqtSignal, QThread
-)
-from PyQt5.QtGui import (
-    QPainter, QColor, QLinearGradient, QRadialGradient, QFont,
-    QPen, QBrush, QFontDatabase, QPixmap, QIcon, QPolygonF, QPointF,
-    QConicalGradient, QFontMetrics
-)
-
 # ============================================================
-# 3D GLOWING PARTICLE SYSTEM (Background Animation)
+# PARTICLE SYSTEM (3D Depth Effect)
 # ============================================================
 class Particle:
     def __init__(self, width, height):
-        self.x = random.uniform(0, width)
-        self.y = random.uniform(0, height)
-        self.z = random.uniform(0.5, 3.0)  # depth for 3D effect
-        self.size = random.uniform(1.5, 4.0)
-        self.speed = random.uniform(0.2, 1.0)
-        self.opacity = random.uniform(0.1, 0.6)
-        self.color = random.choice([
-            QColor(0, 200, 255),   # Cyan
-            QColor(0, 150, 255),   # Blue
-            QColor(100, 200, 255), # Light Blue
-            QColor(0, 255, 200),   # Teal
-        ])
         self.width = width
         self.height = height
+        self.reset()
+
+    def reset(self):
+        self.x = random.uniform(0, self.width)
+        self.y = random.uniform(0, self.height)
+        self.z = random.uniform(0.5, 3.0)
+        self.size = random.uniform(1.5, 4.0)
+        self.speed = random.uniform(0.3, 1.2)
+        self.opacity = random.uniform(0.1, 0.6)
+        self.color = random.choice([
+            (0, 200, 255),    # Cyan
+            (0, 150, 255),    # Blue
+            (100, 200, 255),  # Light Blue
+            (0, 255, 200),    # Teal
+        ])
 
     def update(self):
         self.y -= self.speed * self.z
@@ -51,564 +44,691 @@ class Particle:
             self.y = self.height + 10
             self.x = random.uniform(0, self.width)
 
-    def draw(self, painter):
-        painter.setOpacity(self.opacity)
-        painter.setBrush(QBrush(self.color))
-        painter.setPen(Qt.NoPen)
-        # Draw with glow effect by drawing larger semi-transparent circle first
+    def draw(self, ctx):
+        # Glow effect
         glow_size = self.size * 3 * self.z
-        painter.setOpacity(self.opacity * 0.15)
-        painter.drawEllipse(
-            QPointF(self.x - glow_size/2, self.y - glow_size/2),
-            glow_size, glow_size
+        ctx.set_source_rgba(
+            self.color[0]/255, self.color[1]/255, self.color[2]/255,
+            self.opacity * 0.15
         )
-        painter.setOpacity(self.opacity)
-        painter.drawEllipse(
-            QPointF(self.x - self.size*self.z/2, self.y - self.size*self.z/2),
-            self.size * self.z, self.size * self.z
+        ctx.arc(self.x, self.y, glow_size, 0, 2 * math.pi)
+        ctx.fill()
+
+        # Core particle
+        ctx.set_source_rgba(
+            self.color[0]/255, self.color[1]/255, self.color[2]/255,
+            self.opacity
         )
+        ctx.arc(self.x, self.y, self.size * self.z, 0, 2 * math.pi)
+        ctx.fill()
 
 
 # ============================================================
-# 3D CIRCULAR GAUGE WIDGET
+# CUSTOM 3D GAUGE WIDGET (GTK3 + Cairo)
 # ============================================================
-class CircularGauge(QFrame):
-    def __init__(self, title="GAUGE", max_value=100, parent=None):
-        super().__init__(parent)
+class CircularGauge(Gtk.DrawingArea):
+    def __init__(self, title="GAUGE", max_value=100):
+        super().__init__()
         self.title = title
         self.max_value = max_value
-        self.current_value = 0
-        self.target_value = 0
-        self.setFixedSize(160, 160)
-        self.setFrameShape(QFrame.NoFrame)
+        self.current_value = 0.0
+        self.target_value = 0.0
+        self.set_size_request(160, 160)
+        self.connect("draw", self.on_draw)
 
-        # Animation timer
-        self.anim_timer = QTimer(self)
-        self.anim_timer.timeout.connect(self.animate_value)
+        # Animation
+        self.anim_id = None
 
     def set_value(self, value):
         self.target_value = min(value, self.max_value)
-        self.anim_timer.start(16)  # ~60fps
+        if self.anim_id is None:
+            self.anim_id = GLib.timeout_add(16, self.animate)
 
-    def animate_value(self):
+    def animate(self):
         diff = self.target_value - self.current_value
         if abs(diff) < 0.5:
             self.current_value = self.target_value
-            self.anim_timer.stop()
-        else:
-            self.current_value += diff * 0.1
-        self.update()
+            self.anim_id = None
+            self.queue_draw()
+            return False
+        self.current_value += diff * 0.1
+        self.queue_draw()
+        return True
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        center_x = self.width() / 2
-        center_y = self.height() / 2
+    def on_draw(self, widget, ctx):
+        width = widget.get_allocated_width()
+        height = widget.get_allocated_height()
+        cx, cy = width / 2, height / 2
         radius = 65
 
         # Background dark circle with 3D depth
-        painter.setPen(Qt.NoPen)
+        ctx.set_source_rgba(0, 0, 0, 0)
+        ctx.paint()
 
         # Outer shadow ring
-        shadow_gradient = QRadialGradient(center_x, center_y, radius + 8)
-        shadow_gradient.setColorAt(0, QColor(0, 100, 200, 60))
-        shadow_gradient.setColorAt(1, QColor(0, 50, 100, 0))
-        painter.setBrush(QBrush(shadow_gradient))
-        painter.drawEllipse(center_x - radius - 8, center_y - radius - 8,
-                           (radius + 8) * 2, (radius + 8) * 2)
+        shadow = cairo.RadialGradient(cx, cy, radius, cx, cy, radius + 15)
+        shadow.add_color_stop_rgba(0, 0, 0.4, 0.8, 0.4)
+        shadow.add_color_stop_rgba(1, 0, 0, 0, 0)
+        ctx.set_source(shadow)
+        ctx.arc(cx, cy, radius + 15, 0, 2 * math.pi)
+        ctx.fill()
 
         # Inner dark background
-        bg_gradient = QRadialGradient(center_x, center_y, radius)
-        bg_gradient.setColorAt(0, QColor(10, 20, 35))
-        bg_gradient.setColorAt(0.7, QColor(5, 12, 22))
-        bg_gradient.setColorAt(1, QColor(2, 6, 12))
-        painter.setBrush(QBrush(bg_gradient))
-        painter.drawEllipse(center_x - radius, center_y - radius,
-                           radius * 2, radius * 2)
-
-        # Progress arc
-        pen = QPen()
-        pen.setWidth(6)
-        pen.setCapStyle(Qt.RoundCap)
+        bg = cairo.RadialGradient(cx, cy, 0, cx, cy, radius)
+        bg.add_color_stop_rgba(0, 0.04, 0.08, 0.14, 1)
+        bg.add_color_stop_rgba(0.7, 0.02, 0.05, 0.09, 1)
+        bg.add_color_stop_rgba(1, 0.01, 0.02, 0.05, 1)
+        ctx.set_source(bg)
+        ctx.arc(cx, cy, radius, 0, 2 * math.pi)
+        ctx.fill()
 
         # Background arc
-        pen.setColor(QColor(30, 50, 70))
-        painter.setPen(pen)
-        painter.drawArc(center_x - radius + 12, center_y - radius + 12,
-                       (radius - 12) * 2, (radius - 12) * 2,
-                       225 * 16, -270 * 16)
+        ctx.set_line_width(6)
+        ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+        ctx.set_source_rgba(0.12, 0.2, 0.28, 1)
+        ctx.arc(cx, cy, radius - 12, math.radians(135), math.radians(405))
+        ctx.stroke()
 
         # Value arc with gradient
-        value_gradient = QConicalGradient(center_x, center_y, 225)
-        value_gradient.setColorAt(0, QColor(0, 255, 200))
-        value_gradient.setColorAt(0.5, QColor(0, 150, 255))
-        value_gradient.setColorAt(1, QColor(0, 255, 200))
-        pen.setBrush(QBrush(value_gradient))
-        pen.setWidth(8)
-        painter.setPen(pen)
+        if self.current_value > 0:
+            span = (self.current_value / self.max_value) * 270
 
-        span = int((self.current_value / self.max_value) * 270 * 16)
-        painter.drawArc(center_x - radius + 12, center_y - radius + 12,
-                       (radius - 12) * 2, (radius - 12) * 2,
-                       225 * 16, -span)
+            # Create gradient along the arc
+            ctx.set_line_width(8)
+            ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+
+            # Draw arc with color based on value
+            ratio = self.current_value / self.max_value
+            r = 0 + ratio * 0
+            g = 0.8 - ratio * 0.3
+            b = 1.0 - ratio * 0.4
+            ctx.set_source_rgba(r, g, b, 1)
+
+            ctx.arc(cx, cy, radius - 12, math.radians(135), math.radians(135 + span))
+            ctx.stroke()
+
+            # Glow on the arc
+            ctx.set_line_width(12)
+            ctx.set_source_rgba(r, g, b, 0.2)
+            ctx.arc(cx, cy, radius - 12, math.radians(135), math.radians(135 + span))
+            ctx.stroke()
 
         # Value text
-        painter.setPen(QColor(255, 255, 255))
-        font = QFont("Segoe UI", 18, QFont.Bold)
-        painter.setFont(font)
-        value_text = f"{int(self.current_value)}"
-        fm = painter.fontMetrics()
-        text_width = fm.horizontalAdvance(value_text)
-        painter.drawText(int(center_x - text_width/2), int(center_y + 5), value_text)
+        ctx.set_source_rgb(1, 1, 1)
+        ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        ctx.set_font_size(22)
+        text = f"{int(self.current_value)}"
+        ext = ctx.text_extents(text)
+        ctx.move_to(cx - ext.width/2, cy + 8)
+        ctx.show_text(text)
 
         # Title
-        painter.setPen(QColor(100, 180, 255))
-        font = QFont("Segoe UI", 8)
-        painter.setFont(font)
-        fm = painter.fontMetrics()
-        title_width = fm.horizontalAdvance(self.title)
-        painter.drawText(int(center_x - title_width/2), int(center_y + 28), self.title)
+        ctx.set_source_rgba(0.4, 0.7, 1, 1)
+        ctx.set_font_size(9)
+        ext = ctx.text_extents(self.title)
+        ctx.move_to(cx - ext.width/2, cy + 28)
+        ctx.show_text(self.title)
 
-        painter.end()
+        return False
 
 
 # ============================================================
-# 3D BAR CHART INDICATOR
+# BAR INDICATOR WIDGET
 # ============================================================
-class BarIndicator(QFrame):
-    def __init__(self, label="SENSOR", color=QColor(0, 200, 255), parent=None):
-        super().__init__(parent)
+class BarIndicator(Gtk.DrawingArea):
+    def __init__(self, label="SENSOR", color=(0, 200, 255)):
+        super().__init__()
         self.label_text = label
         self.bar_color = color
-        self.value = 0
-        self.target_value = 0
-        self.setFixedSize(200, 35)
-        self.setFrameShape(QFrame.NoFrame)
-
-        self.anim_timer = QTimer(self)
-        self.anim_timer.timeout.connect(self.animate)
+        self.value = 0.0
+        self.target_value = 0.0
+        self.set_size_request(200, 35)
+        self.connect("draw", self.on_draw)
+        self.anim_id = None
 
     def set_value(self, value):
         self.target_value = min(value, 100)
-        self.anim_timer.start(16)
+        if self.anim_id is None:
+            self.anim_id = GLib.timeout_add(16, self.animate)
 
     def animate(self):
         diff = self.target_value - self.value
         if abs(diff) < 0.5:
             self.value = self.target_value
-            self.anim_timer.stop()
-        else:
-            self.value += diff * 0.08
-        self.update()
+            self.anim_id = None
+            self.queue_draw()
+            return False
+        self.value += diff * 0.08
+        self.queue_draw()
+        return True
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
+    def on_draw(self, widget, ctx):
+        width = widget.get_allocated_width()
+        height = widget.get_allocated_height()
 
         # Background track
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(QColor(20, 35, 55))
-        painter.drawRoundedRect(80, 10, 110, 14, 7, 7)
+        ctx.set_source_rgba(0.08, 0.14, 0.22, 1)
+        ctx.rectangle(80, 10, 110, 14)
+        ctx.fill()
 
-        # Value bar with gradient
-        bar_width = int((self.value / 100) * 106)
+        # Rounded corners for track
+        ctx.set_source_rgba(0.08, 0.14, 0.22, 1)
+        ctx.arc(80 + 7, 10 + 7, 7, math.pi, math.pi * 1.5)
+        ctx.arc(80 + 110 - 7, 10 + 7, 7, math.pi * 1.5, 0)
+        ctx.arc(80 + 110 - 7, 10 + 14 - 7, 7, 0, math.pi * 0.5)
+        ctx.arc(80 + 7, 10 + 14 - 7, 7, math.pi * 0.5, math.pi)
+        ctx.fill()
+
+        # Value bar
+        bar_width = (self.value / 100) * 106
         if bar_width > 0:
-            gradient = QLinearGradient(80, 0, 80 + bar_width, 0)
-            gradient.setColorAt(0, self.bar_color.darker(120))
-            gradient.setColorAt(0.5, self.bar_color)
-            gradient.setColorAt(1, self.bar_color.lighter(130))
-            painter.setBrush(QBrush(gradient))
-            painter.drawRoundedRect(82, 12, bar_width, 10, 5, 5)
+            gradient = cairo.LinearGradient(82, 0, 82 + bar_width, 0)
+            gradient.add_color_stop_rgba(0, 
+                self.bar_color[0]/255 * 0.7, 
+                self.bar_color[1]/255 * 0.7, 
+                self.bar_color[2]/255 * 0.7, 1)
+            gradient.add_color_stop_rgba(0.5,
+                self.bar_color[0]/255,
+                self.bar_color[1]/255,
+                self.bar_color[2]/255, 1)
+            gradient.add_color_stop_rgba(1,
+                self.bar_color[0]/255 * 1.3,
+                self.bar_color[1]/255 * 1.3,
+                self.bar_color[2]/255 * 1.3, 1)
+            ctx.set_source(gradient)
+
+            # Draw rounded bar
+            ctx.rectangle(82, 12, bar_width, 10)
+            ctx.fill()
+
+            # Rounded ends
+            ctx.arc(82 + 5, 12 + 5, 5, math.pi, math.pi * 1.5)
+            ctx.arc(82 + bar_width - 5, 12 + 5, 5, math.pi * 1.5, 0)
+            ctx.arc(82 + bar_width - 5, 12 + 10 - 5, 5, 0, math.pi * 0.5)
+            ctx.arc(82 + 5, 12 + 10 - 5, 5, math.pi * 0.5, math.pi)
+            ctx.fill()
 
         # Label
-        painter.setPen(QColor(150, 180, 210))
-        font = QFont("Segoe UI", 9)
-        painter.setFont(font)
-        painter.drawText(5, 23, self.label_text)
+        ctx.set_source_rgba(0.6, 0.7, 0.85, 1)
+        ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(10)
+        ctx.move_to(5, 23)
+        ctx.show_text(self.label_text)
 
         # Value text
-        painter.setPen(QColor(255, 255, 255))
-        font = QFont("Segoe UI", 9, QFont.Bold)
-        painter.setFont(font)
-        painter.drawText(195, 23, f"{int(self.value)}")
+        ctx.set_source_rgb(1, 1, 1)
+        ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        ctx.set_font_size(10)
+        text = f"{int(self.value)}"
+        ctx.move_to(195, 23)
+        ctx.show_text(text)
 
-        painter.end()
+        return False
 
 
 # ============================================================
-# HEXAGON STATUS CARD (3D Style)
+# STATUS CARD WIDGET
 # ============================================================
-class HexStatusCard(QFrame):
-    def __init__(self, title, icon_text, parent=None):
-        super().__init__(parent)
+class StatusCard(Gtk.DrawingArea):
+    def __init__(self, title, icon_text):
+        super().__init__()
         self.title = title
         self.icon_text = icon_text
         self.status = "ONLINE"
-        self.status_color = QColor(0, 255, 150)
-        self.setFixedSize(140, 100)
-        self.setFrameShape(QFrame.NoFrame)
+        self.status_color = (0, 255, 150)
+        self.set_size_request(140, 100)
+        self.connect("draw", self.on_draw)
 
     def set_status(self, status, color):
         self.status = status
         self.status_color = color
-        self.update()
+        self.queue_draw()
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
+    def on_draw(self, widget, ctx):
+        width = widget.get_allocated_width()
+        height = widget.get_allocated_height()
 
-        # 3D card background
-        painter.setPen(Qt.NoPen)
+        # Card gradient background
+        gradient = cairo.LinearGradient(0, 0, 0, height)
+        gradient.add_color_stop_rgba(0, 0.06, 0.12, 0.2, 1)
+        gradient.add_color_stop_rgba(1, 0.03, 0.07, 0.13, 1)
+        ctx.set_source(gradient)
 
-        # Shadow
-        shadow = QGraphicsDropShadowEffect()
-
-        # Card gradient
-        gradient = QLinearGradient(0, 0, 0, self.height())
-        gradient.setColorAt(0, QColor(15, 30, 50))
-        gradient.setColorAt(1, QColor(8, 18, 32))
-        painter.setBrush(QBrush(gradient))
-        painter.drawRoundedRect(2, 2, self.width()-4, self.height()-4, 10, 10)
+        # Rounded rectangle
+        r = 10
+        ctx.move_to(r, 0)
+        ctx.line_to(width - r, 0)
+        ctx.arc(width - r, r, r, -math.pi/2, 0)
+        ctx.line_to(width, height - r)
+        ctx.arc(width - r, height - r, r, 0, math.pi/2)
+        ctx.line_to(r, height)
+        ctx.arc(r, height - r, r, math.pi/2, math.pi)
+        ctx.line_to(0, r)
+        ctx.arc(r, r, r, math.pi, math.pi * 1.5)
+        ctx.close_path()
+        ctx.fill()
 
         # Top border glow
-        pen = QPen(QColor(0, 150, 255, 100))
-        pen.setWidth(1)
-        painter.setPen(pen)
-        painter.drawRoundedRect(2, 2, self.width()-4, self.height()-4, 10, 10)
+        ctx.set_line_width(1)
+        ctx.set_source_rgba(0, 0.6, 1, 0.4)
+        ctx.move_to(r, 0)
+        ctx.line_to(width - r, 0)
+        ctx.stroke()
 
-        # Icon area (hexagon-ish circle)
-        painter.setPen(Qt.NoPen)
-        icon_gradient = QRadialGradient(35, 35, 20)
-        icon_gradient.setColorAt(0, QColor(0, 150, 255, 80))
-        icon_gradient.setColorAt(1, QColor(0, 80, 160, 30))
-        painter.setBrush(QBrush(icon_gradient))
-        painter.drawEllipse(15, 15, 40, 40)
+        # Icon area glow
+        icon_grad = cairo.RadialGradient(35, 35, 0, 35, 35, 22)
+        icon_grad.add_color_stop_rgba(0, 0, 0.6, 1, 0.3)
+        icon_grad.add_color_stop_rgba(1, 0, 0.3, 0.6, 0.1)
+        ctx.set_source(icon_grad)
+        ctx.arc(35, 35, 22, 0, 2 * math.pi)
+        ctx.fill()
 
         # Icon text
-        painter.setPen(QColor(0, 200, 255))
-        font = QFont("Segoe UI", 16, QFont.Bold)
-        painter.setFont(font)
-        painter.drawText(15, 15, 40, 40, Qt.AlignCenter, self.icon_text)
+        ctx.set_source_rgba(0, 0.8, 1, 1)
+        ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        ctx.set_font_size(20)
+        ext = ctx.text_extents(self.icon_text)
+        ctx.move_to(35 - ext.width/2, 35 + ext.height/2)
+        ctx.show_text(self.icon_text)
 
         # Title
-        painter.setPen(QColor(180, 200, 220))
-        font = QFont("Segoe UI", 9)
-        painter.setFont(font)
-        painter.drawText(65, 20, 70, 20, Qt.AlignLeft | Qt.AlignVCenter, self.title)
+        ctx.set_source_rgba(0.7, 0.8, 0.9, 1)
+        ctx.set_font_size(10)
+        ext = ctx.text_extents(self.title)
+        ctx.move_to(65, 28)
+        ctx.show_text(self.title)
 
         # Status dot
-        painter.setPen(Qt.NoNoPen)
-        painter.setBrush(QBrush(self.status_color))
-        painter.drawEllipse(65, 48, 8, 8)
+        ctx.set_source_rgba(
+            self.status_color[0]/255,
+            self.status_color[1]/255,
+            self.status_color[2]/255, 1
+        )
+        ctx.arc(69, 52, 4, 0, 2 * math.pi)
+        ctx.fill()
 
         # Status text
-        painter.setPen(self.status_color)
-        font = QFont("Segoe UI", 8)
-        painter.setFont(font)
-        painter.drawText(78, 48, 55, 15, Qt.AlignLeft | Qt.AlignVCenter, self.status)
+        ctx.set_source_rgba(
+            self.status_color[0]/255,
+            self.status_color[1]/255,
+            self.status_color[2]/255, 1
+        )
+        ctx.set_font_size(9)
+        ctx.move_to(78, 55)
+        ctx.show_text(self.status)
 
-        painter.end()
+        return False
 
 
 # ============================================================
-# MAIN 3D DASHBOARD SPLASH SCREEN
+# MAIN 3D DASHBOARD SPLASH SCREEN (GTK3)
 # ============================================================
-class DashboardSplash(QMainWindow):
+class DashboardSplash(Gtk.Window):
     def __init__(self):
-        super().__init__()
+        Gtk.Window.__init__(self)
 
-        self.setWindowTitle("BonBloc Technology - Forklift Monitoring System")
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-        self.showFullScreen()
+        self.set_title("BonBloc Technology - Forklift Monitoring System")
+        self.set_decorated(False)
+        self.fullscreen()
 
-        # Color scheme
-        self.bg_dark = QColor(5, 10, 18)
-        self.accent_cyan = QColor(0, 200, 255)
-        self.accent_blue = QColor(0, 100, 200)
+        # Dark background color
+        self.override_background_color(
+            Gtk.StateFlags.NORMAL,
+            Gdk.RGBA(0.02, 0.04, 0.07, 1)
+        )
 
         # Particles
-        self.particles = [Particle(self.width(), self.height()) for _ in range(80)]
+        self.particles = []
+        self.screen_w = 1920
+        self.screen_h = 1080
 
-        # Setup central widget
-        self.central = QWidget()
-        self.setCentralWidget(self.central)
-        self.central.setStyleSheet("background-color: #050a12;")
+        # Main container with custom draw for background
+        self.overlay = Gtk.Overlay()
+        self.add(self.overlay)
 
-        # Main layout
-        main_layout = QVBoxLayout(self.central)
-        main_layout.setContentsMargins(40, 30, 40, 30)
-        main_layout.setSpacing(20)
+        # Background drawing area (particles + grid)
+        self.bg_area = Gtk.DrawingArea()
+        self.bg_area.set_size_request(self.screen_w, self.screen_h)
+        self.bg_area.connect("draw", self.on_bg_draw)
+        self.overlay.add(self.bg_area)
+
+        # Content container
+        self.content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.content.set_margin_top(30)
+        self.content.set_margin_bottom(30)
+        self.content.set_margin_start(40)
+        self.content.set_margin_end(40)
+        self.content.set_spacing(20)
+        self.overlay.add_overlay(self.content)
 
         # ========== TOP BAR ==========
-        top_bar = QHBoxLayout()
+        top_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        top_bar.set_spacing(20)
 
-        # Company branding
-        brand_layout = QVBoxLayout()
-        brand_label = QLabel("BONBLOC")
-        brand_label.setStyleSheet("""
-            color: #00c8ff;
-            font-size: 28px;
-            font-weight: bold;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 4px;
+        # Branding
+        brand_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        brand_label = Gtk.Label()
+        brand_label.set_markup(
+            "<span font='28' weight='bold' foreground='#00c8ff' letter_spacing='4000'>"
+            "BONBLOC"
+            "</span>"
+        )
+        tagline = Gtk.Label()
+        tagline.set_markup(
+            "<span font='12' foreground='#4a90c8' letter_spacing='8000'>"
+            "TECHNOLOGY"
+            "</span>"
+        )
+        brand_box.pack_start(brand_label, False, False, 0)
+        brand_box.pack_start(tagline, False, False, 0)
+        top_bar.pack_start(brand_box, False, False, 0)
+
+        top_bar.pack_end(Gtk.Label(), True, True, 0)  # Spacer
+
+        # System status
+        self.sys_status = Gtk.Label()
+        self.sys_status.set_markup(
+            "<span font='11' foreground='#00ff96' letter_spacing='2000'>"
+            "● SYSTEM ACTIVE"
+            "</span>"
+        )
+        # Add styled frame for status
+        status_frame = Gtk.Frame()
+        status_frame.add(self.sys_status)
+        status_frame.set_shadow_type(Gtk.ShadowType.NONE)
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_data(b"""
+            frame {
+                background-color: rgba(0, 255, 150, 0.1);
+                border: 1px solid rgba(0, 255, 150, 0.3);
+                border-radius: 15px;
+                padding: 5px 15px;
+            }
         """)
+        status_frame.get_style_context().add_provider(
+            css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        top_bar.pack_end(status_frame, False, False, 0)
 
-        tagline = QLabel("TECHNOLOGY")
-        tagline.setStyleSheet("""
-            color: #4a90c8;
-            font-size: 12px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 8px;
-            margin-top: -5px;
-        """)
-
-        brand_layout.addWidget(brand_label)
-        brand_layout.addWidget(tagline)
-        top_bar.addLayout(brand_layout)
-
-        top_bar.addStretch()
-
-        # System status indicator
-        self.sys_status = QLabel("● SYSTEM ACTIVE")
-        self.sys_status.setStyleSheet("""
-            color: #00ff96;
-            font-size: 11px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 2px;
-            padding: 5px 15px;
-            background-color: rgba(0, 255, 150, 0.1);
-            border: 1px solid rgba(0, 255, 150, 0.3);
-            border-radius: 15px;
-        """)
-        top_bar.addWidget(self.sys_status)
-
-        main_layout.addLayout(top_bar)
+        self.content.pack_start(top_bar, False, False, 0)
 
         # ========== MAIN DASHBOARD AREA ==========
-        dashboard = QHBoxLayout()
-        dashboard.setSpacing(25)
+        dashboard = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        dashboard.set_spacing(25)
 
-        # ---- Left Panel: Gauges ----
-        left_panel = QVBoxLayout()
-        left_panel.setSpacing(20)
+        # ---- Left Panel ----
+        left_panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        left_panel.set_spacing(15)
 
-        # Section title
-        gauges_title = QLabel("◆ REAL-TIME METRICS")
-        gauges_title.setStyleSheet("""
-            color: #6ab4ff;
-            font-size: 11px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 3px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(0, 150, 255, 0.3);
+        # Gauges title
+        gauges_title = Gtk.Label()
+        gauges_title.set_markup(
+            "<span font='11' foreground='#6ab4ff' letter_spacing='3000'>"
+            "◆ REAL-TIME METRICS"
+            "</span>"
+        )
+        gauges_title.set_halign(Gtk.Align.START)
+        left_panel.pack_start(gauges_title, False, False, 0)
+
+        # Separator line
+        sep1 = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        css_sep = Gtk.CssProvider()
+        css_sep.load_from_data(b"""
+            separator {
+                background-color: rgba(0, 150, 255, 0.3);
+                min-height: 1px;
+            }
         """)
-        left_panel.addWidget(gauges_title)
+        sep1.get_style_context().add_provider(
+            css_sep, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        left_panel.pack_start(sep1, False, False, 5)
 
-        # Gauges container
-        gauges_row = QHBoxLayout()
+        # Gauges row
+        gauges_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        gauges_row.set_spacing(15)
+        gauges_row.set_halign(Gtk.Align.CENTER)
+
         self.gauge_cpu = CircularGauge("CPU LOAD", 100)
         self.gauge_mem = CircularGauge("MEMORY", 100)
         self.gauge_net = CircularGauge("NETWORK", 100)
-        gauges_row.addWidget(self.gauge_cpu)
-        gauges_row.addWidget(self.gauge_mem)
-        gauges_row.addWidget(self.gauge_net)
-        left_panel.addLayout(gauges_row)
+
+        gauges_row.pack_start(self.gauge_cpu, False, False, 0)
+        gauges_row.pack_start(self.gauge_mem, False, False, 0)
+        gauges_row.pack_start(self.gauge_net, False, False, 0)
+        left_panel.pack_start(gauges_row, False, False, 10)
+
+        # Bars title
+        bars_title = Gtk.Label()
+        bars_title.set_markup(
+            "<span font='11' foreground='#6ab4ff' letter_spacing='3000'>"
+            "◆ SENSOR DATA"
+            "</span>"
+        )
+        bars_title.set_halign(Gtk.Align.START)
+        left_panel.pack_start(bars_title, False, False, 0)
+
+        sep2 = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        sep2.get_style_context().add_provider(
+            css_sep, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        left_panel.pack_start(sep2, False, False, 5)
 
         # Bar indicators
-        bars_title = QLabel("◆ SENSOR DATA")
-        bars_title.setStyleSheet("""
-            color: #6ab4ff;
-            font-size: 11px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 3px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(0, 150, 255, 0.3);
-            margin-top: 10px;
+        self.bar_temp = BarIndicator("TEMPERATURE", (255, 100, 50))
+        self.bar_vib = BarIndicator("VIBRATION", (255, 200, 50))
+        self.bar_load = BarIndicator("FORK LOAD", (0, 200, 255))
+        self.bar_bat = BarIndicator("BATTERY", (0, 255, 150))
+
+        left_panel.pack_start(self.bar_temp, False, False, 5)
+        left_panel.pack_start(self.bar_vib, False, False, 5)
+        left_panel.pack_start(self.bar_load, False, False, 5)
+        left_panel.pack_start(self.bar_bat, False, False, 5)
+
+        dashboard.pack_start(left_panel, False, False, 0)
+
+        # ---- Center Panel ----
+        center_panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        center_panel.set_spacing(15)
+
+        viz_title = Gtk.Label()
+        viz_title.set_markup(
+            "<span font='11' foreground='#6ab4ff' letter_spacing='3000'>"
+            "◆ FORKLIFT MONITORING DASHBOARD"
+            "</span>"
+        )
+        viz_title.set_halign(Gtk.Align.START)
+        center_panel.pack_start(viz_title, False, False, 0)
+
+        sep3 = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        sep3.get_style_context().add_provider(
+            css_sep, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        center_panel.pack_start(sep3, False, False, 5)
+
+        # Visualization area
+        viz_frame = Gtk.Frame()
+        viz_frame.set_size_request(400, 280)
+        css_viz = Gtk.CssProvider()
+        css_viz.load_from_data(b"""
+            frame {
+                background-color: rgba(8, 18, 35, 0.8);
+                border: 1px solid rgba(0, 150, 255, 0.2);
+                border-radius: 10px;
+            }
         """)
-        left_panel.addWidget(bars_title)
+        viz_frame.get_style_context().add_provider(
+            css_viz, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
-        self.bar_temp = BarIndicator("TEMPERATURE", QColor(255, 100, 50))
-        self.bar_vib = BarIndicator("VIBRATION", QColor(255, 200, 50))
-        self.bar_load = BarIndicator("FORK LOAD", QColor(0, 200, 255))
-        self.bar_bat = BarIndicator("BATTERY", QColor(0, 255, 150))
+        viz_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        viz_box.set_spacing(10)
+        viz_box.set_halign(Gtk.Align.CENTER)
+        viz_box.set_valign(Gtk.Align.CENTER)
 
-        left_panel.addWidget(self.bar_temp)
-        left_panel.addWidget(self.bar_vib)
-        left_panel.addWidget(self.bar_load)
-        left_panel.addWidget(self.bar_bat)
-        left_panel.addStretch()
+        self.forklift_icon = Gtk.Label()
+        self.forklift_icon.set_markup(
+            "<span font='60' foreground='#00c8ff'>🚜</span>"
+        )
+        viz_box.pack_start(self.forklift_icon, False, False, 0)
 
-        dashboard.addLayout(left_panel, 3)
+        self.viz_status = Gtk.Label()
+        self.viz_status.set_markup(
+            "<span font='14' foreground='#00c8ff' letter_spacing='2000'>"
+            "INITIALIZING FORKLIFT SYSTEM..."
+            "</span>"
+        )
+        viz_box.pack_start(self.viz_status, False, False, 0)
 
-        # ---- Center Panel: 3D Visualization ----
-        center_panel = QVBoxLayout()
+        viz_frame.add(viz_box)
+        center_panel.pack_start(viz_frame, False, False, 0)
 
-        viz_title = QLabel("◆ FORKLIFT MONITORING DASHBOARD")
-        viz_title.setStyleSheet("""
-            color: #6ab4ff;
-            font-size: 11px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 3px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(0, 150, 255, 0.3);
-        """)
-        center_panel.addWidget(viz_title)
+        # Status cards
+        cards_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        cards_row.set_spacing(15)
+        cards_row.set_halign(Gtk.Align.CENTER)
 
-        # 3D Visualization Area
-        self.viz_widget = QWidget()
-        self.viz_widget.setMinimumSize(400, 300)
-        self.viz_widget.setStyleSheet("""
-            background-color: rgba(8, 18, 35, 0.8);
-            border: 1px solid rgba(0, 150, 255, 0.2);
-            border-radius: 10px;
-        """)
+        self.card_engine = StatusCard("ENGINE", "⚙")
+        self.card_gps = StatusCard("GPS", "📡")
+        self.card_cam = StatusCard("CAMERA", "📷")
+        self.card_alert = StatusCard("ALERTS", "⚠")
 
-        # Add forklift visualization label inside
-        viz_layout = QVBoxLayout(self.viz_widget)
-        viz_layout.setAlignment(Qt.AlignCenter)
+        cards_row.pack_start(self.card_engine, False, False, 0)
+        cards_row.pack_start(self.card_gps, False, False, 0)
+        cards_row.pack_start(self.card_cam, False, False, 0)
+        cards_row.pack_start(self.card_alert, False, False, 0)
+        center_panel.pack_start(cards_row, False, False, 10)
 
-        self.forklift_icon = QLabel("🚜")
-        self.forklift_icon.setStyleSheet("font-size: 80px;")
-        self.forklift_icon.setAlignment(Qt.AlignCenter)
-        viz_layout.addWidget(self.forklift_icon)
+        dashboard.pack_start(center_panel, True, True, 0)
 
-        self.viz_status = QLabel("INITIALIZING FORKLIFT SYSTEM...")
-        self.viz_status.setStyleSheet("""
-            color: #00c8ff;
-            font-size: 14px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 2px;
-        """)
-        self.viz_status.setAlignment(Qt.AlignCenter)
-        viz_layout.addWidget(self.viz_status)
+        # ---- Right Panel ----
+        right_panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        right_panel.set_spacing(15)
 
-        center_panel.addWidget(self.viz_widget)
+        log_title = Gtk.Label()
+        log_title.set_markup(
+            "<span font='11' foreground='#6ab4ff' letter_spacing='3000'>"
+            "◆ SYSTEM LOG"
+            "</span>"
+        )
+        log_title.set_halign(Gtk.Align.START)
+        right_panel.pack_start(log_title, False, False, 0)
 
-        # Status cards row
-        cards_row = QHBoxLayout()
-        self.card_engine = HexStatusCard("ENGINE", "⚙")
-        self.card_gps = HexStatusCard("GPS", "📡")
-        self.card_cam = HexStatusCard("CAMERA", "📷")
-        self.card_alert = HexStatusCard("ALERTS", "⚠")
-
-        cards_row.addWidget(self.card_engine)
-        cards_row.addWidget(self.card_gps)
-        cards_row.addWidget(self.card_cam)
-        cards_row.addWidget(self.card_alert)
-        center_panel.addLayout(cards_row)
-
-        dashboard.addLayout(center_panel, 4)
-
-        # ---- Right Panel: Log & Info ----
-        right_panel = QVBoxLayout()
-
-        log_title = QLabel("◆ SYSTEM LOG")
-        log_title.setStyleSheet("""
-            color: #6ab4ff;
-            font-size: 11px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 3px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(0, 150, 255, 0.3);
-        """)
-        right_panel.addWidget(log_title)
+        sep4 = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        sep4.get_style_context().add_provider(
+            css_sep, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        right_panel.pack_start(sep4, False, False, 5)
 
         # Log display
-        self.log_display = QLabel()
-        self.log_display.setStyleSheet("""
-            background-color: rgba(5, 12, 22, 0.9);
-            color: #8ec8ff;
-            font-family: 'Consolas', monospace;
-            font-size: 10px;
-            padding: 10px;
-            border: 1px solid rgba(0, 150, 255, 0.2);
-            border-radius: 8px;
+        self.log_display = Gtk.Label()
+        self.log_display.set_markup(
+            "<span font='10' foreground='#8ec8ff' font_family='monospace'>"
+            "System boot sequence initiated...\n"
+            "BonBloc Technology v2.0\n"
+            "Forklift Monitoring System"
+            "</span>"
+        )
+        self.log_display.set_line_wrap(True)
+        self.log_display.set_halign(Gtk.Align.START)
+        self.log_display.set_valign(Gtk.Align.START)
+
+        log_frame = Gtk.Frame()
+        log_frame.add(self.log_display)
+        log_frame.set_size_request(250, 200)
+        css_log = Gtk.CssProvider()
+        css_log.load_from_data(b"""
+            frame {
+                background-color: rgba(5, 12, 22, 0.9);
+                border: 1px solid rgba(0, 150, 255, 0.2);
+                border-radius: 8px;
+                padding: 10px;
+            }
+            label {
+                color: #8ec8ff;
+                font-family: monospace;
+            }
         """)
-        self.log_display.setMinimumSize(250, 200)
-        self.log_display.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.log_display.setWordWrap(True)
-        right_panel.addWidget(self.log_display)
+        log_frame.get_style_context().add_provider(
+            css_log, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        right_panel.pack_start(log_frame, False, False, 0)
 
         # Time display
-        self.time_label = QLabel()
-        self.time_label.setStyleSheet("""
-            color: #4a90c8;
-            font-size: 20px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 2px;
-            padding: 10px;
-        """)
-        self.time_label.setAlignment(Qt.AlignCenter)
-        right_panel.addWidget(self.time_label)
+        self.time_label = Gtk.Label()
+        self.time_label.set_markup(
+            "<span font='20' foreground='#4a90c8' letter_spacing='2000'>"
+            "00:00:00"
+            "</span>"
+        )
+        self.time_label.set_halign(Gtk.Align.CENTER)
+        right_panel.pack_start(self.time_label, False, False, 10)
 
-        right_panel.addStretch()
-        dashboard.addLayout(right_panel, 2)
+        dashboard.pack_end(right_panel, False, False, 0)
 
-        main_layout.addLayout(dashboard, 1)
+        self.content.pack_start(dashboard, True, True, 0)
 
-        # ========== BOTTOM PROGRESS BAR ==========
-        bottom_layout = QVBoxLayout()
-        bottom_layout.setSpacing(10)
+        # ========== BOTTOM PROGRESS ==========
+        bottom_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        bottom_box.set_spacing(10)
 
-        # Progress info
-        progress_info = QHBoxLayout()
-        self.step_label = QLabel("INITIALIZING...")
-        self.step_label.setStyleSheet("""
-            color: #ffffff;
-            font-size: 13px;
-            font-family: 'Segoe UI', Arial;
-            letter-spacing: 1px;
-        """)
-        progress_info.addWidget(self.step_label)
+        progress_info = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
-        progress_info.addStretch()
+        self.step_label = Gtk.Label()
+        self.step_label.set_markup(
+            "<span font='13' foreground='#ffffff' letter_spacing='1000'>"
+            "INITIALIZING..."
+            "</span>"
+        )
+        progress_info.pack_start(self.step_label, False, False, 0)
 
-        self.percent_label = QLabel("0%")
-        self.percent_label.setStyleSheet("""
-            color: #00c8ff;
-            font-size: 16px;
-            font-family: 'Segoe UI', Arial;
-            font-weight: bold;
-        """)
-        progress_info.addWidget(self.percent_label)
+        progress_info.pack_start(Gtk.Label(), True, True, 0)  # Spacer
 
-        bottom_layout.addLayout(progress_info)
+        self.percent_label = Gtk.Label()
+        self.percent_label.set_markup(
+            "<span font='16' weight='bold' foreground='#00c8ff'>"
+            "0%"
+            "</span>"
+        )
+        progress_info.pack_end(self.percent_label, False, False, 0)
 
-        # Progress bar
-        self.progress = QProgressBar()
-        self.progress.setTextVisible(False)
-        self.progress.setFixedHeight(8)
-        self.progress.setStyleSheet("""
-            QProgressBar {
+        bottom_box.pack_start(progress_info, False, False, 0)
+
+        # Custom progress bar
+        self.progress = Gtk.ProgressBar()
+        self.progress.set_show_text(False)
+        self.progress.set_size_request(-1, 8)
+        css_progress = Gtk.CssProvider()
+        css_progress.load_from_data(b"""
+            progressbar {
+                min-height: 8px;
+                border-radius: 4px;
+            }
+            progressbar trough {
                 background-color: rgba(20, 40, 70, 0.8);
                 border: none;
                 border-radius: 4px;
+                min-height: 8px;
             }
-            QProgressBar::chunk {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #0066cc, stop:0.5 #00c8ff, stop:1 #00ff96);
+            progressbar progress {
+                background-image: linear-gradient(to right, #0066cc, #00c8ff, #00ff96);
                 border-radius: 4px;
+                min-height: 8px;
             }
         """)
-        self.progress.setMaximum(100)
-        self.progress.setValue(0)
-        bottom_layout.addWidget(self.progress)
+        self.progress.get_style_context().add_provider(
+            css_progress, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        bottom_box.pack_start(self.progress, False, False, 0)
 
-        main_layout.addLayout(bottom_layout)
+        self.content.pack_end(bottom_box, False, False, 0)
 
-        # ========== TIMERS & ANIMATIONS ==========
+        # ========== TIMERS ==========
+        # Particle animation
+        self.particle_timer = GLib.timeout_add(33, self.update_particles)
 
-        # Particle animation timer
-        self.particle_timer = QTimer(self)
-        self.particle_timer.timeout.connect(self.update_particles)
-        self.particle_timer.start(33)  # ~30fps for particles
-
-        # Time update timer
-        self.time_timer = QTimer(self)
-        self.time_timer.timeout.connect(self.update_time)
-        self.time_timer.start(1000)
-        self.update_time()
+        # Time update
+        self.time_timer = GLib.timeout_add(1000, self.update_time)
 
         # Loading steps
         self.steps = [
@@ -620,188 +740,279 @@ class DashboardSplash(QMainWindow):
             ("System Ready - Launching...", self.step_ready)
         ]
         self.current_step = 0
-        self.progress_value = 0
+        self.log_messages = [
+            "System boot sequence initiated...",
+            "BonBloc Technology v2.0",
+            "Forklift Monitoring System"
+        ]
 
-        # Start loading sequence
-        self.load_timer = QTimer(self)
-        self.load_timer.timeout.connect(self.advance_loading)
-        self.load_timer.start(800)
+        # Start loading
+        self.load_timer = GLib.timeout_add(800, self.advance_loading)
 
-        # Initial log
-        self.log_messages = []
-        self.add_log("System boot sequence initiated...")
-        self.add_log("BonBloc Technology v2.0")
-        self.add_log("Forklift Monitoring System")
+        # Fade in effect
+        self.opacity = 0.0
+        self.fade_in()
 
-        # Fade in animation
-        self.setWindowOpacity(0)
-        self.fade_in = QPropertyAnimation(self, b"windowOpacity")
-        self.fade_in.setDuration(1000)
-        self.fade_in.setStartValue(0)
-        self.fade_in.setEndValue(1)
-        self.fade_in.setEasingCurve(QEasingCurve.InOutQuad)
-        self.fade_in.start()
+    def fade_in(self):
+        self.opacity += 0.05
+        if self.opacity >= 1.0:
+            self.opacity = 1.0
+            self.set_opacity(self.opacity)
+            return False
+        self.set_opacity(self.opacity)
+        GLib.timeout_add(30, self.fade_in)
+        return False
 
-    def update_particles(self):
-        for p in self.particles:
-            p.update()
-        self.update()
+    def set_opacity(self, opacity):
+        screen = self.get_screen()
+        visual = screen.get_rgba_visual()
+        if visual:
+            self.set_visual(visual)
+        self.override_background_color(
+            Gtk.StateFlags.NORMAL,
+            Gdk.RGBA(0.02, 0.04, 0.07, opacity)
+        )
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
+    def on_bg_draw(self, widget, ctx):
+        width = widget.get_allocated_width()
+        height = widget.get_allocated_height()
 
         # Dark background
-        painter.fillRect(self.rect(), self.bg_dark)
+        ctx.set_source_rgb(0.02, 0.04, 0.07)
+        ctx.paint()
 
-        # Draw grid lines (3D perspective effect)
-        painter.setPen(QPen(QColor(0, 100, 200, 15), 1))
+        # Grid lines
+        ctx.set_line_width(0.5)
+        ctx.set_source_rgba(0, 0.4, 0.8, 0.08)
         grid_spacing = 60
-        for x in range(0, self.width(), grid_spacing):
-            painter.drawLine(x, 0, x, self.height())
-        for y in range(0, self.height(), grid_spacing):
-            painter.drawLine(0, y, self.width(), y)
+        for x in range(0, width, grid_spacing):
+            ctx.move_to(x, 0)
+            ctx.line_to(x, height)
+            ctx.stroke()
+        for y in range(0, height, grid_spacing):
+            ctx.move_to(0, y)
+            ctx.line_to(width, y)
+            ctx.stroke()
 
-        # Draw diagonal accent lines
-        painter.setPen(QPen(QColor(0, 150, 255, 20), 1))
-        for i in range(-self.height(), self.width(), 120):
-            painter.drawLine(i, self.height(), i + self.height(), 0)
+        # Diagonal lines
+        ctx.set_source_rgba(0, 0.6, 1, 0.06)
+        for i in range(-height, width, 120):
+            ctx.move_to(i, height)
+            ctx.line_to(i + height, 0)
+            ctx.stroke()
 
         # Draw particles
         for p in self.particles:
-            p.draw(painter)
+            p.draw(ctx)
 
-        # Draw ambient glow at corners
-        corner_glow = QRadialGradient(0, 0, 300)
-        corner_glow.setColorAt(0, QColor(0, 100, 200, 40))
-        corner_glow.setColorAt(1, QColor(0, 0, 0, 0))
-        painter.setBrush(QBrush(corner_glow))
-        painter.setPen(Qt.NoPen)
-        painter.drawRect(0, 0, 300, 300)
+        # Corner glows
+        corner_glow = cairo.RadialGradient(0, 0, 0, 0, 0, 300)
+        corner_glow.add_color_stop_rgba(0, 0, 0.4, 0.8, 0.15)
+        corner_glow.add_color_stop_rgba(1, 0, 0, 0, 0)
+        ctx.set_source(corner_glow)
+        ctx.rectangle(0, 0, 300, 300)
+        ctx.fill()
 
-        corner_glow2 = QRadialGradient(self.width(), self.height(), 300)
-        corner_glow2.setColorAt(0, QColor(0, 200, 255, 30))
-        corner_glow2.setColorAt(1, QColor(0, 0, 0, 0))
-        painter.setBrush(QBrush(corner_glow2))
-        painter.drawRect(self.width()-300, self.height()-300, 300, 300)
+        corner_glow2 = cairo.RadialGradient(width, height, 0, width, height, 300)
+        corner_glow2.add_color_stop_rgba(0, 0, 0.8, 1, 0.1)
+        corner_glow2.add_color_stop_rgba(1, 0, 0, 0, 0)
+        ctx.set_source(corner_glow2)
+        ctx.rectangle(width - 300, height - 300, 300, 300)
+        ctx.fill()
 
-        painter.end()
+        return False
+
+    def update_particles(self):
+        # Initialize particles on first run
+        if not self.particles:
+            w = self.bg_area.get_allocated_width()
+            h = self.bg_area.get_allocated_height()
+            self.particles = [Particle(w, h) for _ in range(80)]
+
+        for p in self.particles:
+            p.update()
+        self.bg_area.queue_draw()
+        return True
 
     def update_time(self):
         now = datetime.now()
-        self.time_label.setText(now.strftime("%H:%M:%S"))
+        self.time_label.set_markup(
+            f"<span font='20' foreground='#4a90c8' letter_spacing='2000'>"
+            f"{now.strftime('%H:%M:%S')}"
+            f"</span>"
+        )
+        return True
 
     def add_log(self, message):
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.log_messages.append(f"[{timestamp}] {message}")
         if len(self.log_messages) > 12:
             self.log_messages.pop(0)
-        self.log_display.setText("\n".join(self.log_messages))
+        log_text = "\n".join(self.log_messages)
+        self.log_display.set_markup(
+            f"<span font='10' foreground='#8ec8ff' font_family='monospace'>"
+            f"{log_text}"
+            f"</span>"
+        )
 
     def advance_loading(self):
         if self.current_step < len(self.steps):
             text, callback = self.steps[self.current_step]
-            self.step_label.setText(text)
+            self.step_label.set_markup(
+                f"<span font='13' foreground='#ffffff' letter_spacing='1000'>"
+                f"{text}"
+                f"</span>"
+            )
             self.add_log(text)
             if callback:
                 callback()
             self.current_step += 1
+            return True
         else:
-            self.load_timer.stop()
             self.fade_out_and_exit()
+            return False
 
     def step_database(self):
-        self.progress_value = 15
-        self.progress.setValue(self.progress_value)
-        self.percent_label.setText("15%")
+        self.progress.set_fraction(0.15)
+        self.percent_label.set_markup(
+            "<span font='16' weight='bold' foreground='#00c8ff'>15%</span>"
+        )
         self.gauge_cpu.set_value(35)
         self.bar_temp.set_value(42)
 
     def step_sensors(self):
-        self.progress_value = 32
-        self.progress.setValue(self.progress_value)
-        self.percent_label.setText("32%")
+        self.progress.set_fraction(0.32)
+        self.percent_label.set_markup(
+            "<span font='16' weight='bold' foreground='#00c8ff'>32%</span>"
+        )
         self.gauge_mem.set_value(28)
         self.bar_vib.set_value(15)
-        self.card_engine.set_status("WARMING", QColor(255, 200, 50))
+        self.card_engine.set_status("WARMING", (255, 200, 50))
         self.add_log("Sensor array online: 12/12")
 
     def step_calibration(self):
-        self.progress_value = 48
-        self.progress.setValue(self.progress_value)
-        self.percent_label.setText("48%")
+        self.progress.set_fraction(0.48)
+        self.percent_label.set_markup(
+            "<span font='16' weight='bold' foreground='#00c8ff'>48%</span>"
+        )
         self.gauge_net.set_value(55)
         self.bar_load.set_value(0)
-        self.card_gps.set_status("LOCKING", QColor(255, 200, 50))
-        self.viz_status.setText("CALIBRATING SENSORS...")
+        self.card_gps.set_status("LOCKING", (255, 200, 50))
+        self.viz_status.set_markup(
+            "<span font='14' foreground='#00c8ff' letter_spacing='2000'>"
+            "CALIBRATING SENSORS..."
+            "</span>"
+        )
         self.add_log("GPS signal acquired: 8 satellites")
 
     def step_api(self):
-        self.progress_value = 65
-        self.progress.setValue(self.progress_value)
-        self.percent_label.setText("65%")
+        self.progress.set_fraction(0.65)
+        self.percent_label.set_markup(
+            "<span font='16' weight='bold' foreground='#00c8ff'>65%</span>"
+        )
         self.gauge_cpu.set_value(62)
         self.bar_bat.set_value(87)
-        self.card_cam.set_status("ACTIVE", QColor(0, 255, 150))
-        self.viz_status.setText("API GATEWAY ONLINE")
+        self.card_cam.set_status("ACTIVE", (0, 255, 150))
+        self.viz_status.set_markup(
+            "<span font='14' foreground='#00c8ff' letter_spacing='2000'>"
+            "API GATEWAY ONLINE"
+            "</span>"
+        )
         self.add_log("REST API listening on port 8080")
 
     def step_dashboard(self):
-        self.progress_value = 82
-        self.progress.setValue(self.progress_value)
-        self.percent_label.setText("82%")
+        self.progress.set_fraction(0.82)
+        self.percent_label.set_markup(
+            "<span font='16' weight='bold' foreground='#00c8ff'>82%</span>"
+        )
         self.gauge_mem.set_value(45)
         self.bar_temp.set_value(38)
-        self.card_engine.set_status("ONLINE", QColor(0, 255, 150))
-        self.card_gps.set_status("LOCKED", QColor(0, 255, 150))
-        self.viz_status.setText("DASHBOARD LOADING...")
+        self.card_engine.set_status("ONLINE", (0, 255, 150))
+        self.card_gps.set_status("LOCKED", (0, 255, 150))
+        self.viz_status.set_markup(
+            "<span font='14' foreground='#00c8ff' letter_spacing='2000'>"
+            "DASHBOARD LOADING..."
+            "</span>"
+        )
         self.add_log("WebSocket connection established")
 
     def step_ready(self):
-        self.progress_value = 100
-        self.progress.setValue(self.progress_value)
-        self.percent_label.setText("100%")
+        self.progress.set_fraction(1.0)
+        self.percent_label.set_markup(
+            "<span font='16' weight='bold' foreground='#00c8ff'>100%</span>"
+        )
         self.gauge_cpu.set_value(12)
         self.gauge_mem.set_value(18)
         self.gauge_net.set_value(25)
         self.bar_vib.set_value(5)
-        self.card_alert.set_status("CLEAR", QColor(0, 255, 150))
-        self.viz_status.setText("SYSTEM READY")
-        self.sys_status.setText("● ALL SYSTEMS NOMINAL")
+        self.card_alert.set_status("CLEAR", (0, 255, 150))
+        self.viz_status.set_markup(
+            "<span font='14' foreground='#00c8ff' letter_spacing='2000'>"
+            "SYSTEM READY"
+            "</span>"
+        )
+        self.sys_status.set_markup(
+            "<span font='11' foreground='#00ff96' letter_spacing='2000'>"
+            "● ALL SYSTEMS NOMINAL"
+            "</span>"
+        )
         self.add_log("All systems operational. Launching dashboard...")
 
     def fade_out_and_exit(self):
-        self.fade_out = QPropertyAnimation(self, b"windowOpacity")
-        self.fade_out.setDuration(1500)
-        self.fade_out.setStartValue(1)
-        self.fade_out.setEndValue(0)
-        self.fade_out.setEasingCurve(QEasingCurve.InOutQuad)
-        self.fade_out.finished.connect(self.close)
-        self.fade_out.start()
+        self.fade_opacity = 1.0
+        GLib.timeout_add(30, self.do_fade_out)
 
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
-            self.close()
+    def do_fade_out(self):
+        self.fade_opacity -= 0.03
+        if self.fade_opacity <= 0:
+            self.fade_opacity = 0
+            self.destroy()
+            Gtk.main_quit()
+            return False
+        self.set_opacity(self.fade_opacity)
+        return True
 
-    def mousePressEvent(self, event):
-        # Allow click to skip
+    def on_key_press(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.destroy()
+            Gtk.main_quit()
+
+    def on_click(self, widget, event):
         if self.current_step < len(self.steps):
             self.current_step = len(self.steps) - 1
             self.advance_loading()
 
 
 # ============================================================
+# INTEGRATION HELPER - Drop-in replacement for your splash
+# ============================================================
+def show_dashboard_splash():
+    """
+    Show the 3D dashboard splash screen.
+    Blocks until splash completes or is dismissed.
+    Returns when splash finishes.
+    """
+    win = DashboardSplash()
+    win.show_all()
+    Gtk.main()
+
+
+# ============================================================
+# BACKWARD COMPATIBILITY - Same interface as original
+# ============================================================
+class SplashScreen(DashboardSplash):
+    """
+    Drop-in replacement for your original SplashScreen class.
+    Same interface, upgraded 3D visuals.
+    """
+    pass
+
+
+# ============================================================
 # ENTRY POINT
 # ============================================================
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    # Set application font
-    font = QFont("Segoe UI", 10)
-    app.setFont(font)
-
-    # Create and show splash
-    splash = DashboardSplash()
-    splash.show()
-
-    sys.exit(app.exec_())
+    win = DashboardSplash()
+    win.connect("destroy", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()

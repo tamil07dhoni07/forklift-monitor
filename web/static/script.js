@@ -472,6 +472,18 @@ async function fetchAll() {
 
   console.log('[fetchAll] ✅ Cycle complete');
   console.log('─'.repeat(50));
+
+  // Battery online
+document.getElementById('bat-badge').className = 'panel-badge status-online';
+document.getElementById('bat-badge').textContent = 'Online';
+
+// Motor offline
+document.getElementById('motor-badge').className = 'panel-badge status-offline';
+document.getElementById('motor-badge').textContent = 'Offline';
+
+// Hydraulic no data
+document.getElementById('hyd-badge').className = 'panel-badge status-nodata';
+document.getElementById('hyd-badge').textContent = 'No Data';
 }
 
  
