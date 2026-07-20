@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../static/style.css">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -99,21 +100,20 @@
         </div>
       </div>
 
-      <!-- LEFT GAUGE: Battery -->
+      <!-- LEFT: Battery Tank -->
       <div class="gauge-container left-cluster" id="batteryGauge">
-        <svg class="gauge-svg" viewBox="0 0 120 120">
-          <defs>
-            <filter id="glowPurple"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          <!-- Background arc (240 degrees) -->
-          <path class="gauge-bg" d="M 30 100 A 50 50 0 1 1 90 100" />
-          <!-- Value arc -->
-          <path id="bat-gauge-arc" class="gauge-track" d="M 30 100 A 50 50 0 1 1 90 100"
-            stroke="#a855f7" stroke-dasharray="0 210" filter="url(#glowPurple)" />
-          <!-- Value text -->
-          <text id="bat-gauge-val" class="gauge-value" x="60" y="68">--</text>
-          <text class="gauge-unit" x="60" y="82">%</text>
-        </svg>
+        <div class="tank-wrap">
+          <div class="tank-cap"></div>
+          <div class="tank-body">
+            <div class="tank-fill" id="battery-fill" style="height:0%"></div>
+            <div class="tank-level-lines">
+              <div class="tank-line" style="bottom:25%"></div>
+              <div class="tank-line" style="bottom:50%"></div>
+              <div class="tank-line" style="bottom:75%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tank-percent" id="battery-percent">--%</div>
         <div class="gauge-label">Battery</div>
         <div class="gauge-sublabel" id="bat-gauge-status">-- A</div>
 
@@ -130,18 +130,26 @@
         </div>
       </div>
 
-      <!-- RIGHT GAUGE: Motor -->
+      <!-- RIGHT: Thermal Meter -->
       <div class="gauge-container right-cluster" id="motorGauge">
-        <svg class="gauge-svg" viewBox="0 0 120 120">
-          <defs>
-            <filter id="glowTeal"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          <path class="gauge-bg" d="M 30 100 A 50 50 0 1 1 90 100" />
-          <path id="motor-gauge-arc" class="gauge-track" d="M 30 100 A 50 50 0 1 1 90 100"
-            stroke="#2dd4bf" stroke-dasharray="0 210" filter="url(#glowTeal)" />
-          <text id="motor-gauge-val" class="gauge-value" x="60" y="68">--</text>
-          <text class="gauge-unit" x="60" y="82">°C</text>
-        </svg>
+        <div class="thermal-wrap">
+          <div class="thermal-body">
+            <div class="thermal-stem">
+              <div class="thermal-fill" id="motor-thermal-fill" style="height:0%"></div>
+            </div>
+            <div class="thermal-bulb"></div>
+            <div class="thermal-ticks">
+              <div class="thermal-tick"><span>120</span></div>
+              <div class="thermal-tick"><span>90</span></div>
+              <div class="thermal-tick"><span>60</span></div>
+              <div class="thermal-tick"><span>30</span></div>
+              <div class="thermal-tick"><span>0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="thermal-value">
+          <span id="motor-gauge-val">--</span><span class="thermal-unit">°C</span>
+        </div>
         <div class="gauge-label">Motor</div>
         <div class="gauge-sublabel" id="motor-gauge-health">Health --/100</div>
 
@@ -186,12 +194,12 @@
           <span class="dash-label">Hydraulic</span>
           <span class="dash-val" id="statusHydraulicVal">--</span>
         </div>
-        <div class="dash-sep"></div>
+        <!-- <div class="dash-sep"></div>
         <div class="dash-item">
           <span class="dash-dot" style="background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.5)"></span>
           <span class="dash-label">System</span>
           <span class="dash-val" id="statusSystemVal">--</span>
-        </div>
+        </div> -->
         <div class="dash-sep"></div>
         <div class="dash-item">
           <span class="dash-dot" style="background:#a855f7;box-shadow:0 0 8px rgba(168,85,247,.5)"></span>
@@ -302,10 +310,11 @@ let time = 0;
 function initThreeJS() {
   const container = document.getElementById('viewport3d');
   const canvas = document.getElementById('three-canvas');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xffffff);
-  scene.fog = new THREE.Fog(0xffffff, 8, 25);
+  scene.background = new THREE.Color(isDark ? 0xf8fafc : 0xffffff);
+  scene.fog = new THREE.Fog(isDark ? 0xf8fafc : 0xffffff, 8, 25);
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
   camera.position.set(5, 4, 6);
@@ -317,31 +326,38 @@ function initThreeJS() {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.6 : 0.8);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  const dirLight = new THREE.DirectionalLight(0xffffff, isDark ? 0.8 : 1.0);
   dirLight.position.set(5, 8, 5);
   dirLight.castShadow = true;
   dirLight.shadow.mapSize.width = 1024;
   dirLight.shadow.mapSize.height = 1024;
   scene.add(dirLight);
 
-  const spotLight = new THREE.SpotLight(0xffffff, 0.9);
+  const spotLight = new THREE.SpotLight(isDark ? 0x00d4ff : 0x0ea5e9, isDark ? 0.5 : 0.3);
   spotLight.position.set(-3, 6, 3);
   spotLight.angle = Math.PI / 6;
   spotLight.penumbra = 0.5;
   scene.add(spotLight);
 
   const floorGeo = new THREE.PlaneGeometry(30, 30);
-  const floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.2 });
+  const floorMat = new THREE.MeshStandardMaterial({ 
+    color: isDark ? 0xf1f5f9 : 0xe2e8f0, 
+    roughness: 0.8, 
+    metalness: 0.1 
+  });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.01;
   floor.receiveShadow = true;
   scene.add(floor);
 
-  const gridHelper = new THREE.GridHelper(30, 30, 0xffffff, 0xffffff);
+  const gridHelper = new THREE.GridHelper(30, 30, 
+    isDark ? 0xcbd5e1 : 0x94a3b8, 
+    isDark ? 0xe2e8f0 : 0xf1f5f9
+  );
   gridHelper.position.y = 0.01;
   scene.add(gridHelper);
 
@@ -594,7 +610,30 @@ document.getElementById('themeToggle').addEventListener('click',function(){
     document.documentElement.setAttribute('data-theme','dark');
     try{localStorage.setItem('geariq-theme','dark');}catch(e){}
   }
+  // Update Three.js scene colors
+  updateSceneTheme();
 });
+
+function updateSceneTheme() {
+  if(!scene) return;
+  var isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  scene.background = new THREE.Color(isDark ? 0xf8fafc : 0xffffff);
+  scene.fog.color = new THREE.Color(isDark ? 0xf8fafc : 0xffffff);
+
+  // Update floor color
+  scene.traverse(function(child) {
+    if(child.isMesh && child.geometry.type === 'PlaneGeometry') {
+      child.material.color.setHex(isDark ? 0xf1f5f9 : 0xe2e8f0);
+    }
+  });
+
+  // Update grid
+  scene.traverse(function(child) {
+    if(child.type === 'GridHelper') {
+      child.material.color.setHex(isDark ? 0xcbd5e1 : 0x94a3b8);
+    }
+  });
+}
 
 // Camera fullscreen
 document.getElementById('camExpand').addEventListener('click',function(){
