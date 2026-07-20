@@ -3,23 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gear IQ</title>
+<title>Gear IQ — 3D Forklift View</title>
 <script>
   (function(){try{
     if(localStorage.getItem('geariq-theme')==='light')
-  {
-     document.documentElement.setAttribute('data-theme','light');
-  }
-  else
-  {
-     document.documentElement.setAttribute('data-theme','light');
-  }
-   
-  }
-    catch(e){}}());
+      document.documentElement.setAttribute('data-theme','light');
+    else
+      document.documentElement.setAttribute('data-theme','light');
+  }catch(e){}}());
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../static/style.css">
+<base target="_blank">
 </head>
 <body>
 
@@ -45,7 +40,6 @@
   </div>
 
   <div class="nav-meta">
-    <!-- <span class="live-pill"><span class="live-dot blink"></span>LIVE</span> -->
     <span class="nav-id" id="nav-id"></span>
     <span class="nav-sep">·</span>
     <span class="nav-loc" id="nav-loc"></span>
@@ -81,214 +75,203 @@
   </div>
 </nav>
 
-<script>
-  document.getElementById('themeToggle').addEventListener('click',function(){
-    var l=document.documentElement.getAttribute('data-theme')==='light';
-    l?document.documentElement.removeAttribute('data-theme'):document.documentElement.setAttribute('data-theme','light');
-    try{localStorage.setItem('geariq-theme',l?'light':'light');}catch(e){}
-  });
-  (function tick(){
-    var e=document.getElementById('navTime');
-    if(e)e.textContent=new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour12:true,hour:'numeric',minute:'2-digit',second:'2-digit'});
-    setTimeout(tick,1000);
-  })();
-</script>
-
-<!-- DASHBOARD -->
+<!-- MAIN LAYOUT -->
 <div class="layout">
-<main class="main">
-<div class="dash-grid">
+  <div class="main-content">
 
-  <!-- TOP: Battery | Motor -->
-  <div class="top-sensors">
+    <!-- 3D VIEWPORT (60%) -->
+    <div class="viewport-3d" id="viewport3d">
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">LOADING 3D MODEL...</div>
+      </div>
 
-    <!-- BATTERY -->
-    <div class="sc card-purple">
-      <div class="sc-head">
-        <span class="sc-lbl">Battery</span>
-        <span class="badge" id="bat-badge">Normal</span>
-      </div>
-      <div class="batt-layout">
-        <div class="batt-left">
-          <div class="sc-big" id="battery-percent">--%</div>
-          <div class="sc-sub" id="battery-status">-- A</div>
-        </div>
-        <div class="batt-tank"><div class="batt-fill" id="battery-fill" style="height:72%"></div></div>
-      </div>
-      <div class="volt-grid">
-        <div class="volt-row"><span>B1</span><span id="bat1tmp">-- °C</span><span id="bat1">-- V</span></div>
-        <div class="volt-row"><span>B2</span><span id="bat2tmp">-- °C</span><span id="bat2">-- V</span></div>
-        <div class="volt-row"><span>B3</span><span id="bat3tmp">-- °C</span><span id="bat3">-- V</span></div>
-        <div class="volt-row"><span>B4</span><span id="bat4tmp">-- °C</span><span id="bat4">-- V</span></div>
-        <div class="volt-row"><span>Power</span><span id="bat-power">-- W</span></div>
-        <div class="volt-row"><span>Energy</span><span id="bat-energy">-- Wh</span></div>
-      </div>
-      <!-- <div class="bar-label"><span>Charge</span><span id="bat-pct">--%</span></div> -->
-      <!-- <div class="bar"><div class="bar-fill" id="batt-bar" style="width:72%"></div></div> -->
-    </div>
+      <canvas id="three-canvas"></canvas>
 
-    <!-- MOTOR -->
-    <div class="sc card-teal">
-      <div class="sc-head">
-        <span class="sc-lbl">Motor</span>
-        <span class="badge" id="motor-badge">Normal</span>
-      </div>
-      <div class="arc-wrap">
-        <svg viewBox="0 0 130 95" class="arc-svg">
-          <defs>
-            <filter id="arcGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          <path d="M 12 80 A 53 53 0 1 1 118 80" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="10" stroke-linecap="round"/>
-          <path id="motor-arc" d="M 12 80 A 53 53 0 1 1 118 80" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 166" filter="url(#arcGlow)"/>
-          <text id="motor-gauge-value" x="65" y="63" text-anchor="middle" fill="#fff" font-size="26" font-weight="700" font-family="'Roboto Mono',monospace">--</text>
-          <text x="65" y="76" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9" font-family="Inter">°C</text>
-        </svg>
-      </div>
-      <div class="arc-wrap">
-      <div class="pair-row">
-         <div class="arc-wrap">
-        <div class="pair" >
-          <div class="pair-lbl">Vibration</div>
-          <div class="pair-val" id="motor-vib-total">-- <span class="u">mm/s</span></div>
+      <!-- Battery Panel Overlay -->
+      <div class="data-overlay battery-panel" id="batteryPanel">
+        <div class="panel-head">
+          <span class="panel-title">Battery</span>
+          <span class="panel-badge" id="bat-badge" class="panel-badge status-offline">Offline</span>
         </div>
-        </div>
-        <div class="arc-wrap">
-        <div class="pair"> 
-          <div class="pair-lbl_small">X · Y · Z</div>
-          <div class="pair-val_small" id="motor-velocity">-·-·- <span class="u">mm/s</span></div>
-        </div>
-        </div>
-      </div>
-      </div>
-      <!-- <div class="bar-label"><span>Health</span><span id="motor-health-score">--/100</span></div> -->
-      <!-- <div class="bar"><div class="bar-fill" id="motor-health-bar" style="width:0%"></div></div> -->
-    </div>
-
-  </div><!-- /top-sensors -->
-
-  <!-- BOT-LEFT: Hydraulic | 2×2 KPI -->
-  <div class="bot-left">
-
-    <!-- HYDRAULIC OIL -->
-    <div class="sc card-pink">
-      <div class="sc-head">
-        <span class="sc-lbl">Hydraulic</span>
-        <span class="badge" id="hyd-badge">No Data</span>
-      </div>
-      <div class="hyd-body">
-        <div class="hyd-tank-col">
-          <svg viewBox="0 0 28 100" preserveAspectRatio="none"
-     style="width:clamp(22px,2.8vw,30px);height:100%;display:block">
-            <text x="18" y="8"  fill="rgba(255,255,255,.6)" font-size="7">100</text>
-            <text x="18" y="33" fill="rgba(255,255,255,.6)" font-size="7">75</text>
-            <text x="18" y="58" fill="rgba(255,255,255,.6)" font-size="7">50</text>
-            <text x="18" y="83" fill="rgba(255,255,255,.6)" font-size="7">25</text>
-            <line x1="14" y1="5"  x2="17" y2="5"  stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
-            <line x1="14" y1="30" x2="17" y2="30" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
-            <line x1="14" y1="55" x2="17" y2="55" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
-            <line x1="14" y1="80" x2="17" y2="80" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
-            <rect x="1" y="3" width="12" height="94" rx="4" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>
-            <clipPath id="hc"><rect x="1" y="3" width="12" height="94" rx="4"/></clipPath>
-            <rect id="hyd-fill" x="1" y="26" width="12" height="71" clip-path="url(#hc)" fill="rgba(255,255,255,.55)"/>
-            <path d="M1,26 Q7,22 13,26" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1"/>
-          </svg>
-        </div>
-        <div class="hyd-data">
-          <div class="hyd-row">
-            <div class="pair-lbl">Level</div>
-            <div class="sc-big" id="hyd-level" style="font-size:clamp(18px,2.8vw,26px)">--<span class="u">%</span></div>
+        <div class="batt-main">
+          <div class="batt-percent" id="battery-percent">--%</div>
+          <div class="batt-tank-mini">
+            <div class="batt-fill-mini" id="battery-fill" style="height:72%"></div>
           </div>
-          <div class="hyd-row" style="margin-top:5px">
-            <div class="pair-lbl">Temp</div>
-            <div class="pair-val"><span id="hyd-temp">--</span><span class="u"> °C</span></div>
-            <div class="hyd-tag" id="hyd-temp-tag">--</div>
+        </div>
+        <div class="batt-sub" id="battery-status">-- A</div>
+        <div class="cell-grid">
+          <div class="cell-row"><span>B1</span><span class="cell-volt" id="bat1v">-- V</span><span class="cell-temp" id="bat1t">-- °C</span></div>
+          <div class="cell-row"><span>B2</span><span class="cell-volt" id="bat2v">-- V</span><span class="cell-temp" id="bat2t">-- °C</span></div>
+          <div class="cell-row"><span>B3</span><span class="cell-volt" id="bat3v">-- V</span><span class="cell-temp" id="bat3t">-- °C</span></div>
+          <div class="cell-row"><span>B4</span><span class="cell-volt" id="bat4v">-- V</span><span class="cell-temp" id="bat4t">-- °C</span></div>
+        </div>
+        <div class="batt-footer">
+          <span>Power</span><span id="bat-power">-- W</span>
+        </div>
+        <div class="batt-footer">
+          <span>Energy</span><span id="bat-energy">-- Wh</span>
+        </div>
+      </div>
+
+      <!-- Motor Panel Overlay -->
+      <div class="data-overlay motor-panel" id="motorPanel">
+        <div class="panel-head">
+          <span class="panel-title">Motor</span>
+          <span class="panel-badge" id="motor-badge" class="panel-badge status-offline">Offline</span>
+        </div>
+        <div class="motor-temp">
+          <div class="temp-gauge">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="8"/>
+              <circle id="motor-arc" cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="8"
+                stroke-dasharray="0 264" stroke-linecap="round" transform="rotate(-90 50 50)"/>
+            </svg>
+            <div class="temp-value" id="motor-gauge-value">--</div>
+            <div class="temp-unit">°C</div>
           </div>
-          <!-- <div style="margin-top:auto">
-            <div class="bar-label"><span>Quality</span><span id="hyd-quality-lbl">--%</span></div>
-            <div class="bar"><div class="bar-fill" id="hyd-quality-bar" style="width:0%"></div></div>
-          </div> -->
+        </div>
+        <div class="motor-data">
+          <div class="motor-row"><span>Vibration</span><span id="motor-vib-total">-- mm/s</span></div>
+          <div class="motor-row"><span>X · Y · Z</span><span id="motor-velocity">-·-·- mm/s</span></div>
+        </div>
+      </div>
+
+      <!-- Hydraulic Panel Overlay -->
+      <div class="data-overlay hydraulic-panel" id="hydraulicPanel">
+        <div class="panel-head">
+          <span class="panel-title">Hydraulic</span>
+          <span class="panel-badge" id="hyd-badge" class="panel-badge status-nodata">No Data</span>
+        </div>
+        <div class="hyd-body">
+          <div class="hyd-tank-mini">
+            <svg viewBox="0 0 28 100" preserveAspectRatio="none">
+              <!-- Tank background -->
+              <rect x="2" y="3" width="24" height="94" rx="4" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+              <!-- Fill liquid (no clipPath, just positioned) -->
+              <rect id="hyd-fill" x="3" y="26" width="22" height="71" rx="3" fill="rgba(255,255,255,.6)"/>
+              <!-- Liquid surface line -->
+              <line x1="3" y1="26" x2="25" y2="26" stroke="rgba(255,255,255,.8)" stroke-width="1"/>
+              <!-- Tick marks -->
+              <line x1="20" y1="8" x2="24" y2="8" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
+              <line x1="20" y1="33" x2="24" y2="33" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
+              <line x1="20" y1="58" x2="24" y2="58" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
+              <line x1="20" y1="83" x2="24" y2="83" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
+              <!-- Labels -->
+              <text x="18" y="10" text-anchor="end" fill="rgba(255,255,255,.5)" font-size="6">100</text>
+              <text x="18" y="35" text-anchor="end" fill="rgba(255,255,255,.5)" font-size="6">75</text>
+              <text x="18" y="60" text-anchor="end" fill="rgba(255,255,255,.5)" font-size="6">50</text>
+              <text x="18" y="85" text-anchor="end" fill="rgba(255,255,255,.5)" font-size="6">25</text>
+            </svg>
+          </div>
+          <div class="hyd-data">
+            <div class="hyd-row">
+              <span>Level</span>
+              <span class="hyd-val" id="hyd-level">--%</span>
+            </div>
+            <div class="hyd-row">
+              <span>Temp</span>
+              <span class="hyd-val" id="hyd-temp">--°C</span>
+              <span class="hyd-tag" id="hyd-temp-tag">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Bar with inline KPIs -->
+      <div class="data-overlay status-bar" id="statusBar">
+        <div class="status-item">
+          <span class="status-dot teal" id="statusMotorDot"></span>
+          <span class="status-label">Motor:</span><span class="status-val" id="statusMotorVal">--</span>
+        </div>
+        <span class="status-sep">·</span>
+        <div class="status-item">
+          <span class="status-dot purple" id="statusBatteryDot"></span>
+          <span class="status-label">Battery:</span><span class="status-val" id="statusBatteryVal">--</span>
+        </div>
+        <span class="status-sep">·</span>
+        <div class="status-item">
+          <span class="status-dot pink" id="statusHydraulicDot"></span>
+          <span class="status-label">Hydraulic:</span><span class="status-val" id="statusHydraulicVal">--</span>
+        </div>
+        <span class="status-sep">·</span>
+        <div class="status-item">
+          <span class="status-dot" id="statusSystemDot"></span>
+          <span class="status-label">System:</span><span class="status-val" id="statusSystemVal">--</span>
+        </div>
+        <span class="status-sep">|</span>
+        <div class="status-item">
+          <span class="status-dot purple" id="kpiOpDot"></span>
+          <span class="status-label">Op Time:</span><span class="status-val" id="kpi-optime">--</span>
+        </div>
+        <span class="status-sep">·</span>
+        <div class="status-item">
+          <span class="status-dot teal" id="kpiIdleDot"></span>
+          <span class="status-label">Idle:</span><span class="status-val" id="kpi-idletime">--</span>
+        </div>
+        <span class="status-sep">·</span>
+        <div class="status-item">
+          <span class="status-dot pink" id="kpiCycleDot"></span>
+          <span class="status-label">Cycles:</span><span class="status-val" id="kpi-cycles">--</span>
+        </div>
+        <span class="status-sep">·</span>
+        <div class="status-item">
+          <span class="status-dot peach" id="kpiEnergyDot"></span>
+          <span class="status-label">Energy:</span><span class="status-val" id="kpi-energy">--</span>
         </div>
       </div>
     </div>
 
-    <!-- 2×2 KPI GRID -->
-    <div class="kpi-2x2">
-      <div class="kpi-tile kpi-purple">
-        <div class="kpi-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <!-- CAMERA PANEL (40%) -->
+    <div class="cam-panel">
+      <div class="cam-card">
+        <div class="cam-header">
+          <div class="cam-hl">
+            <span class="cam-live"><span class="live-dot blink"></span>LIVE</span>
+            <span class="cam-title">Live Camera Feed</span>
+          </div>
+          <button class="cam-expand" id="camExpand" title="Fullscreen">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+          </button>
         </div>
-        <div class="kpi-lbl">Operating Time</div>
-        <div class="kpi-val"><span id="kpi-optime">--</span> <span class="kpi-u">hrs</span></div>
-      </div>
-      <div class="kpi-tile kpi-teal">
-        <div class="kpi-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
+        <div class="cam-frame">
+          <img id="camVideo" src="http://127.0.0.1:8080/?action=stream"
+            style="width:100%;height:100%;object-fit:cover;"
+            onerror="document.getElementById('camFallback').style.display='flex'"
+            onload="document.getElementById('camFallback').style.display='none'">
+          <div class="cam-fallback" id="camFallback">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 9.5l6-3v11l-6-3"/><line x1="2" y1="2" x2="22" y2="22"/>
+            </svg>
+            <span>Camera unavailable</span>
+          </div>
         </div>
-        <div class="kpi-lbl">Idle Time</div>
-        <div class="kpi-val"><span id="kpi-idletime">--</span> <span class="kpi-u">hrs</span></div>
-      </div>
-      <div class="kpi-tile kpi-pink">
-        <div class="kpi-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        </div>
-        <div class="kpi-lbl">Cycles Today</div>
-        <div class="kpi-val"><span id="kpi-cycles">--</span> <span class="kpi-u">cyc</span></div>
-      </div>
-      <div class="kpi-tile kpi-peach">
-        <div class="kpi-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
-        <div class="kpi-lbl">Energy Used</div>
-        <div class="kpi-val"><span id="kpi-energy">--</span> <span class="kpi-u">kWh</span></div>
-      </div>
-    </div><!-- /kpi-2x2 -->
-
-  </div><!-- /bot-left -->
-
-  <!-- CAMERA — right column, full height -->
-  <div class="cam-card">
-    <div class="cam-header">
-      <div class="cam-hl">
-        <span class="cam-live"><span class="live-dot blink"></span>LIVE</span>
-        <span class="cam-title">Live Camera Feed</span>
-      </div>
-      <button class="cam-expand" id="camExpand" title="Fullscreen">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
-          <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
-        </svg>
-      </button>
-    </div>
-    <div class="cam-frame">
-      <img id="camVideo" src="http://127.0.0.1:8080/?action=stream"
-        style="width:100%;height:100%;object-fit:cover;"
-        onerror="document.getElementById('camFallback').style.display='flex'"
-        onload="document.getElementById('camFallback').style.display='none'">
-      <div class="cam-fallback" id="camFallback">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 9.5l6-3v11l-6-3"/><line x1="2" y1="2" x2="22" y2="22"/>
-        </svg>
-        <span>Camera unavailable</span>
       </div>
     </div>
+
   </div>
 
-  <!-- ALERTS — full width -->
+  <!-- KPIs are now inline inside the 3D view status bar -->
+
+  <!-- ALERTS -->
   <div class="alerts-panel">
     <div class="alerts-head">⚡ Alerts</div>
     <div class="alerts-pills" id="alerts-pills">
       <div class="alert-pill a-warn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/></svg>
-        <div class="alert-body"><div class="alert-msg">Motor sensor offline</div><div class="alert-sub">Check sensor</div></div>
+        <div class="alert-body"><div class="alert-msg">Motor sensor offline</div><div class="alert-sub">Check sensor · 10:06 am</div></div>
       </div>
       <div class="alert-pill a-warn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/></svg>
-        <div class="alert-body"><div class="alert-msg">Battery sensor offline</div><div class="alert-sub">Check sensors</div></div>
+        <div class="alert-body"><div class="alert-msg">Battery sensor offline</div><div class="alert-sub">Check sensors · 10:06 am</div></div>
       </div>
     </div>
   </div>
-
-</div><!-- /dash-grid -->
+</div>
 
 <!-- FULLSCREEN MODAL -->
 <div class="cam-modal" id="camModal">
@@ -309,8 +292,410 @@
   </div>
 </div>
 
-</main>
-</div>
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═════════════════════════════════════════════════
+// THREE.JS 3D FORKLIFT SCENE
+// ═════════════════════════════════════════════════
+
+let scene, camera, renderer, forkliftGroup;
+let batteryMesh, motorMesh, hydraulicMesh;
+let batteryGlow, motorGlow, hydraulicGlow;
+let animationId;
+let time = 0;
+
+function initThreeJS() {
+  const container = document.getElementById('viewport3d');
+  const canvas = document.getElementById('three-canvas');
+
+  // Scene
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0d1117);
+  scene.fog = new THREE.Fog(0x0d1117, 8, 25);
+
+  // Camera
+  camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+  camera.position.set(5, 4, 6);
+  camera.lookAt(0, 0.5, 0);
+
+  // Renderer
+  renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  // Lights
+  const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+  scene.add(ambientLight);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(5, 8, 5);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 1024;
+  dirLight.shadow.mapSize.height = 1024;
+  scene.add(dirLight);
+
+  const spotLight = new THREE.SpotLight(0x3b82f6, 0.5);
+  spotLight.position.set(-3, 6, 3);
+  spotLight.angle = Math.PI / 6;
+  spotLight.penumbra = 0.5;
+  scene.add(spotLight);
+
+  // Floor
+  const floorGeo = new THREE.PlaneGeometry(30, 30);
+  const floorMat = new THREE.MeshStandardMaterial({
+    color: 0x161b22,
+    roughness: 0.8,
+    metalness: 0.2
+  });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -0.01;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  // Grid
+  const gridHelper = new THREE.GridHelper(30, 30, 0x1e3050, 0x0d1117);
+  gridHelper.position.y = 0.01;
+  scene.add(gridHelper);
+
+  // Build Forklift
+  buildForklift();
+
+  // Animate
+  animate();
+
+  // Hide loading
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+  }, 1500);
+
+  // Resize handler
+  window.addEventListener('resize', onWindowResize);
+}
+
+function buildForklift() {
+  forkliftGroup = new THREE.Group();
+
+  // Materials
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3, metalness: 0.4 });
+  const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5, metalness: 0.6 });
+  const metalMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.2, metalness: 0.8 });
+  const tireMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.9, metalness: 0.1 });
+  const glassMat = new THREE.MeshStandardMaterial({ color: 0x60a5fa, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.4 });
+  const seatMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.8, metalness: 0.1 });
+
+  // ── CHASSIS ──
+  const chassisGeo = new THREE.BoxGeometry(2.2, 0.6, 1.4);
+  const chassis = new THREE.Mesh(chassisGeo, bodyMat);
+  chassis.position.y = 0.5;
+  chassis.castShadow = true;
+  forkliftGroup.add(chassis);
+
+  // ── CABIN ──
+  const cabinGeo = new THREE.BoxGeometry(1.4, 1.6, 1.2);
+  const cabin = new THREE.Mesh(cabinGeo, bodyMat);
+  cabin.position.set(-0.2, 1.6, 0);
+  cabin.castShadow = true;
+  forkliftGroup.add(cabin);
+
+  // Cabin roof
+  const roofGeo = new THREE.BoxGeometry(1.5, 0.08, 1.3);
+  const roof = new THREE.Mesh(roofGeo, darkMat);
+  roof.position.set(-0.2, 2.42, 0);
+  forkliftGroup.add(roof);
+
+  // Windshield
+  const windGeo = new THREE.PlaneGeometry(1.0, 0.8);
+  const windshield = new THREE.Mesh(windGeo, glassMat);
+  windshield.position.set(0.51, 1.8, 0);
+  windshield.rotation.y = Math.PI / 2;
+  forkliftGroup.add(windshield);
+
+  // Side windows
+  const sideWinGeo = new THREE.PlaneGeometry(0.8, 0.6);
+  const sideWinL = new THREE.Mesh(sideWinGeo, glassMat);
+  sideWinL.position.set(-0.2, 1.8, 0.61);
+  forkliftGroup.add(sideWinL);
+  const sideWinR = new THREE.Mesh(sideWinGeo, glassMat);
+  sideWinR.position.set(-0.2, 1.8, -0.61);
+  sideWinR.rotation.y = Math.PI;
+  forkliftGroup.add(sideWinR);
+
+  // Seat
+  const seatGeo = new THREE.BoxGeometry(0.5, 0.6, 0.5);
+  const seat = new THREE.Mesh(seatGeo, seatMat);
+  seat.position.set(-0.3, 1.2, 0);
+  forkliftGroup.add(seat);
+
+  // Steering wheel
+  const steerGeo = new THREE.TorusGeometry(0.18, 0.03, 8, 24);
+  const steering = new THREE.Mesh(steerGeo, darkMat);
+  steering.position.set(0.15, 1.5, 0);
+  steering.rotation.x = Math.PI / 2;
+  steering.rotation.y = 0.3;
+  forkliftGroup.add(steering);
+
+  // ── MAST (Front lifting mechanism) ──
+  const mastGeo = new THREE.BoxGeometry(0.15, 2.8, 0.12);
+  const mastL = new THREE.Mesh(mastGeo, metalMat);
+  mastL.position.set(1.3, 1.6, 0.35);
+  mastL.castShadow = true;
+  forkliftGroup.add(mastL);
+
+  const mastR = new THREE.Mesh(mastGeo, metalMat);
+  mastR.position.set(1.3, 1.6, -0.35);
+  mastR.castShadow = true;
+  forkliftGroup.add(mastR);
+
+  // Cross bars on mast
+  for (let i = 0; i < 4; i++) {
+    const crossGeo = new THREE.BoxGeometry(0.12, 0.08, 0.8);
+    const cross = new THREE.Mesh(crossGeo, metalMat);
+    cross.position.set(1.3, 0.6 + i * 0.6, 0);
+    forkliftGroup.add(cross);
+  }
+
+  // Forks
+  const forkGeo = new THREE.BoxGeometry(1.0, 0.06, 0.12);
+  const forkL = new THREE.Mesh(forkGeo, metalMat);
+  forkL.position.set(1.8, 0.5, 0.25);
+  forkL.castShadow = true;
+  forkliftGroup.add(forkL);
+
+  const forkR = new THREE.Mesh(forkGeo, metalMat);
+  forkR.position.set(1.8, 0.5, -0.25);
+  forkR.castShadow = true;
+  forkliftGroup.add(forkR);
+
+  // Fork backplate
+  const backplateGeo = new THREE.BoxGeometry(0.08, 0.5, 0.7);
+  const backplate = new THREE.Mesh(backplateGeo, metalMat);
+  backplate.position.set(1.35, 0.7, 0);
+  forkliftGroup.add(backplate);
+
+  // ── WHEELS ──
+  function createWheel(x, z, isRear) {
+    const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.25, 24);
+    const wheel = new THREE.Mesh(wheelGeo, tireMat);
+    wheel.rotation.z = Math.PI / 2;
+    wheel.position.set(x, 0.35, z);
+    wheel.castShadow = true;
+
+    // Rim
+    const rimGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.26, 16);
+    const rim = new THREE.Mesh(rimGeo, metalMat);
+    rim.rotation.z = Math.PI / 2;
+    rim.position.set(x, 0.35, z);
+
+    const group = new THREE.Group();
+    group.add(wheel);
+    group.add(rim);
+    return group;
+  }
+
+  forkliftGroup.add(createWheel(-0.6, 0.7, true));
+  forkliftGroup.add(createWheel(-0.6, -0.7, true));
+  forkliftGroup.add(createWheel(0.8, 0.7, false));
+  forkliftGroup.add(createWheel(0.8, -0.7, false));
+
+  // ── BATTERY COMPARTMENT (highlighted area) ──
+  const batteryGeo = new THREE.BoxGeometry(0.8, 0.4, 0.9);
+  const batteryMat = new THREE.MeshStandardMaterial({
+    color: 0x8b76e2,
+    roughness: 0.3,
+    metalness: 0.5,
+    emissive: 0x8b76e2,
+    emissiveIntensity: 0.2
+  });
+  batteryMesh = new THREE.Mesh(batteryGeo, batteryMat);
+  batteryMesh.position.set(-0.5, 0.85, 0);
+  batteryMesh.castShadow = true;
+  forkliftGroup.add(batteryMesh);
+
+  // Battery glow ring
+  const batteryRingGeo = new THREE.TorusGeometry(0.6, 0.02, 8, 32);
+  const batteryRingMat = new THREE.MeshBasicMaterial({ color: 0x8b76e2, transparent: true, opacity: 0.6 });
+  batteryGlow = new THREE.Mesh(batteryRingGeo, batteryRingMat);
+  batteryGlow.position.set(-0.5, 0.85, 0);
+  batteryGlow.rotation.x = Math.PI / 2;
+  forkliftGroup.add(batteryGlow);
+
+  // Battery label indicator
+  const batteryIndGeo = new THREE.SphereGeometry(0.06, 8, 8);
+  const batteryIndMat = new THREE.MeshBasicMaterial({ color: 0x8b76e2 });
+  const batteryInd = new THREE.Mesh(batteryIndGeo, batteryIndMat);
+  batteryInd.position.set(-0.5, 1.15, 0);
+  forkliftGroup.add(batteryInd);
+
+  // ── MOTOR COMPARTMENT (highlighted area) ──
+  const motorGeo = new THREE.BoxGeometry(0.6, 0.5, 0.7);
+  const motorMat = new THREE.MeshStandardMaterial({
+    color: 0x2ab8b8,
+    roughness: 0.3,
+    metalness: 0.5,
+    emissive: 0x2ab8b8,
+    emissiveIntensity: 0.2
+  });
+  motorMesh = new THREE.Mesh(motorGeo, motorMat);
+  motorMesh.position.set(0.4, 0.9, 0);
+  motorMesh.castShadow = true;
+  forkliftGroup.add(motorMesh);
+
+  // Motor glow ring
+  const motorRingGeo = new THREE.TorusGeometry(0.5, 0.02, 8, 32);
+  const motorRingMat = new THREE.MeshBasicMaterial({ color: 0x2ab8b8, transparent: true, opacity: 0.6 });
+  motorGlow = new THREE.Mesh(motorRingGeo, motorRingMat);
+  motorGlow.position.set(0.4, 0.9, 0);
+  motorGlow.rotation.x = Math.PI / 2;
+  forkliftGroup.add(motorGlow);
+
+  // Motor label indicator
+  const motorIndGeo = new THREE.SphereGeometry(0.06, 8, 8);
+  const motorIndMat = new THREE.MeshBasicMaterial({ color: 0x2ab8b8 });
+  const motorInd = new THREE.Mesh(motorIndGeo, motorIndMat);
+  motorInd.position.set(0.4, 1.2, 0);
+  forkliftGroup.add(motorInd);
+
+  // ── HYDRAULIC SYSTEM (highlighted area) ──
+  const hydGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.8, 12);
+  const hydMat = new THREE.MeshStandardMaterial({
+    color: 0xf0789a,
+    roughness: 0.2,
+    metalness: 0.7,
+    emissive: 0xf0789a,
+    emissiveIntensity: 0.15
+  });
+  hydraulicMesh = new THREE.Mesh(hydGeo, hydMat);
+  hydraulicMesh.position.set(1.3, 1.8, 0);
+  hydraulicMesh.castShadow = true;
+  forkliftGroup.add(hydraulicMesh);
+
+  // Hydraulic glow ring
+  const hydRingGeo = new THREE.TorusGeometry(0.15, 0.015, 8, 32);
+  const hydRingMat = new THREE.MeshBasicMaterial({ color: 0xf0789a, transparent: true, opacity: 0.6 });
+  hydraulicGlow = new THREE.Mesh(hydRingGeo, hydRingMat);
+  hydraulicGlow.position.set(1.3, 2.6, 0);
+  hydraulicGlow.rotation.x = Math.PI / 2;
+  forkliftGroup.add(hydraulicGlow);
+
+  // Hydraulic label indicator
+  const hydIndGeo = new THREE.SphereGeometry(0.06, 8, 8);
+  const hydIndMat = new THREE.MeshBasicMaterial({ color: 0xf0789a });
+  const hydInd = new THREE.Mesh(hydIndGeo, hydIndMat);
+  hydInd.position.set(1.3, 2.75, 0);
+  forkliftGroup.add(hydInd);
+
+  // ── HEADLIGHTS ──
+  const lightGeo = new THREE.SphereGeometry(0.08, 12, 12);
+  const lightMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, emissive: 0xfef08a, emissiveIntensity: 0.5 });
+  const headLightL = new THREE.Mesh(lightGeo, lightMat);
+  headLightL.position.set(1.11, 0.65, 0.45);
+  forkliftGroup.add(headLightL);
+  const headLightR = new THREE.Mesh(lightGeo, lightMat);
+  headLightR.position.set(1.11, 0.65, -0.45);
+  forkliftGroup.add(headLightR);
+
+  // ── TAIL LIGHTS ──
+  const tailMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444, emissiveIntensity: 0.3 });
+  const tailLightL = new THREE.Mesh(lightGeo, tailMat);
+  tailLightL.position.set(-1.11, 0.65, 0.45);
+  forkliftGroup.add(tailLightL);
+  const tailLightR = new THREE.Mesh(lightGeo, tailMat);
+  tailLightR.position.set(-1.11, 0.65, -0.45);
+  forkliftGroup.add(tailLightR);
+
+  // ── EXHAUST / VENTS ──
+  const ventGeo = new THREE.BoxGeometry(0.3, 0.05, 0.4);
+  const vent = new THREE.Mesh(ventGeo, darkMat);
+  vent.position.set(-1.12, 0.7, 0);
+  forkliftGroup.add(vent);
+
+  // Add forklift to scene
+  scene.add(forkliftGroup);
+}
+
+function animate() {
+  animationId = requestAnimationFrame(animate);
+  time += 0.016;
+
+  // Slow rotation
+  if (forkliftGroup) {
+    forkliftGroup.rotation.y += 0.003;
+  }
+
+  // Pulse glows
+  if (batteryGlow) {
+    const pulse = 0.4 + Math.sin(time * 2) * 0.2;
+    batteryGlow.material.opacity = pulse;
+    batteryGlow.scale.setScalar(1 + Math.sin(time * 2) * 0.05);
+  }
+  if (motorGlow) {
+    const pulse = 0.4 + Math.sin(time * 2.5 + 1) * 0.2;
+    motorGlow.material.opacity = pulse;
+    motorGlow.scale.setScalar(1 + Math.sin(time * 2.5 + 1) * 0.05);
+  }
+  if (hydraulicGlow) {
+    const pulse = 0.4 + Math.sin(time * 1.8 + 2) * 0.2;
+    hydraulicGlow.material.opacity = pulse;
+    hydraulicGlow.scale.setScalar(1 + Math.sin(time * 1.8 + 2) * 0.05);
+  }
+
+  // Subtle camera movement
+  if (camera) {
+    camera.position.x = 5 + Math.sin(time * 0.3) * 0.5;
+    camera.position.z = 6 + Math.cos(time * 0.3) * 0.5;
+    camera.lookAt(0, 0.5, 0);
+  }
+
+  renderer.render(scene, camera);
+}
+
+function onWindowResize() {
+  const container = document.getElementById('viewport3d');
+  if (!container || !camera || !renderer) return;
+  camera.aspect = container.clientWidth / container.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+}
+
+// ═════════════════════════════════════════════════
+// APP LOGIC (from original)
+// ═════════════════════════════════════════════════
+
+// Clock
+(function tick(){
+  var e=document.getElementById('navTime');
+  if(e)e.textContent=new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour12:true,hour:'numeric',minute:'2-digit',second:'2-digit'});
+  setTimeout(tick,1000);
+})();
+
+// Theme toggle
+document.getElementById('themeToggle').addEventListener('click',function(){
+  var l=document.documentElement.getAttribute('data-theme')==='light';
+  l?document.documentElement.removeAttribute('data-theme'):document.documentElement.setAttribute('data-theme','light');
+  try{localStorage.setItem('geariq-theme',l?'light':'light');}catch(e){}
+});
+
+// Camera fullscreen
+document.getElementById('camExpand').addEventListener('click',function(){
+  document.getElementById('camModal').classList.add('open');
+  var src=document.getElementById('camVideo').src;
+  document.getElementById('camVideoLarge').src=src;
+});
+document.getElementById('camClose').addEventListener('click',function(){
+  document.getElementById('camModal').classList.remove('open');
+});
+
+// Initialize
+window.addEventListener('DOMContentLoaded', function() {
+  initThreeJS();
+
+});
+</script>
+
 <script src="../static/script.js"></script>
 </body>
 </html>

@@ -412,7 +412,7 @@ async function fetchAll() {
     updateKPI(null);
     console.log('[fetchAll] 🌡️  Fetching temperature ...');
     updateTemperature();
-    renderAlerts(generateAlerts(null, null));
+    //renderAlerts(generateAlerts(null, null));
     setCloudDot(false);
     console.warn('[fetchAll] ⏳ Waiting for next cycle ...');
     return;

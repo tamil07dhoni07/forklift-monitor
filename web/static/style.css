@@ -1,13 +1,12 @@
+
 /* ═══════════════════════════════════════════════
-   GEAR IQ — Forklift Monitor
-   Car dashboard dark + pastel gradient cards
-   Layout: Battery|Motor / Hydraulic|KPI / Camera / Alerts
+   GEAR IQ — 3D Forklift Dashboard
+   Layout: 60% 3D View + Data Overlays | 40% Camera
    ═══════════════════════════════════════════════ */
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%}
+html,body{width:100%;height:100%;overflow:hidden}
 
-/* ── PASTEL CARD GRADIENTS ─────────────────── */
 :root{
   --purple: linear-gradient(145deg,#8b76e2,#a590ee);
   --teal:   linear-gradient(145deg,#2ab8b8,#4dd4d4);
@@ -18,7 +17,6 @@ html,body{width:100%;height:100%}
   --pink-s:  rgba(240,120,154,.5);
   --peach-s: rgba(240,168,112,.5);
 
-  /* Light theme (default) */
   --bg:      #f0f4f8;
   --nav-bg:  rgba(255,255,255,.95);
   --cam-bg:  #0a0e18;
@@ -29,30 +27,13 @@ html,body{width:100%;height:100%}
   --ts:      #475569;
   --tm:      #94a3b8;
   --bar:     rgba(0,0,0,.08);
-
   --nav: 40px;
-}
-/* Dark override */
-:root[data-theme="dark"]{
-  --bg:      #f0f4f8;
-  --nav-bg:  rgba(255,255,255,.95);
-  --cam-bg:  #0a0e18;
-  --alert-bg:#ffffff;
-  --border:  #e2e8f0;
-  --glow:    #e2e8f0;
-  --tp:      #0f172a;
-  --ts:      #475569;
-  --tm:      #94a3b8;
-  --bar:     rgba(0,0,0,.08);
 }
 
 body{
-  width:100vw;height:100vh;overflow:hidden;
   font-family:'Inter',sans-serif;font-size:clamp(11px,1.55vw,14px);
   background:var(--bg);color:var(--tp);
-  background-image:radial-gradient(ellipse at center,#ffffff 0%,#ffffff 100%);
 }
-:root[data-theme="dark"] body{background-image:none}
 
 /* ── TOPNAV ─────────────────────────────────── */
 .topnav{
@@ -61,7 +42,7 @@ body{
   backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 1.2vw;gap:.7vw;
-  position:relative;z-index:10;
+  position:relative;z-index:100;
 }
 .brand{display:flex;align-items:center;gap:.55vw;flex-shrink:0}
 .brand-logo{
@@ -75,15 +56,6 @@ body{
 .brand-name{font-size:clamp(11px,1.5vw,14px);font-weight:800;color:var(--tp)}
 .brand-sub{font-size:clamp(6.5px,.82vw,8.5px);color:var(--tm);text-transform:uppercase;letter-spacing:.9px}
 .nav-meta{flex:1;display:flex;align-items:center;justify-content:center;gap:.65vw;font-size:clamp(9px,1.15vw,12px);color:var(--ts)}
-.live-pill{
-  display:inline-flex;align-items:center;gap:.35vw;
-  background:rgba(239,68,68,.12);color:#f87171;
-  font-size:clamp(7px,.82vw,9px);font-weight:800;letter-spacing:.7px;
-  padding:2px .6vw;border-radius:20px;border:1px solid rgba(239,68,68,.3);
-  box-shadow:0 0 8px rgba(239,68,68,.2);
-}
-:root[data-theme="dark"] .live-pill{background:rgba(239,68,68,.08);color:#dc2626;box-shadow:none}
-.live-dot{width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block}
 .nav-id{font-weight:700;color:var(--tp);font-size:clamp(10px,1.3vw,13px)}
 .nav-sep{color:var(--tm)}
 .nav-tz{font-size:clamp(7px,.82vw,9px);color:var(--tm);font-family:'Roboto Mono',monospace;letter-spacing:.5px}
@@ -94,10 +66,7 @@ body{
   display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ts);transition:.15s;
 }
 .theme-btn:hover{color:var(--tp);background:rgba(255,255,255,.08)}
-:root[data-theme="dark"] .theme-btn{background:rgba(0,0,0,.04)}
 .icon-moon{display:none}
-:root[data-theme="dark"] .icon-sun{display:none}
-:root[data-theme="dark"] .icon-moon{display:block}
 .net-group{display:flex;align-items:center;gap:.45vw;flex-shrink:0}
 .net-pill{
   display:inline-flex;align-items:center;gap:.35vw;
@@ -108,10 +77,6 @@ body{
 .net-pill.online  {background:rgba(16,185,129,.1); color:#10b981;border-color:rgba(16,185,129,.3);box-shadow:0 0 8px rgba(16,185,129,.15)}
 .net-pill.offline {background:rgba(239,68,68,.1);  color:#f87171;border-color:rgba(239,68,68,.3); box-shadow:0 0 8px rgba(239,68,68,.15)}
 .net-pill.checking{background:rgba(245,158,11,.1); color:#fbbf24;border-color:rgba(245,158,11,.3);box-shadow:0 0 8px rgba(245,158,11,.12)}
-:root[data-theme="dark"] .net-pill{box-shadow:none}
-:root[data-theme="dark"] .net-pill.online {color:#059669;border-color:rgba(16,185,129,.25)}
-:root[data-theme="dark"] .net-pill.offline{color:#dc2626;border-color:rgba(239,68,68,.25)}
-:root[data-theme="dark"] .net-pill.checking{color:#d97706;border-color:rgba(245,158,11,.25)}
 .net-dot{width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block}
 .net-pill.online .net-dot{animation:blink 2s infinite}
 .net-pill.checking .net-dot{animation:blink .8s infinite}
@@ -122,186 +87,305 @@ body{
   padding:1.5px clamp(4px,.55vw,7px);border-radius:10px;
   border:1px solid var(--border);background:rgba(255,255,255,.02);white-space:nowrap;
 }
-:root[data-theme="dark"] .sensor-chip{background:rgba(0,0,0,.03)}
 .sensor-dot{width:5px;height:5px;border-radius:50%;background:var(--tm);display:inline-block;transition:background .3s}
 .sensor-dot.online {background:#10b981;box-shadow:0 0 6px rgba(16,185,129,.6);animation:blink 2s infinite}
 .sensor-dot.offline{background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,.5)}
-:root[data-theme="dark"] .sensor-dot.online,.sensor-dot.offline{box-shadow:none}
 
-/* ── LAYOUT ─────────────────────────────────── */
-.layout{width:100vw;height:calc(100vh - var(--nav))}
-.main{width:100%;height:100%;padding:.65vw;display:flex;flex-direction:column}
-
-/* ── DASHBOARD GRID ─────────────────────────── */
-.dash-grid{
-  display:grid;
-  grid-template-columns:1fr 1.45fr;
-  grid-template-rows:1fr 1fr auto;
-  grid-template-areas:
-    "top    cam"
-    "bot    cam"
-    "alerts alerts";
-  gap:.65vw;flex:1;min-height:0;
+/* ── MAIN LAYOUT ────────────────────────────── */
+.layout{
+  width:100vw;
+  height:calc(100vh - var(--nav));
+  display:flex;
+  flex-direction:column;
 }
-.top-sensors  {grid-area:top; display:flex; flex-direction:row; gap:.65vw; min-height:0}
-.top-sensors .sc{flex:1;min-height:0}
-.bot-left     {grid-area:bot; display:grid; grid-template-columns:1fr 1fr; gap:.65vw; min-height:0}
-.bot-left .sc {min-height:0}
-.cam-card     {grid-area:cam}
-.alerts-panel {grid-area:alerts}
 
-/* ── SENSOR CARD BASE ───────────────────────── */
-.sc{
+.main-content{
+  display:flex;
+  flex:1;
+  min-height:0;
+  gap:.65vw;
+  padding:.65vw;
+}
+
+/* ── 3D VIEWPORT (60%) ──────────────────────── */
+.viewport-3d{
+  flex:0 0 60%;
+  position:relative;
   border-radius:clamp(10px,1.3vw,16px);
-  padding:clamp(8px,.95vw,13px) clamp(9px,1.05vw,14px) clamp(7px,.85vw,11px);
-  display:flex;flex-direction:column;overflow:hidden;position:relative;
-  border:none;
+  overflow:hidden;
+  background:linear-gradient(180deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+  border:1px solid var(--border);
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
 }
-/* Decorative circle top-right */
-.sc::after{
-  content:'';position:absolute;
-  top:clamp(-20px,-2.5vw,-12px);right:clamp(-20px,-2.5vw,-12px);
-  width:clamp(65px,10vw,100px);height:clamp(65px,10vw,100px);
-  border-radius:50%;background:rgba(255,255,255,.12);
+
+#three-canvas{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+/* ── DATA OVERLAYS ON 3D VIEW ───────────────── */
+.data-overlay{
+  position:absolute;
   pointer-events:none;
+  z-index:10;
 }
 
-/* ── PASTEL CARD COLORS ─────────────────────── */
-.card-purple{background:var(--purple);box-shadow:0 8px 28px var(--purple-s),0 2px 6px rgba(0,0,0,.2)}
-.card-teal  {background:var(--teal);  box-shadow:0 8px 28px var(--teal-s),  0 2px 6px rgba(0,0,0,.2)}
-.card-pink  {background:var(--pink);  box-shadow:0 8px 28px var(--pink-s),  0 2px 6px rgba(0,0,0,.2)}
-.card-peach {background:var(--peach); box-shadow:0 8px 28px var(--peach-s), 0 2px 6px rgba(0,0,0,.2)}
-
-/* ── CARD TEXT (all white on pastel) ─────────── */
-.sc .sc-head,.sc .sc-lbl,.sc .sc-big,.sc .sc-sub,
-.sc .volt-row,.sc .bar-label,.sc .pair-lbl,.sc .pair-val,
-.sc .hyd-row *,.sc .hyd-tag{color:rgba(255,255,255,.92) !important}
-.sc .volt-row span:last-child{color:rgba(255,255,255,.75) !important;font-family:'Roboto Mono',monospace}
-.sc .bar{background:rgba(255,255,255,.22) !important;height:3px;border-radius:2px;overflow:hidden;flex-shrink:0}
-.sc .bar-fill{background:rgba(255,255,255,.85) !important;height:100%;border-radius:2px;transition:width .5s}
-.badge{
-  font-size:clamp(7px,.85vw,9px);font-weight:700;padding:2px clamp(5px,.6vw,8px);border-radius:20px;
-  background:rgba(255,255,255,.22);color:#fff;border:1px solid rgba(255,255,255,.35);
+/* Battery Panel - Top Left */
+.battery-panel{
+  top:clamp(8px,.8vw,12px);
+  left:clamp(8px,.8vw,12px);
+  background:rgba(139,118,226,.92);
+  backdrop-filter:blur(12px);
+  border-radius:clamp(8px,1vw,12px);
+  padding:clamp(6px,.7vw,10px) clamp(8px,.9vw,12px);
+  min-width:clamp(140px,16vw,200px);
+  box-shadow:0 4px 20px rgba(139,118,226,.4), 0 0 0 1px rgba(255,255,255,.15);
+  pointer-events:auto;
+}
+.battery-panel .panel-head{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
+}
+.battery-panel .panel-title{
+  font-size:clamp(7px,.8vw,9px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
+}
+.battery-panel .panel-badge{
+  font-size:clamp(6px,.7vw,8px);font-weight:700;padding:2px 8px;border-radius:10px;
+  color:#fff;border:1px solid rgba(255,255,255,.2);transition:all .3s;
+}
+.battery-panel .panel-badge.status-online{
+  background:rgba(16,185,129,.85);box-shadow:0 0 8px rgba(16,185,129,.3);
+}
+.battery-panel .panel-badge.status-offline{
+  background:rgba(239,68,68,.85);box-shadow:0 0 8px rgba(239,68,68,.3);
+}
+.battery-panel .panel-badge.status-nodata{
+  background:rgba(245,158,11,.85);box-shadow:0 0 8px rgba(245,158,11,.3);
+}
+.battery-panel .batt-main{
+  display:flex;align-items:center;gap:8px;margin-bottom:4px;
+}
+.battery-panel .batt-percent{
+  font-size:clamp(18px,2.5vw,26px);font-weight:800;font-family:'Roboto Mono',monospace;color:#fff;line-height:1;
+}
+.battery-panel .batt-tank-mini{
+  width:clamp(10px,1.2vw,14px);height:clamp(32px,4.5vh,48px);
+  border:1.5px solid rgba(255,255,255,.35);border-radius:3px;
+  overflow:hidden;position:relative;background:rgba(255,255,255,.12);
+}
+.battery-panel .batt-fill-mini{
+  position:absolute;bottom:0;width:100%;background:rgba(255,255,255,.85);border-radius:1px;transition:height .5s;
+}
+.battery-panel .batt-sub{
+  font-size:clamp(8px,1vw,11px);color:rgba(255,255,255,.75);margin-bottom:6px;
+}
+.battery-panel .cell-grid{
+  display:flex;flex-direction:column;gap:1px;
+  font-size:clamp(6.5px,.75vw,9px);color:rgba(255,255,255,.85);
+  margin-top:2px;
+}
+.battery-panel .cell-row{
+  display:grid;grid-template-columns:22px 1fr 1fr;gap:4px;align-items:center;
+  padding:2px 0;border-bottom:1px solid rgba(255,255,255,.08);
+}
+.battery-panel .cell-row span:first-child{
+  font-weight:700;color:rgba(255,255,255,.9);
+}
+.battery-panel .cell-row .cell-volt{
+  font-family:'Roboto Mono',monospace;color:rgba(255,255,255,.75);
+  text-align:right;
+}
+.battery-panel .cell-row .cell-temp{
+  font-family:'Roboto Mono',monospace;color:rgba(255,255,255,.6);
+  text-align:right;
+}
+.battery-panel .batt-footer{
+  display:flex;justify-content:space-between;margin-top:4px;
+  font-size:clamp(7px,.8vw,9px);color:rgba(255,255,255,.8);
+  border-top:1px solid rgba(255,255,255,.15);padding-top:3px;
+}
+.battery-panel .batt-footer span:last-child{
+  font-family:'Roboto Mono',monospace;
 }
 
-/* Card shared helpers */
-.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(4px,.55vw,8px);flex-shrink:0}
-.sc-lbl{font-size:clamp(7.5px,.92vw,10px);font-weight:700;letter-spacing:1.6px;text-transform:uppercase}
-.sc-big{font-size:clamp(20px,3.2vw,30px);font-weight:800;font-family:'Roboto Mono',monospace;line-height:1}
-.sc-sub{font-size:clamp(9px,1.2vw,13px);margin-top:2px;font-weight:500}
-.u{font-size:.75em;font-weight:500;font-family:inherit;opacity:.8}
-.bar-label{display:flex;justify-content:space-between;font-size:clamp(7.5px,.88vw,10px);margin-bottom:3px;margin-top:auto;padding-top:4px}
-.hyd-tag{font-size:clamp(8px,.88vw,10px);font-weight:600;margin-top:1px}
-
-/* Battery */
-.batt-layout{display:flex;align-items:flex-start;justify-content:space-between;gap:.45vw;margin-bottom:.45vw}
-.batt-left{flex:1}
-.batt-tank{
-  width:clamp(12px,1.5vw,18px);height:clamp(40px,6.5vh,58px);
-  border:1.5px solid rgba(255,255,255,.35);border-radius:4px;
-  overflow:hidden;position:relative;background:rgba(255,255,255,.15);flex-shrink:0;
+/* Motor Panel - Top Right */
+.motor-panel{
+  top:clamp(8px,.8vw,12px);
+  right:clamp(8px,.8vw,12px);
+  background:rgba(42,184,184,.92);
+  backdrop-filter:blur(12px);
+  border-radius:clamp(8px,1vw,12px);
+  padding:clamp(6px,.7vw,10px) clamp(8px,.9vw,12px);
+  min-width:clamp(130px,14vw,180px);
+  box-shadow:0 4px 20px rgba(42,184,184,.4), 0 0 0 1px rgba(255,255,255,.15);
+  pointer-events:auto;
 }
-.batt-fill{position:absolute;bottom:0;width:100%;background:rgba(255,255,255,.8);border-radius:2px;transition:height .5s}
-.volt-grid{display:flex;flex-direction:column;gap:clamp(1px,.25vw,3px);margin-bottom:.4vw}
-.volt-row{display:flex;justify-content:space-between;font-size:clamp(7.5px,.92vw,10.5px)}
-
-/* Motor */
-.arc-wrap{display:flex;justify-content:center;margin-bottom:.3vw}
-.arc-svg{width:100%;max-width:clamp(78px,11.5vw,115px);height:auto;display:block}
-.pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4vw;margin-bottom:.2vw}
-.pair{display:flex;flex-direction:column;gap:1px}
-.pair-lbl{font-size:clamp(7px,.83vw,9.5px);font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.8}
-.pair-val{font-size:clamp(11px,1.6vw,16px);font-weight:700;font-family:'Roboto Mono',monospace;line-height:1.2}
-.pair-val.sm{font-size:clamp(9px,1.2vw,13px)}
-.pair-lbl_small{font-size:clamp(7px,.83vw,7px);font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.8;color:#ffffff}
-.pair-val_small{font-size:clamp(11px,1.6vw,7px);font-weight:700;font-family:'Roboto Mono',monospace;line-height:1.2;color:#ffffff}
-
-
-/* Hydraulic */
-.hyd-body{display:flex;gap:.55vw;flex:1;min-height:0;align-items:flex-start}
-.hyd-tank-col{flex-shrink:0}
-.hyd-data{flex:1;display:flex;flex-direction:column;height:100%}
-.hyd-row{display:flex;flex-direction:column}
-
-/* Hydraulic card — fill full card height */
-.sc .hyd-body {
-  flex: 1;
-  min-height: 0;
-  align-items: stretch;
+.motor-panel .panel-head{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
 }
-
-/* Tank column — stretch full height */
-.hyd-tank-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.motor-panel .panel-title{
+  font-size:clamp(7px,.8vw,9px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
 }
-.hyd-tank-col svg {
-  flex: 1;
-  height: 100%;
-  max-height: 100%;
-  width: clamp(24px, 3vw, 32px);
+.motor-panel .panel-badge{
+  font-size:clamp(6px,.7vw,8px);font-weight:700;padding:2px 8px;border-radius:10px;
+  color:#fff;border:1px solid rgba(255,255,255,.2);transition:all .3s;
 }
-
-/* Data column — space content evenly top to bottom */
-.hyd-data {
-  justify-content: space-evenly !important;
+.motor-panel .panel-badge.status-online{
+  background:rgba(16,185,129,.85);box-shadow:0 0 8px rgba(16,185,129,.3);
 }
-.hyd-row {
-  gap: 2px;
+.motor-panel .panel-badge.status-offline{
+  background:rgba(239,68,68,.85);box-shadow:0 0 8px rgba(239,68,68,.3);
+}
+.motor-panel .panel-badge.status-nodata{
+  background:rgba(245,158,11,.85);box-shadow:0 0 8px rgba(245,158,11,.3);
+}
+.motor-panel .motor-temp{
+  display:flex;align-items:center;gap:6px;margin-bottom:4px;
+}
+.motor-panel .temp-gauge{
+  width:clamp(36px,4.5vw,55px);height:clamp(36px,4.5vw,55px);
+  position:relative;
+}
+.motor-panel .temp-gauge svg{width:100%;height:100%}
+.motor-panel .temp-value{
+  position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);
+  font-size:clamp(11px,1.4vw,15px);font-weight:700;font-family:'Roboto Mono',monospace;color:#fff;
+  line-height:1;
+}
+.motor-panel .temp-unit{
+  position:absolute;top:62%;left:50%;transform:translate(-50%,-50%);
+  font-size:clamp(7px,.8vw,9px);color:rgba(255,255,255,.6);
+  line-height:1;
+}
+.motor-panel .motor-data{
+  font-size:clamp(7px,.85vw,10px);color:rgba(255,255,255,.9);
+}
+.motor-panel .motor-row{
+  display:flex;justify-content:space-between;padding:1px 0;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.motor-panel .motor-row span:last-child{
+  font-family:'Roboto Mono',monospace;color:rgba(255,255,255,.75);
 }
 
-/* Bigger numbers to fill the space */
-.hyd-data .sc-big {
-  font-size: clamp(22px, 3.8vw, 36px) !important;
-  line-height: 1 !important;
+/* Hydraulic Panel - Bottom Left */
+.hydraulic-panel{
+  bottom:clamp(8px,.8vw,12px);
+  left:clamp(8px,.8vw,12px);
+  background:rgba(240,120,154,.92);
+  backdrop-filter:blur(12px);
+  border-radius:clamp(8px,1vw,12px);
+  padding:clamp(6px,.7vw,10px) clamp(8px,.9vw,12px);
+  min-width:clamp(130px,14vw,180px);
+  box-shadow:0 4px 20px rgba(240,120,154,.4), 0 0 0 1px rgba(255,255,255,.15);
+  pointer-events:auto;
 }
-.hyd-data .pair-lbl {
-  font-size: clamp(8px, 1.1vw, 11px) !important;
-  margin-bottom: 2px;
+.hydraulic-panel .panel-head{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
 }
-.hyd-data .pair-val {
-  font-size: clamp(14px, 2.2vw, 22px) !important;
+.hydraulic-panel .panel-title{
+  font-size:clamp(7px,.8vw,9px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
+}
+.hydraulic-panel .panel-badge{
+  font-size:clamp(6px,.7vw,8px);font-weight:700;padding:2px 8px;border-radius:10px;
+  color:#fff;border:1px solid rgba(255,255,255,.2);transition:all .3s;
+}
+.hydraulic-panel .panel-badge.status-online{
+  background:rgba(16,185,129,.85);box-shadow:0 0 8px rgba(16,185,129,.3);
+}
+.hydraulic-panel .panel-badge.status-offline{
+  background:rgba(239,68,68,.85);box-shadow:0 0 8px rgba(239,68,68,.3);
+}
+.hydraulic-panel .panel-badge.status-nodata{
+  background:rgba(245,158,11,.85);box-shadow:0 0 8px rgba(245,158,11,.3);
+}
+.hydraulic-panel .hyd-body{
+  display:flex;gap:8px;align-items:center;
+}
+.hydraulic-panel .hyd-tank-mini{
+  width:clamp(20px,2.2vw,28px);height:clamp(60px,7vh,80px);
+  position:relative;flex-shrink:0;
+}
+.hydraulic-panel .hyd-tank-mini svg{width:100%;height:100%}
+.hydraulic-panel .hyd-data{
+  flex:1;
+}
+.hydraulic-panel .hyd-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:clamp(7px,.85vw,10px);color:rgba(255,255,255,.9);
+  padding:2px 0;border-bottom:1px solid rgba(255,255,255,.1);
+}
+.hydraulic-panel .hyd-row .hyd-val{
+  font-family:'Roboto Mono',monospace;color:rgba(255,255,255,.8);
+}
+.hydraulic-panel .hyd-tag{
+  font-size:clamp(6px,.7vw,8px);font-weight:600;padding:1px 5px;border-radius:4px;
+  background:rgba(255,255,255,.2);color:#fff;margin-left:4px;
 }
 
-/* ── 2×2 KPI GRID ────────────────────────────── */
-.kpi-2x2{
-  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
-  gap:.65vw;min-height:0;
+/* Status Bar - Bottom Right with KPIs inline */
+.status-bar{
+  bottom:clamp(8px,.8vw,12px);
+  right:clamp(8px,.8vw,12px);
+  left:auto;
+  transform:none;
+  background:rgba(15,23,42,.92);
+  backdrop-filter:blur(16px);
+  border-radius:clamp(10px,1.2vw,14px);
+  padding:clamp(6px,.7vw,10px) clamp(12px,1.3vw,18px);
+  display:flex;
+  gap:clamp(6px,1vw,14px);
+  box-shadow:0 4px 24px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.08);
+  pointer-events:auto;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  max-width:clamp(320px,42vw,520px);
 }
-.kpi-tile{
-  border-radius:clamp(9px,1.1vw,14px);
-  padding:clamp(7px,.85vw,12px) clamp(8px,.95vw,13px);
-  display:flex;flex-direction:column;justify-content:space-between;
-  position:relative;overflow:hidden;
+.status-bar .status-item{
+  display:flex;align-items:center;gap:clamp(4px,.4vw,6px);
+  font-size:clamp(8px,.9vw,11px);
+  color:rgba(255,255,255,.7);
+  white-space:nowrap;
 }
-/* same decorative circle */
-.kpi-tile::after{
-  content:'';position:absolute;
-  top:clamp(-16px,-2vw,-8px);right:clamp(-16px,-2vw,-8px);
-  width:clamp(50px,7.5vw,75px);height:clamp(50px,7.5vw,75px);
-  border-radius:50%;background:rgba(255,255,255,.12);pointer-events:none;
+.status-bar .status-dot{
+  width:clamp(5px,.5vw,7px);height:clamp(5px,.5vw,7px);border-radius:50%;background:#10b981;
+  box-shadow:0 0 8px rgba(16,185,129,.6);animation:blink 2s infinite;flex-shrink:0;
 }
-.kpi-purple{background:var(--purple);box-shadow:0 6px 20px var(--purple-s)}
-.kpi-teal  {background:var(--teal);  box-shadow:0 6px 20px var(--teal-s)}
-.kpi-pink  {background:var(--pink);  box-shadow:0 6px 20px var(--pink-s)}
-.kpi-peach {background:var(--peach); box-shadow:0 6px 20px var(--peach-s)}
-.kpi-icon{
-  width:clamp(28px,3.5vw,38px);height:clamp(28px,3.5vw,38px);
-  background:rgba(255,255,255,.18);border-radius:clamp(7px,.9vw,11px);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+.status-bar .status-dot.warn{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.6);}
+.status-bar .status-dot.crit{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.6);}
+.status-bar .status-dot.purple{background:#8b76e2;box-shadow:0 0 8px rgba(139,118,226,.6);}
+.status-bar .status-dot.teal{background:#2ab8b8;box-shadow:0 0 8px rgba(42,184,184,.6);}
+.status-bar .status-dot.pink{background:#f0789a;box-shadow:0 0 8px rgba(240,120,154,.6);}
+.status-bar .status-dot.peach{background:#f0a870;box-shadow:0 0 8px rgba(240,168,112,.6);}
+.status-bar .status-label{
+  font-weight:600;letter-spacing:.3px;
 }
-.kpi-icon svg{width:55%;height:55%}
-.kpi-lbl{font-size:clamp(7.5px,.9vw,10px);font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.8);margin-top:clamp(3px,.4vw,6px)}
-.kpi-val{font-size:clamp(18px,3vw,28px);font-weight:800;color:#fff;font-family:'Roboto Mono',monospace;line-height:1}
-.kpi-u{font-size:clamp(8px,1vw,11px);font-weight:500;opacity:.8;font-family:inherit}
+.status-bar .status-val{
+  font-family:'Roboto Mono',monospace;font-weight:700;color:#fff;
+}
+.status-bar .status-sep{
+  color:rgba(255,255,255,.2);font-size:clamp(10px,1vw,12px);margin:0 2px;
+}
 
-/* ── CAMERA ─────────────────────────────────── */
+/* ── CAMERA PANEL (40%) ─────────────────────── */
+.cam-panel{
+  flex:0 0 40%;
+  display:flex;
+  flex-direction:column;
+  gap:.65vw;
+}
+
 .cam-card{
-  background:var(--cam-bg);border:1px solid var(--border);
-  border-radius:clamp(10px,1.2vw,15px);overflow:hidden;
-  display:flex;flex-direction:column;min-height:0;
-  box-shadow:0 0 0 1px var(--glow),0 8px 32px rgba(255, 255, 255, 0.5);
+  flex:1;
+  background:var(--cam-bg);
+  border:1px solid var(--border);
+  border-radius:clamp(10px,1.2vw,15px);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  box-shadow:0 0 0 1px var(--glow),0 8px 32px rgba(0,0,0,.1);
 }
 .cam-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -339,8 +423,8 @@ body{
   padding:clamp(5px,.6vw,8px) clamp(8px,.95vw,13px);
   display:flex;align-items:center;gap:.7vw;flex-shrink:0;overflow:hidden;
   box-shadow:0 0 0 1px var(--glow);
+  
 }
-:root[data-theme="dark"] .alerts-panel{box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .alerts-head{
   font-size:clamp(7.5px,.88vw,10px);font-weight:700;letter-spacing:1.5px;
   text-transform:uppercase;color:var(--tm);white-space:nowrap;flex-shrink:0;
@@ -357,13 +441,11 @@ body{
 .alert-pill svg{flex-shrink:0}
 .a-warn{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);box-shadow:0 0 10px rgba(245,158,11,.08)}
 .a-ok  {background:rgba(16,185,129,.07); border-color:rgba(16,185,129,.2); box-shadow:0 0 10px rgba(16,185,129,.07)}
-:root[data-theme="dark"] .a-warn,.a-warn{box-shadow:none}
-:root[data-theme="dark"] .a-ok ,.a-ok  {box-shadow:none}
 .alert-body{flex:1;min-width:0}
 .alert-msg{font-size:clamp(9px,1.12vw,12px);font-weight:600;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .alert-sub{font-size:clamp(7.5px,.92vw,10px);color:var(--ts);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ── MODAL ──────────────────────────────────── */
+/* ── FULLSCREEN MODAL ───────────────────────── */
 .cam-modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:1000;padding:2vw}
 .cam-modal.open{display:flex}
 .cam-modal-box{position:relative;width:100%;max-width:92vw;aspect-ratio:16/9;background:#020408;border-radius:1.2vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(56,130,246,.15)}
@@ -371,34 +453,28 @@ body{
 .cam-close{position:absolute;top:1vw;right:1vw;width:clamp(28px,3.5vw,40px);height:clamp(28px,3.5vw,40px);min-width:28px;min-height:28px;border-radius:50%;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:.15s}
 .cam-close:hover{background:rgba(255,255,255,.1);color:#fff}
 
-/* ── ANIMATION ──────────────────────────────── */
+/* ── ANIMATIONS ─────────────────────────────── */
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 .blink{animation:blink 2s infinite}
 
-/* ── FAULT CODE ALERTS ─────────────────────────────────────────── */
-.a-crit{
-  background:rgba(239,68,68,.1);
-  border-color:rgba(239,68,68,.35);
-  box-shadow:0 0 12px rgba(239,68,68,.12);
+/* ── LOADING OVERLAY ────────────────────────── */
+.loading-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:50;transition:opacity .5s;
 }
-:root[data-theme="light"] .a-crit{
-  background:rgba(239,68,68,.07);
-  border-color:rgba(239,68,68,.25);
-  box-shadow:none;
+.loading-overlay.hidden{opacity:0;pointer-events:none}
+.loading-text{
+  font-size:clamp(12px,1.5vw,16px);color:rgba(255,255,255,.6);
+  font-family:'Roboto Mono',monospace;letter-spacing:2px;
+  margin-top:16px;
 }
-.fault-code{
-  display:inline-block;
-  font-family:'Roboto Mono',monospace;
-  font-size:clamp(8px,1vw,11px);
-  font-weight:700;
-  background:rgba(0,0,0,.25);
-  color:#fff;
-  padding:1px 5px;
-  border-radius:4px;
-  margin-right:5px;
-  letter-spacing:.5px;
+.loading-spinner{
+  width:clamp(30px,4vw,50px);height:clamp(30px,4vw,50px);
+  border:2px solid rgba(255,255,255,.1);
+  border-top-color:rgba(16,185,129,.8);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
 }
-:root[data-theme="light"] .fault-code{
-  background:rgba(0,0,0,.1);
-  color:var(--tp);
-}
+@keyframes spin{to{transform:rotate(360deg)}}
