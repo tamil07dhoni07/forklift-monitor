@@ -133,13 +133,13 @@ body{
 
 /* Battery Panel - Top Left */
 .battery-panel{
-  top:clamp(8px,.8vw,12px);
-  left:clamp(8px,.8vw,12px);
+  top:clamp(10px,1vw,16px);
+  left:clamp(10px,1vw,16px);
   background:rgba(139,118,226,.92);
   backdrop-filter:blur(12px);
-  border-radius:clamp(8px,1vw,12px);
-  padding:clamp(6px,.7vw,10px) clamp(8px,.9vw,12px);
-  min-width:clamp(140px,16vw,200px);
+  border-radius:clamp(10px,1.2vw,14px);
+  padding:clamp(10px,1vw,14px) clamp(12px,1.1vw,16px);
+  min-width:clamp(180px,20vw,260px);
   box-shadow:0 4px 20px rgba(139,118,226,.4), 0 0 0 1px rgba(255,255,255,.15);
   pointer-events:auto;
 }
@@ -147,10 +147,10 @@ body{
   display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
 }
 .battery-panel .panel-title{
-  font-size:clamp(7px,.8vw,9px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
+  font-size:clamp(10px,1.1vw,13px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
 }
 .battery-panel .panel-badge{
-  font-size:clamp(6px,.7vw,8px);font-weight:700;padding:2px 8px;border-radius:10px;
+  font-size:clamp(9px,1vw,11px);font-weight:700;padding:3px 10px;border-radius:10px;
   color:#fff;border:1px solid rgba(255,255,255,.2);transition:all .3s;
 }
 .battery-panel .panel-badge.status-online{
@@ -163,30 +163,30 @@ body{
   background:rgba(245,158,11,.85);box-shadow:0 0 8px rgba(245,158,11,.3);
 }
 .battery-panel .batt-main{
-  display:flex;align-items:center;gap:8px;margin-bottom:4px;
+  display:flex;align-items:center;gap:10px;margin-bottom:6px;
 }
 .battery-panel .batt-percent{
-  font-size:clamp(18px,2.5vw,26px);font-weight:800;font-family:'Roboto Mono',monospace;color:#fff;line-height:1;
+  font-size:clamp(24px,3vw,32px);font-weight:800;font-family:'Roboto Mono',monospace;color:#fff;line-height:1;
 }
 .battery-panel .batt-tank-mini{
-  width:clamp(10px,1.2vw,14px);height:clamp(32px,4.5vh,48px);
-  border:1.5px solid rgba(255,255,255,.35);border-radius:3px;
+  width:clamp(14px,1.6vw,18px);height:clamp(40px,5.5vh,56px);
+  border:2px solid rgba(255,255,255,.35);border-radius:4px;
   overflow:hidden;position:relative;background:rgba(255,255,255,.12);
 }
 .battery-panel .batt-fill-mini{
-  position:absolute;bottom:0;width:100%;background:rgba(255,255,255,.85);border-radius:1px;transition:height .5s;
+  position:absolute;bottom:0;width:100%;background:rgba(255,255,255,.85);border-radius:2px;transition:height .5s;
 }
 .battery-panel .batt-sub{
-  font-size:clamp(8px,1vw,11px);color:rgba(255,255,255,.75);margin-bottom:6px;
+  font-size:clamp(11px,1.2vw,14px);color:rgba(255,255,255,.75);margin-bottom:8px;
 }
 .battery-panel .cell-grid{
-  display:flex;flex-direction:column;gap:1px;
-  font-size:clamp(6.5px,.75vw,9px);color:rgba(255,255,255,.85);
-  margin-top:2px;
+  display:flex;flex-direction:column;gap:2px;
+  font-size:clamp(10px,1vw,12px);color:rgba(255,255,255,.85);
+  margin-top:4px;
 }
 .battery-panel .cell-row{
-  display:grid;grid-template-columns:22px 1fr 1fr;gap:4px;align-items:center;
-  padding:2px 0;border-bottom:1px solid rgba(255,255,255,.08);
+  display:grid;grid-template-columns:28px 1fr 1fr;gap:6px;align-items:center;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.08);
 }
 .battery-panel .cell-row span:first-child{
   font-weight:700;color:rgba(255,255,255,.9);
@@ -200,9 +200,9 @@ body{
   text-align:right;
 }
 .battery-panel .batt-footer{
-  display:flex;justify-content:space-between;margin-top:4px;
-  font-size:clamp(7px,.8vw,9px);color:rgba(255,255,255,.8);
-  border-top:1px solid rgba(255,255,255,.15);padding-top:3px;
+  display:flex;justify-content:space-between;margin-top:6px;
+  font-size:clamp(10px,1vw,12px);color:rgba(255,255,255,.8);
+  border-top:1px solid rgba(255,255,255,.15);padding-top:4px;
 }
 .battery-panel .batt-footer span:last-child{
   font-family:'Roboto Mono',monospace;
@@ -210,13 +210,13 @@ body{
 
 /* Motor Panel - Top Right */
 .motor-panel{
-  top:clamp(8px,.8vw,12px);
-  right:clamp(8px,.8vw,12px);
+  top:clamp(10px,1vw,16px);
+  right:clamp(10px,1vw,16px);
   background:rgba(42,184,184,.92);
   backdrop-filter:blur(12px);
-  border-radius:clamp(8px,1vw,12px);
-  padding:clamp(6px,.7vw,10px) clamp(8px,.9vw,12px);
-  min-width:clamp(130px,14vw,180px);
+  border-radius:clamp(10px,1.2vw,14px);
+  padding:clamp(10px,1vw,14px) clamp(12px,1.1vw,16px);
+  min-width:clamp(160px,18vw,220px);
   box-shadow:0 4px 20px rgba(42,184,184,.4), 0 0 0 1px rgba(255,255,255,.15);
   pointer-events:auto;
 }
@@ -224,10 +224,10 @@ body{
   display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
 }
 .motor-panel .panel-title{
-  font-size:clamp(7px,.8vw,9px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
+  font-size:clamp(10px,1.1vw,13px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
 }
 .motor-panel .panel-badge{
-  font-size:clamp(6px,.7vw,8px);font-weight:700;padding:2px 8px;border-radius:10px;
+  font-size:clamp(9px,1vw,11px);font-weight:700;padding:3px 10px;border-radius:10px;
   color:#fff;border:1px solid rgba(255,255,255,.2);transition:all .3s;
 }
 .motor-panel .panel-badge.status-online{
@@ -240,28 +240,28 @@ body{
   background:rgba(245,158,11,.85);box-shadow:0 0 8px rgba(245,158,11,.3);
 }
 .motor-panel .motor-temp{
-  display:flex;align-items:center;gap:6px;margin-bottom:4px;
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;
 }
 .motor-panel .temp-gauge{
-  width:clamp(36px,4.5vw,55px);height:clamp(36px,4.5vw,55px);
+  width:clamp(56px,7vw,80px);height:clamp(56px,7vw,80px);
   position:relative;
 }
 .motor-panel .temp-gauge svg{width:100%;height:100%}
 .motor-panel .temp-value{
-  position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);
-  font-size:clamp(11px,1.4vw,15px);font-weight:700;font-family:'Roboto Mono',monospace;color:#fff;
+  position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);
+  font-size:clamp(16px,2vw,22px);font-weight:700;font-family:'Roboto Mono',monospace;color:#fff;
   line-height:1;
 }
 .motor-panel .temp-unit{
-  position:absolute;top:62%;left:50%;transform:translate(-50%,-50%);
-  font-size:clamp(7px,.8vw,9px);color:rgba(255,255,255,.6);
+  position:absolute;top:64%;left:50%;transform:translate(-50%,-50%);
+  font-size:clamp(10px,1.1vw,12px);color:rgba(255,255,255,.6);
   line-height:1;
 }
 .motor-panel .motor-data{
-  font-size:clamp(7px,.85vw,10px);color:rgba(255,255,255,.9);
+  font-size:clamp(11px,1.1vw,13px);color:rgba(255,255,255,.9);
 }
 .motor-panel .motor-row{
-  display:flex;justify-content:space-between;padding:1px 0;
+  display:flex;justify-content:space-between;padding:3px 0;
   border-bottom:1px solid rgba(255,255,255,.1);
 }
 .motor-panel .motor-row span:last-child{
@@ -270,13 +270,13 @@ body{
 
 /* Hydraulic Panel - Bottom Left */
 .hydraulic-panel{
-  bottom:clamp(8px,.8vw,12px);
-  left:clamp(8px,.8vw,12px);
+  bottom:clamp(10px,1vw,16px);
+  left:clamp(10px,1vw,16px);
   background:rgba(240,120,154,.92);
   backdrop-filter:blur(12px);
-  border-radius:clamp(8px,1vw,12px);
-  padding:clamp(6px,.7vw,10px) clamp(8px,.9vw,12px);
-  min-width:clamp(130px,14vw,180px);
+  border-radius:clamp(10px,1.2vw,14px);
+  padding:clamp(10px,1vw,14px) clamp(12px,1.1vw,16px);
+  min-width:clamp(160px,18vw,220px);
   box-shadow:0 4px 20px rgba(240,120,154,.4), 0 0 0 1px rgba(255,255,255,.15);
   pointer-events:auto;
 }
@@ -284,10 +284,10 @@ body{
   display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
 }
 .hydraulic-panel .panel-title{
-  font-size:clamp(7px,.8vw,9px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
+  font-size:clamp(10px,1.1vw,13px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.9);
 }
 .hydraulic-panel .panel-badge{
-  font-size:clamp(6px,.7vw,8px);font-weight:700;padding:2px 8px;border-radius:10px;
+  font-size:clamp(9px,1vw,11px);font-weight:700;padding:3px 10px;border-radius:10px;
   color:#fff;border:1px solid rgba(255,255,255,.2);transition:all .3s;
 }
 .hydraulic-panel .panel-badge.status-online{
@@ -300,10 +300,10 @@ body{
   background:rgba(245,158,11,.85);box-shadow:0 0 8px rgba(245,158,11,.3);
 }
 .hydraulic-panel .hyd-body{
-  display:flex;gap:8px;align-items:center;
+  display:flex;gap:12px;align-items:center;
 }
 .hydraulic-panel .hyd-tank-mini{
-  width:clamp(20px,2.2vw,28px);height:clamp(60px,7vh,80px);
+  width:clamp(26px,2.8vw,34px);height:clamp(85px,10vh,110px);
   position:relative;flex-shrink:0;
 }
 .hydraulic-panel .hyd-tank-mini svg{width:100%;height:100%}
@@ -312,15 +312,15 @@ body{
 }
 .hydraulic-panel .hyd-row{
   display:flex;justify-content:space-between;align-items:center;
-  font-size:clamp(7px,.85vw,13px);color:rgba(255,255,255,.9);
-  padding:2px 0;border-bottom:1px solid rgba(255,255,255,.1);
+  font-size:clamp(11px,1.1vw,13px);color:rgba(255,255,255,.9);
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,.1);
 }
 .hydraulic-panel .hyd-row .hyd-val{
   font-family:'Roboto Mono',monospace;color:rgba(255,255,255,.8);
 }
 .hydraulic-panel .hyd-tag{
-  font-size:clamp(6px,.7vw,8px);font-weight:600;padding:1px 5px;border-radius:4px;
-  background:rgba(255,255,255,.2);color:#fff;margin-left:4px;
+  font-size:clamp(9px,1vw,11px);font-weight:600;padding:2px 8px;border-radius:4px;
+  background:rgba(255,255,255,.2);color:#fff;margin-left:6px;
 }
 
 /* Status Bar - Bottom Right with KPIs inline */
