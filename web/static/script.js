@@ -415,7 +415,7 @@ async function fetchAll() {
     updateKPI(null);
     console.log('[fetchAll] 🌡️  Fetching temperature ...');
     updateTemperature();
-    //renderAlerts(generateAlerts(null, null));
+    renderAlerts(generateAlerts(null, null));
     setCloudDot(false);
     console.warn('[fetchAll] ⏳ Waiting for next cycle ...');
     return;
@@ -460,10 +460,10 @@ async function fetchAll() {
 
   // ── Alerts ──────────────────────────────────────────
   console.log('[fetchAll] 🔔 Generating alerts ...');
-  const alerts = generateAlerts(motor, batt);
-  renderAlerts(alerts);
-  const warnCount = alerts.filter(a => a.type === 'warn').length;
-  console.log(`[fetchAll] 🔔 Alerts → total=${alerts.length}  warnings=${warnCount}`);
+  //const alerts = generateAlerts(motor, batt);
+  //renderAlerts(alerts);
+  //const warnCount = alerts.filter(a => a.type === 'warn').length;
+  //console.log(`[fetchAll] 🔔 Alerts → total=${alerts.length}  warnings=${warnCount}`);
 
   // ── Fault codes ─────────────────────────────────────
   console.log('[fetchAll] ⚠️  Checking fault codes ...');
