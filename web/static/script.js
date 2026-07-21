@@ -197,7 +197,7 @@ async function updateHydraulic() {
         txt('hyd-volume', '--');
         // attr_('hyd-fill', 'y',      '97');
         // attr_('hyd-fill', 'height', '0');
-        style_('hyd-fill','width',23.6+'%');
+        style_('hyd-fill','width',0+'%');
         return;
     }
 
@@ -583,49 +583,6 @@ async function updateFaults() {
     }).join('');
 }
 
-
-async function updateHydraulic() {
-    const data = await safeFetch(`${API}/hydraulic`);
-
-    if (!data || data.status === 'offline') {
-        badge('hyd-badge', 'No Data', 'orange');
-        html_('hyd-level', '--<span class="u">%</span>');
-        txt('hyd-temp', '--');
-        txt('hyd-volume', '--');
-        attr_('hyd-fill', 'y',      '97');
-        attr_('hyd-fill', 'height', '0');
-        return;
-    }
-
-    const level = data.level_pct;
-    const temp  = data.temperature;
-    const vol   = data.volume_l;
-
-    // SVG tank fill (rect y="3" height="94")
-    const fillH = (level / 100) * 94;
-    const fillY = 3 + 94 - fillH;
-    attr_('hyd-fill', 'y',      fillY.toFixed(1));
-    attr_('hyd-fill', 'height', fillH.toFixed(1));
-
-    // Values
-    html_('hyd-level',  `${level.toFixed(1)}<span class="u">%</span>`);
-    txt('hyd-temp',   temp.toFixed(1));
-    txt('hyd-volume', vol.toFixed(2) + ' L');
-
-    // Badge
-    if      (level < 20) badge('hyd-badge', 'Critical', 'orange');
-    else if (level < 40) badge('hyd-badge', 'Low',      'orange');
-    else                 badge('hyd-badge', 'Good',     'teal');
-
-    // Temp color
-    const tempTag = $('hyd-temp-tag');
-    if (tempTag) {
-        tempTag.textContent = temp > 65 ? 'High' : 'Normal';
-        tempTag.style.color = temp > 65 ? '#f97316' : '';
-    }
-
-    console.log(`[Hydraulic] ✅ level=${level}%  temp=${temp}°C  volume=${vol}L`);
-}
  
 
 
