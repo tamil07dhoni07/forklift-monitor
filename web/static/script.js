@@ -71,7 +71,7 @@ async function updateTemperature() {
             // Color code: green normal / orange warm / red hot
             if      (r.temperature > 45) el.style.color = '#ef4444';  // red
             else if (r.temperature > 35) el.style.color = '#f97316';  // orange
-            else                         el.style.color = 'rgba(255,255,255,.6)'; // normal
+            else                         el.style.color = 'rgba(255, 0, 0, 0.6)'; // normal
         });
 
     } catch (e) {
@@ -162,8 +162,8 @@ function updateMotor(raw) {
   const h   =vibToHealth(vib);
   attr_('motor-arc','stroke-dasharray',`${Math.min((temp/150)*166,166).toFixed(1)} 166`);
   txt('motor-gauge-value',Math.round(temp));
-  html_('motor-vib-total',vib.toFixed(2)+' <span class="u">mm/s</span>');
-  html_('motor-velocity',`${vx.toFixed(2)}·${vy.toFixed(2)}·${vz.toFixed(2)} <span class="u">mm/s</span>`);
+  html_('motor-vib-total',vib.toFixed(0)+' <span class="u">mm/s</span>');
+  html_('motor-velocity',`${vx.toFixed(0)}·${vy.toFixed(0)}·${vz.toFixed(0)} <span class="u">mm/s</span>`);
   txt('motor-health-score',h+'/100');
   style_('motor-health-bar','width',h+'%');
   const T=THRESHOLDS.motor;
@@ -460,14 +460,14 @@ async function fetchAll() {
 
   // ── Alerts ──────────────────────────────────────────
   console.log('[fetchAll] 🔔 Generating alerts ...');
-  //const alerts = generateAlerts(motor, batt);
+ // const alerts = generateAlerts(motor, batt);
   //renderAlerts(alerts);
   //const warnCount = alerts.filter(a => a.type === 'warn').length;
   //console.log(`[fetchAll] 🔔 Alerts → total=${alerts.length}  warnings=${warnCount}`);
 
   // ── Fault codes ─────────────────────────────────────
   console.log('[fetchAll] ⚠️  Checking fault codes ...');
-  await updateFaults();
+ // await updateFaults();
 
   // ── Cloud sync ──────────────────────────────────────
   console.log('[fetchAll] ☁️  Syncing to cloud ...');

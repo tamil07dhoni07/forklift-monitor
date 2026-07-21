@@ -142,7 +142,7 @@ body{
 
 /* ── 3D VIEWPORT (60%) ──────────────────────── */
 .viewport-3d{
-  flex:0 0 50%;
+  flex:0 0 55%;
   position:relative;
   border-radius:16px;
   overflow:hidden;
@@ -367,7 +367,7 @@ body{
 
 /* ── RIGHT GAUGE CLUSTER ────────────────────── */
 .right-cluster{
-  top:30%; /* Moved up from 50% */
+  top:35%; /* Moved up from 50% */
   right:clamp(12px,1.5vw,20px);
   transform:translateY(-50%);
   max-height: calc(100% - 140px); /* Prevent extending into dash bar area */
@@ -485,7 +485,7 @@ body{
 
 /* ── CAMERA PANEL (40%) ─────────────────────── */
 .cam-panel{
-  flex:0 0 50%;
+  flex:0 0 45%;
   display:flex;flex-direction:column;gap:1px;
 }
 .cam-card{
@@ -604,6 +604,7 @@ body{
   display:flex;flex-direction:column;gap:4px;
   margin-top:8px;
   padding-top:8px;
+  align-items:center;
   border-top:1px solid rgba(255,255,255,.08);
 }
 .motor-data-row{
