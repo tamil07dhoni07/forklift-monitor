@@ -209,7 +209,7 @@ async function updateHydraulic() {
     const fillY = 3 + 94 - fillH;
     // attr_('hyd-fill', 'y',      fillY.toFixed(1));
     // attr_('hyd-fill', 'height', fillH.toFixed(1));
-    style_('hyd-fill','width','${level}%'); 
+    style_('hyd-fill','width',`${level}%`); 
     // Values
     html_('hyd-level',  `${level.toFixed(1)}<span class="u">%</span>`);
     txt('hyd-temp',   temp.toFixed(1));
