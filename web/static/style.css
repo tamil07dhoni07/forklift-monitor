@@ -586,8 +586,8 @@ body{
 /* ── CELL DETAIL LIST (for battery gauge) ───── */
 .cell-list{
   display:flex;flex-direction:column;gap:3px;
-  margin-top:8px;
-  padding-top:8px;
+  margin-top:2px;
+  padding-top:2px;
   border-top:1px solid rgba(255,255,255,.08);
 }
 .cell-item{
