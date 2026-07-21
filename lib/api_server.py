@@ -29,6 +29,9 @@ DB_CONFIG = {
     'password': 'root'
 }
 
+MAX_OIL_VOLUME_L = 10.0   # ← set your tank max capacity in litres
+
+
 
 # ════════════════════════════════════════════════════════════════
 #  COLORED LOGGER
@@ -155,6 +158,57 @@ def get_latest_temperatures():
         return []
     finally:
         conn.close()
+
+# ── Hydraulic oil config ──────────────────────────────────────────
+
+def get_latest_hydraulic():
+    log.debug('🛢️   get_latest_hydraulic  →  querying DB ...')
+    conn = get_db_connection()
+    if not conn:
+        log.error('🛢️   get_latest_hydraulic  →  no DB connection')
+        return None
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT temperature, raw_distance_mm, fuel_level_cm,
+                   oil_height_mm, volume_ml, rounded_volume_l,
+                   status, timestamp
+            FROM   fuel_level_sensor_data
+            ORDER  BY id DESC LIMIT 1
+        """)
+        row = cur.fetchone()
+        cur.close()
+        if not row:
+            log.warning('🛢️   get_latest_hydraulic  →  no rows found')
+            return None
+
+        volume_l  = float(row[5] or 0)
+        level_pct = round(min(100, (volume_l / MAX_OIL_VOLUME_L) * 100), 1)
+
+        log.debug(f'🛢️   hydraulic fetched  →  '
+                  f'temp={row[0]}°C  '
+                  f'volume={volume_l}L  '
+                  f'level={level_pct}%  '
+                  f'status={row[6]}  '
+                  f'ts={row[7]}')
+
+        return {
+            'temperature':     float(row[0] or 0),
+            'raw_distance_mm': float(row[1] or 0),
+            'fuel_level_cm':   float(row[2] or 0),
+            'oil_height_mm':   float(row[3] or 0),
+            'volume_ml':       float(row[4] or 0),
+            'volume_l':        volume_l,
+            'level_pct':       level_pct,
+            'status':          row[6],
+            'timestamp':       row[7].isoformat()
+        }
+    except Exception as e:
+        log.error(f'🛢️   get_latest_hydraulic ERROR  →  {e}')
+        return None
+    finally:
+        conn.close()
+
 
 
 # ════════════════════════════════════════════════════════════════
@@ -333,6 +387,28 @@ def faults():
         log.info('⚠️   no active faults  →  all systems normal')
 
     return jsonify(summary)
+
+
+@app.route('/api/hydraulic')
+def hydraulic():
+    log.info('🛢️   GET /api/hydraulic  →  processing ...')
+    rec = get_latest_hydraulic()
+    if not rec:
+        log.warning('🛢️   hydraulic  →  no data')
+        return jsonify({'status': 'offline', 'level_pct': 0,
+                        'temperature': 0, 'volume_l': 0})
+
+    age    = (datetime.now() - datetime.fromisoformat(rec['timestamp'])).total_seconds()
+    online = age < 10
+    rec['status'] = 'online' if online else 'offline'
+
+    log.info(f'🛢️   response  →  '
+             f'level={rec["level_pct"]}%  '
+             f'temp={rec["temperature"]}°C  '
+             f'volume={rec["volume_l"]}L  '
+             f'status={rec["status"]}  '
+             f'age={age:.1f}s')
+    return jsonify(rec)
 
 
 # ════════════════════════════════════════════════════════════════
