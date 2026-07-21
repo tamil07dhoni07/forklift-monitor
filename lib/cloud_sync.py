@@ -11,20 +11,7 @@ import requests
 from datetime import datetime, timezone, timedelta
 from db import get_db_connection
 from config import DEVICE_ID, LOCATION  # ← add
-
-# ── CONFIG ───────────────────────────────────────────────────────
-CLOUD_API_URL     = 'https://192.168.0.3:8080/api/geariq/v1/ingest'
-CLOUD_API_KEY     = 'geariq-edge-secret-2024'
-SYNC_INTERVAL_SEC = 60
-BATCH_SIZE        = 20
-RETRY_MAX         = 3
-RETRY_DELAY_SEC   = 5
-
-DB_CONFIG = {
-    'host': 'localhost', 'port': 5432,
-    'dbname': 'gearid_db', 'user': 'postgres', 'password': 'root'
-}
-# ─────────────────────────────────────────────────────────────────
+from constants import  CLOUD_API_KEY,DB_CONFIG,RETRY_DELAY_SEC,RETRY_MAX,SYNC_INTERVAL_SEC,BATCH_SIZE,CLOUD_API_URL,DEVICE_ID,LOCATION,VERSION  # ← add
 
 IST = timezone(timedelta(hours=5, minutes=30))
 

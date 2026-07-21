@@ -13,6 +13,7 @@ from config import DEVICE_ID, HOSTNAME, LOCATION
 from constants import VERSION
 from fault_codes import detect_faults, fault_summary
 import logging
+from device_register import register_device, unregister_device
 
 app = Flask(__name__,
             static_folder='../web/static',
@@ -353,5 +354,7 @@ if __name__ == '__main__':
     delete_old_voltage_records()
     delete_old_vibration_records()
     log.info('[Startup] Cleanup done ✅')
+
+    register_device()      
 
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
