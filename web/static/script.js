@@ -84,12 +84,12 @@ async function updateTemperature() {
 // ════════════════════════════════════════════════════════════════
 function updateBattery(raw) {
   if (!raw || !raw.length) {
-    txt('battery-percent','--%'); txt('battery-status','-- A');
-    txt('bat-pct','--%'); txt('bat-power','-- W'); txt('bat-energy','-- Wh');
-    style_('battery-fill','height','0%'); style_('batt-bar','width','0%');
-    ['bat1','bat2','bat3','bat4'].forEach(id=>txt(id,'-- V'));
-    ['bat1tmp','bat2tmp','bat3tmp','bat4tmp'].forEach(id=>txt(id,'-- °C'));
-    badge('bat-badge','Offline','red'); return null;
+    // txt('battery-percent','--%'); txt('battery-status','-- A');
+    // txt('bat-pct','--%'); txt('bat-power','-- W'); txt('bat-energy','-- Wh');
+    // style_('battery-fill','height','0%'); style_('batt-bar','width','0%');
+    // ['bat1','bat2','bat3','bat4'].forEach(id=>txt(id,'-- V'));
+    // ['bat1tmp','bat2tmp','bat3tmp','bat4tmp'].forEach(id=>txt(id,'-- °C'));
+    // badge('bat-badge','Offline','red'); return null;
   }
   // const cells=[0,0,0,0]; let cur=0, pwr=0, enrg=0, on=0;
   // raw.forEach(r=>{
