@@ -22,12 +22,12 @@ import requests
 
 # Import local version from constants.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from constants import VERSION, CLOUD_API_BASE, CLOUD_API_KEY, DEVICE_ID
+from constants import VERSION, CLOUD_API_URL, CLOUD_API_KEY, DEVICE_ID
 
 # ── Config ────────────────────────────────────────────────────
 CHECK_INTERVAL_SEC = 300          # check every 5 minutes
 INSTALL_SCRIPT     = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'install.sh')
-VERSION_ENDPOINT   = f'{CLOUD_API_BASE}/version'
+VERSION_ENDPOINT   = f'{CLOUD_API_URL}/version'
 # ─────────────────────────────────────────────────────────────
 
 logging.basicConfig(

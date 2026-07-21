@@ -8,12 +8,12 @@
 import requests
 import logging
 from config    import DEVICE_ID, LOCATION
-from constants import CLOUD_API_BASE, CLOUD_API_KEY
+from constants import CLOUD_API_URL, CLOUD_API_KEY
 
 log = logging.getLogger('device_register')
 
 # ── Cloud config ─────────────────────────────────────────────────
-REGISTER_URL = f'{CLOUD_API_BASE}/api/devices'
+REGISTER_URL = f'{CLOUD_API_URL}/api/devices'
 TENANT_ID    = 'org::7'           # ← change to your tenant
 ORG_ID       = 'org::7'           # ← change to your org
 # ─────────────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ from config import DEVICE_ID, HOSTNAME, LOCATION
 from constants import VERSION
 from fault_codes import detect_faults, fault_summary
 import logging
-from device_register import register_device, unregister_device
+from device_register import register_device
 
 app = Flask(__name__,
             static_folder='../web/static',
