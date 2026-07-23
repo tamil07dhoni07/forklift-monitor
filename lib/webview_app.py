@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from ultralytics import settings
 
 import gi
 gi.require_version('Gtk', '3.0')
