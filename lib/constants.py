@@ -10,8 +10,6 @@
 
 VERSION = 1          # current installed version (integer)
 
-DEVICE_ID = 'FL-2024'
-LOCATION  = 'Warehouse A — Bay 3'
 
 DB_CONFIG = {
     'host':     'localhost',

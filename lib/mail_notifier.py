@@ -27,6 +27,7 @@ import functools
 from datetime import datetime, timezone, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from config import DEVICE_ID, LOCATION
 
 # ── ① EMAIL CONFIG — fill these ─────────────────────────────────
 SMTP_HOST     = 'smtp.office365.com'
@@ -38,8 +39,7 @@ DEV_TEAM_MAIL = [
     'thamilarasan.santhakumar@bonbloc.com',  # ← add more team emails here
 ]
 
-DEVICE_ID     = 'FL-2024'
-LOCATION      = 'Warehouse A — Bay 3'
+
 # ────────────────────────────────────────────────────────────────
 
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -214,7 +214,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
     print(f'Sending test email to: {DEV_TEAM_MAIL}')
     try:
-        raise ValueError('This is a test crash from Gear IQ device FL-2024')
+        raise ValueError('This is a test crash from Gear IQ device '+DEVICE_ID+' at '+LOCATION)
     except Exception as e:
         send_error('Test Service', e)
     print('Done — check your inbox.')
