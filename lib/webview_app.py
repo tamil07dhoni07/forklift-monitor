@@ -94,8 +94,8 @@ class ForkliftApp(Gtk.Window):
         self.present()
 
         print("Loading Dashboard...")
-        #self.webview.load_uri(HOME_URL)
-        self.webview.load_uri("http://127.0.0.1:8080/?action=stream")
+        self.webview.load_uri(HOME_URL)
+        # self.webview.load_uri("http://127.0.0.1:8080/?action=stream")
 
     def page_loaded(self, webview, event):
 
