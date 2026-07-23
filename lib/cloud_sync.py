@@ -12,6 +12,7 @@ from datetime import datetime, timezone, timedelta
 from db import get_db_connection
 from config import DEVICE_ID, LOCATION  # ← add
 from constants import  CLOUD_API_KEY,DB_CONFIG,RETRY_DELAY_SEC,RETRY_MAX,SYNC_INTERVAL_SEC,BATCH_SIZE,CLOUD_API_URL,DEVICE_ID,LOCATION,VERSION  # ← add
+from cloud_client import cloud_request
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -200,12 +201,14 @@ def post_to_cloud(payload: dict) -> bool:
             log.debug(f'☁️   Attempt {attempt}/{RETRY_MAX}  →  sending request ...')
             log.debug("☁️ Payload:\n%s", json.dumps(payload, indent=4, sort_keys=True, default=str))
 
-            resp = requests.post(
+            resp = cloud_request(
+                "POST",
                 CLOUD_API_URL,
                 json=payload,
                 headers=headers,
                 timeout=15
             )
+            
 
             if resp.status_code in (200, 201, 202):
                 log.info(f'☁️   POST success  →  HTTP {resp.status_code}  '

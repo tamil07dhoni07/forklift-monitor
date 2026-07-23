@@ -213,7 +213,7 @@ async function updateHydraulic() {
     style_('hyd-fill','width',level+'%'); 
     // Values
     html_('hyd-level',  `${level.toFixed(1)}<span class="u">%</span>`);
-    txt('hyd-temp',   temp.toFixed(1));
+    txt('hyd-temp',   temp.toFixed(1)+' °C');
     txt('hyd-volume', vol.toFixed(2) + ' L');
 
     // Badge

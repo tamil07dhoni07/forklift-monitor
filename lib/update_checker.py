@@ -23,6 +23,7 @@ import requests
 # Import local version from constants.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from constants import VERSION, CLOUD_API_URL, CLOUD_API_KEY, DEVICE_ID
+from device_service import get_device_details
 
 # ── Config ────────────────────────────────────────────────────
 CHECK_INTERVAL_SEC = 300          # check every 5 minutes
@@ -119,11 +120,17 @@ def check_once():
     """Single version check cycle."""
     log.info(f'Checking version  (local={VERSION})...')
 
-    cloud_version = get_cloud_version()
-
-    if cloud_version is None:
+    device = get_device_details(Device_id=DEVICE_ID)
+    cloud_version = None
+    if device:
+        cloud_version = device.get("version")
+        if cloud_version is None:
+            log.info('Version check skipped — cloud unreachable')
+            return
+    else:
         log.info('Version check skipped — cloud unreachable')
         return
+    
 
     log.info(f'  local version = {VERSION}')
     log.info(f'  cloud version = {cloud_version}')

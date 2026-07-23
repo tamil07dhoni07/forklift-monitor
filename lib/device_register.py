@@ -5,10 +5,14 @@
 #  POST {{baseUrl}}/api/devices
 # ================================================================
 
+import token
+
 import requests
 import logging
 from config    import DEVICE_ID, LOCATION
 from constants import CLOUD_API_URL, CLOUD_API_KEY
+from cloud_auth import get_bearer_token
+from cloud_client import cloud_request
 
 log = logging.getLogger('device_register')
 
@@ -90,15 +94,16 @@ def unregister_device() -> bool:
         'status':         'offline'
     }
 
+
     headers = {
         'Content-Type':  'application/json',
-        'Authorization': f'Bearer {CLOUD_API_KEY}',
         'X-Device-Id':   DEVICE_ID,
     }
 
     log.info(f'📋  Unregistering device  →  status=offline')
     try:
-        resp = requests.post(
+        resp = cloud_request(
+            'POST',
             REGISTER_URL,
             json=payload,
             headers=headers,
