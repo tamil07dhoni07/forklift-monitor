@@ -195,6 +195,7 @@ def post_to_cloud(payload: dict) -> bool:
     }
 
     log.info(f'☁️   Posting to cloud  →  {CLOUD_API_URL}')
+    log.info(f'☁️   Posting to cloud headers  →  {headers}')
 
     for attempt in range(1, RETRY_MAX + 1):
         try:
