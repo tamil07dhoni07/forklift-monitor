@@ -11,7 +11,7 @@ import requests
 from datetime import datetime, timezone, timedelta
 from db import get_db_connection
 from config import DEVICE_ID, LOCATION  # ← add
-from constants import  CLOUD_API_KEY,DB_CONFIG,RETRY_DELAY_SEC,RETRY_MAX,SYNC_INTERVAL_SEC,BATCH_SIZE,CLOUD_API_URL,DEVICE_ID,LOCATION,VERSION  # ← add
+from constants import  CLOUD_API_KEY,DB_CONFIG,RETRY_DELAY_SEC,RETRY_MAX,SYNC_INTERVAL_SEC,BATCH_SIZE,CLOUD_API_URL,VERSION  # ← add
 from cloud_client import cloud_request
 
 IST = timezone(timedelta(hours=5, minutes=30))

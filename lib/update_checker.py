@@ -22,7 +22,8 @@ import requests
 
 # Import local version from constants.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from constants import VERSION, CLOUD_API_URL, CLOUD_API_KEY, DEVICE_ID
+from constants import VERSION, CLOUD_API_URL, CLOUD_API_KEY
+from config import DEVICE_ID
 from device_service import get_device_details
 
 # ── Config ────────────────────────────────────────────────────
