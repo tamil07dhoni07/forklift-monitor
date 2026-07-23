@@ -59,7 +59,7 @@ def start_camera():
     if result.returncode != 0:
         subprocess.Popen([
             "mjpg_streamer",
-            "-i", "input_uvc.so -d /dev/video10 -r 1280x720 -f 30",
+            "-i", "input_uvc.so -d /dev/video10 -r 1280x720 -f 10",
             "-o", "output_http.so -p 8080 -w /usr/share/mjpg-streamer/www"
         ])
 
