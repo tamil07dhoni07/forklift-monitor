@@ -41,7 +41,7 @@ def get_bearer_token(force_refresh=False):
         # Adjust according to actual API response
         _token = (
             data.get("token")
-            or data.get("accessToken")
+            or data.get("access_token")
             or data.get("jwt")
             or data.get("data", {}).get("token")
         )
