@@ -5,8 +5,8 @@
 
 // ── ① CONFIGURE ────────────────────────────────────────────────
 const API           = 'http://localhost:5000/api';
-const CAM_STREAM    = 'http://192.168.0.32:8080/?action=stream';
-const REFRESH_MS    = 5000;
+const CAM_STREAM    = `http://localhost:8080/?action=stream`;
+const REFRESH_MS    = 5000; 
 const CLOUD_API_URL = 'https://your-cloud-api.com/api/v1/ingest'; // ← change this
 const CLOUD_API_KEY = 'your-api-key-here';                         // ← change this
 const DEVICE_ID     = 'FL-2024';
