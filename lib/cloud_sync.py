@@ -203,7 +203,7 @@ def post_to_cloud(payload: dict) -> bool:
 
             resp = cloud_request(
                 "POST",
-                CLOUD_API_URL,
+                CLOUD_API_URL+"/api/geariq/v1/ingest",
                 json=payload,
                 headers=headers,
                 timeout=15

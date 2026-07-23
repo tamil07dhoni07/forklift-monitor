@@ -24,7 +24,7 @@ DB_CONFIG = {
 CAM_STREAM_URL   = 'http://127.0.0.1:8080/?action=stream'
 
 # ── CONFIG ───────────────────────────────────────────────────────
-CLOUD_API_URL     = 'https://dev-edgedata.onelign.com/api/geariq/v1/ingest'
+CLOUD_API_URL     = 'https://dev-edgedata.onelign.com'
 CLOUD_API_KEY     = 'geariq-edge-secret-2024'
 SYNC_INTERVAL_SEC = 60
 BATCH_SIZE        = 20
