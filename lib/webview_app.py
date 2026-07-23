@@ -19,7 +19,7 @@ def start_services():
     print("Starting API Server...")
 
     # Start Camera Stream
-    #start_camera()
+    start_camera()
 
     time.sleep(2)
 
