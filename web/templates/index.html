@@ -895,9 +895,9 @@ function buildForklift() {
 
   const textureLoader = new THREE.TextureLoader();
   
-  // Load the TrailerCaddy PNG image directly
+  // Load the TrailerCaddy image
   textureLoader.load(
-    '../static/powerpusher.png', // Update to your exact image path if different
+    '../static/powerpusher.png', // Or '../static/powerpusher.png' depending on your path
     function (texture) {
       const material = new THREE.MeshBasicMaterial({
         map: texture,
@@ -905,19 +905,19 @@ function buildForklift() {
         side: THREE.DoubleSide
       });
 
-      // Aspect ratio setup matching the image (approx 1.25:1 width-to-height)
-      const geometry = new THREE.PlaneGeometry(3.2, 2.56);
+      // Scaled down dimensions to avoid overlapping side gauges
+      const geometry = new THREE.PlaneGeometry(2.0, 1.6);
       const plane = new THREE.Mesh(geometry, material);
       
-      // Position plane slightly above ground grid
-      plane.position.set(0, 1.28, 0);
+      // Positioned lower so it sits comfortably above the floor grid
+      plane.position.set(0, 0.8, 0);
 
       forkliftGroup.add(plane);
       scene.add(forkliftGroup);
     },
     undefined,
     function (err) {
-      console.error('Error loading TrailerCaddy image texture:', err);
+      console.error('Error loading image:', err);
     }
   );
 }
