@@ -906,7 +906,7 @@ function buildForklift() {
   const textureLoader = new THREE.TextureLoader();
   
   textureLoader.load(
-    'powerpusher.png', // Update to your exact path
+    '../static/powerpusher.png', // Update to your exact path
     function (texture) {
       const material = new THREE.MeshBasicMaterial({
         map: texture,
