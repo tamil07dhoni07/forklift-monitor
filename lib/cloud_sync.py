@@ -138,15 +138,17 @@ def build_payload(vib_rows, volt_rows, oil_rows, kpi) -> dict:
         })
 
     battery_list = []
-    for r in (volt_rows or []):
+    for idx, r in enumerate(volt_rows or [], start=1):
         battery_list.append({
-            'id':          r.get('id',1),
-            'sensor_id':   r.get('sensor_id',1),
-            'voltage':     float(r.get('voltage', 0)),
-            'current':     float(r.get('current', 0)),
-            'power':       float(r.get('power', 0)),
-            'energy':      float(r.get('energy', 0)),
-            'status':      r.get('status', 'ok'),
+            'id': idx,
+            'sensor_id': r.get('sensor_id', 1),
+            'voltage': float(r.get('voltage', 0)),
+            'current': float(r.get('current', 0)),
+            'power': float(r.get('power', 0)),
+            'energy': float(r.get('energy', 0)),
+            'temperature': float(r.get('temperature', 0)),
+            'temp_timestamp': str(r.get('temp_timestamp', now_ist)),
+            'status': r.get('status', 'ok'),
             'recorded_at': str(r.get('recorded_at', now_ist)),
         })
 
@@ -154,10 +156,13 @@ def build_payload(vib_rows, volt_rows, oil_rows, kpi) -> dict:
     for r in (oil_rows or []):
         oil_list.append({
             'id':          r.get('id',1),
-            'level':       float(r.get('level', 0)),
+            'level_pct':       float(r.get('level_pct', 0)),
             'temperature': float(r.get('temperature', 0)),
-            'oil_quality': float(r.get('oil_quality', 0)),
-            'pressure':    float(r.get('pressure', 0)),
+            'raw_distance_mm': float(r.get('raw_distance_mm', 0)),
+            'fuel_level_cm':   float(r.get('fuel_level_cm', 0)),
+            'oil_height_mm':   float(r.get('oil_height_mm', 0)),
+            'volume_ml':       float(r.get('volume_ml', 0)),
+            'volume_l':        float(r.get('volume_l', 0)),
             'status':      r.get('status', 'ok'),
             'recorded_at': str(r.get('recorded_at', now_ist)),
         })

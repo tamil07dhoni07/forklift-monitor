@@ -113,18 +113,60 @@ def get_latest_voltages():
         log.error('🔍  get_latest_voltages  →  no DB connection')
         return []
     cur = conn.cursor()
+    # cur.execute("""
+    #     SELECT DISTINCT ON (sensor_id) sensor_id, voltage, current, power, energy, timestamp
+    #     FROM voltage_data ORDER BY sensor_id, id DESC
+    # """)
     cur.execute("""
-        SELECT DISTINCT ON (sensor_id) sensor_id, voltage, current, power, energy, timestamp
-        FROM voltage_data ORDER BY sensor_id, id DESC
-    """)
+        WITH latest_voltage AS (
+        SELECT DISTINCT ON (sensor_id)
+           sensor_id,
+           voltage,
+           current,
+           power,
+           energy,
+           timestamp
+            FROM voltage_data
+            ORDER BY sensor_id, id DESC
+            ),
+            latest_temperature AS (
+            SELECT DISTINCT ON (sensor_id)
+           sensor_id,
+           temperature,
+           status,
+           timestamp AS temp_timestamp
+            FROM temperature_data
+            ORDER BY sensor_id, id DESC
+            )
+            SELECT
+            v.sensor_id,
+            v.voltage,
+            v.current,
+            v.power,
+            v.energy,
+            v.timestamp,
+            t.temperature,
+            t.status,
+            t.temp_timestamp
+            FROM latest_voltage v
+            LEFT JOIN latest_temperature t
+            ON v.sensor_id =
+            CASE t.sensor_id
+            WHEN 1 THEN 2
+            WHEN 2 THEN 3
+            WHEN 3 THEN 4
+            WHEN 4 THEN 6
+            END
+            ORDER BY v.sensor_id;
+            """)
     rows = cur.fetchall()
     cur.close(); conn.close()
     log.debug(f'🔍  voltages fetched  →  {len(rows)} sensor(s)')
     for r in rows:
-        log.debug(f'    sensor_id={r[0]}  voltage={r[1]:.2f}V  current={r[2]:.2f}A  power={r[3]:.1f}W')
+        log.debug(f'    sensor_id={r[0]}  voltage={r[1]:.2f}V  current={r[2]:.2f}A  power={r[3]:.1f}W  temperature={r[6]}°C  status={r[7]}  ts={r[5]}  temp_ts={r[8]}')
     return [{
         'sensor_id': r[0], 'voltage': r[1], 'current': r[2],
-        'power': r[3],     'energy':  r[4], 'timestamp': r[5]
+        'power': r[3],     'energy':  r[4], 'timestamp': r[5], 'temperature': r[6], 'status': r[7], 'temp_timestamp': r[8]
     } for r in rows]
 
 
@@ -241,6 +283,7 @@ def vibration():
     rec  = get_latest_vibration()
     volt = get_latest_voltages()
     data = calculate_kpi_today()
+    oilData = get_latest_hydraulic()
     log.debug(f'📊  KPI  →  {data}')
 
     if rec and (datetime.now() - rec['timestamp']) < timedelta(seconds=10):
@@ -264,7 +307,7 @@ def vibration():
             payload = build_payload(
                 vib_rows  = [rec],
                 volt_rows = volt,
-                oil_rows  = [],
+                oil_rows  = oilData,
                 kpi       = data
             )
             enqueue(payload)
