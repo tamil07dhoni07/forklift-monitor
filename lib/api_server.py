@@ -156,10 +156,10 @@ def get_latest_voltages():
             LEFT JOIN latest_temperature t
             ON v.sensor_id =
             CASE t.sensor_id
-            WHEN 1 THEN 2
-            WHEN 2 THEN 3
-            WHEN 3 THEN 4
-            WHEN 4 THEN 6
+            WHEN 2 THEN 2
+            WHEN 3 THEN 3
+            WHEN 4 THEN 4
+            WHEN 6 THEN 6
             END
             ORDER BY v.sensor_id;
             """)

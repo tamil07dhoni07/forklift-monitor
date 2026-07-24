@@ -8,6 +8,582 @@
 <link rel="stylesheet" href="../static/style.css">
 <base target="_blank">
 <base target="_blank">
+<style>
+/* ═══════════════════════════════════════════════
+   GEAR IQ — Automotive Instrument Cluster Dashboard
+   Custom Theme: Primary #005e60 | Secondary #40cd24
+   ═══════════════════════════════════════════════ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+
+/* ── THEME VARIABLES ───────────────────────── */
+:root{
+  /* Light theme (default) */
+  --bg:                 #f0f4f4;
+  --panel-bg:           rgba(255,255,255,.92);
+  --glass:              rgba(0,94,96,.04);
+  --glass-border:       rgba(0,94,96,.15);
+  --glass-strong:       rgba(0,94,96,.08);
+  --text-primary:       #002b2c;
+  --text-secondary:     #1a4a4b;
+  --text-dim:           #4a7576;
+  --text-muted:         #8caeaf;
+  --surface:            #ffffff;
+  --surface-elevated:   #f4f8f8;
+  --border-color:       #d0e0e0;
+  --shadow-color:       rgba(0,94,96,.08);
+  --grid-color:         #cbd5e1;
+  --cam-bg:             #f8fafc;
+  --alert-bg:           #ffffff;
+
+  /* Theme Primary & Secondary Branding Accents */
+  --brand-primary:      #005e60;
+  --brand-secondary:    #40cd24;
+
+  /* Neon accents adjusted to align with new palette */
+  --neon-blue:          #005e60;
+  --neon-purple:        #005e60;
+  --neon-teal:          #14b8a6;
+  --neon-pink:          #ec4899;
+  --neon-orange:        #f97316;
+  --neon-green:         #40cd24;
+  --neon-red:           #ef4444;
+  --neon-yellow:        #eab308;
+
+  --nav: 44px;
+}
+
+/* Dark theme override */
+:root[data-theme="dark"]{
+  --bg:                 #021213;
+  --panel-bg:           rgba(2,24,25,.88);
+  --glass:              rgba(64,205,36,.05);
+  --glass-border:       rgba(64,205,36,.2);
+  --glass-strong:       rgba(64,205,36,.12);
+  --text-primary:       rgba(255,255,255,.95);
+  --text-secondary:     rgba(255,255,255,.75);
+  --text-dim:           rgba(255,255,255,.5);
+  --text-muted:         rgba(255,255,255,.3);
+  --surface:            #041d1e;
+  --surface-elevated:   #062829;
+  --border-color:       rgba(64,205,36,.2);
+  --shadow-color:       rgba(0,0,0,.6);
+  --grid-color:         #083335;
+  --cam-bg:             #021213;
+  --alert-bg:           rgba(2,24,25,.92);
+
+  --neon-blue:          #40cd24;
+  --neon-purple:        #40cd24;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text-primary);
+  transition:background .3s,color .3s;
+}
+
+/* ── TOPNAV ─────────────────────────────────── */
+.topnav{
+  width:100%;height:var(--nav);
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-color);
+  display:flex;align-items:center;padding:0 20px;gap:12px;
+  position:relative;z-index:100;
+  transition:background .3s;
+}
+:root[data-theme="dark"] .topnav{
+  background:rgba(2,24,25,.95);
+  border-bottom:1px solid var(--border-color);
+}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-logo{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 15px rgba(64,205,36,.35);
+}
+.brand-logo svg{width:60%;height:60%}
+.brand-txt{display:flex;flex-direction:column;line-height:1.2}
+.brand-name{font-size:14px;font-weight:800;color:var(--text-primary)}
+.brand-sub{font-size:9px;color:var(--brand-secondary);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+.nav-meta{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;font-size:12px;color:var(--text-secondary)}
+.nav-id{font-weight:700;color:var(--text-primary);font-size:13px}
+.nav-sep{color:var(--text-dim)}
+.nav-tz{font-size:10px;color:var(--text-dim);font-family:'Roboto Mono',monospace;letter-spacing:.5px}
+.nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.theme-btn{
+  width:32px;height:32px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);transition:.15s;
+}
+.theme-btn:hover{color:var(--brand-secondary);background:var(--glass-strong)}
+.icon-moon{display:none}
+.net-group{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.net-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:4px 12px;border-radius:20px;
+  font-size:12px;font-weight:700;letter-spacing:.4px;
+  border:1px solid;transition:.3s;white-space:nowrap;
+}
+.net-pill.online  {background:rgba(64,205,36,.12); color:var(--brand-secondary);border-color:rgba(64,205,36,.4);box-shadow:0 0 10px rgba(64,205,36,.2)}
+.net-pill.offline {background:rgba(239,68,68,.1);  color:var(--neon-red);border-color:rgba(239,68,68,.3); box-shadow:0 0 10px rgba(239,68,68,.15)}
+.net-pill.checking{background:rgba(234,179,8,.1); color:var(--neon-yellow);border-color:rgba(234,179,8,.3);box-shadow:0 0 10px rgba(234,179,8,.12)}
+.net-dot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+.net-pill.online .net-dot{animation:blink 2s infinite}
+.net-pill.checking .net-dot{animation:blink .8s infinite}
+.sensor-chips{display:flex;gap:6px}
+.sensor-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--text-secondary);font-weight:600;
+  padding:3px 10px;border-radius:10px;
+  border:1px solid var(--glass-border);background:var(--glass);white-space:nowrap;
+}
+.sensor-dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);display:inline-block;transition:background .3s}
+.sensor-dot.online {background:var(--brand-secondary);box-shadow:0 0 8px rgba(64,205,36,.7);animation:blink 2s infinite}
+.sensor-dot.offline{background:var(--neon-red);box-shadow:0 0 8px rgba(239,68,68,.5)}
+
+/* ── MAIN LAYOUT ────────────────────────────── */
+.layout{
+  width:100vw;height:calc(100vh - var(--nav));
+  display:flex;flex-direction:column;
+}
+.main-content{
+  display:flex;flex:1;min-height:0;gap:1px;
+  padding:1px;
+}
+
+/* ── 3D VIEWPORT (60%) ──────────────────────── */
+.viewport-3d{
+  flex:0 0 55%;
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  background:radial-gradient(ellipse at center, #ffffff 0%, #edf4f4 60%, #dbe8e8 100%);
+  border:1px solid var(--border-color);
+  box-shadow:inset 0 0 60px rgba(0,94,96,.05), 0 4px 24px rgba(0,0,0,.06);
+  transition:background .3s;
+}
+:root[data-theme="dark"] .viewport-3d{
+  background:radial-gradient(ellipse at center, #041f20 0%, #021213 70%);
+  box-shadow:inset 0 0 60px rgba(64,205,36,.06), 0 4px 24px rgba(0,0,0,.4);
+}
+#three-canvas{width:100%;height:100%;display:block}
+
+/* ── LOADING ────────────────────────────────── */
+.loading-overlay{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at center, #ffffff 0%, #edf4f4 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:50;transition:opacity .5s;
+}
+:root[data-theme="dark"] .loading-overlay{
+  background:radial-gradient(ellipse at center, #041f20 0%, #021213 100%);
+}
+.loading-overlay.hidden{opacity:0;pointer-events:none}
+.loading-text{
+  font-size:14px;color:var(--brand-primary);
+  font-family:'Roboto Mono',monospace;letter-spacing:4px;
+  margin-top:20px;font-weight:700;
+}
+:root[data-theme="dark"] .loading-text{
+  color:var(--brand-secondary);
+  text-shadow:0 0 20px rgba(64,205,36,.5);
+}
+.loading-spinner{
+  width:40px;height:40px;
+  border:3px solid rgba(0,94,96,.2);
+  border-top-color:var(--brand-primary);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+:root[data-theme="dark"] .loading-spinner{
+  border-color:rgba(64,205,36,.2);
+  border-top-color:var(--brand-secondary);
+  box-shadow:0 0 20px rgba(64,205,36,.3);
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── GAUGE CONTAINERS ───────────────────────── */
+.gauge-container{
+  position:absolute;
+  display:flex;flex-direction:column;align-items:center;
+  gap:12px;
+}
+
+/* ── BATTERY TANK ───────────────────────────── */
+.tank-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  gap:2px;
+}
+.tank-cap{
+  width:clamp(20px,2.5vw,30px);height:clamp(6px,.6vw,8px);
+  background:var(--brand-primary);
+  border-radius:3px 3px 0 0;
+  border:2px solid var(--brand-primary);
+  border-bottom:none;
+  order: -1;
+}
+:root[data-theme="dark"] .tank-cap{
+  background:var(--brand-secondary);
+  border-color:var(--brand-secondary);
+}
+.tank-body{
+  width:clamp(36px,4vw,50px);
+  height:clamp(80px,10vh,120px);
+  border:2px solid var(--brand-primary);
+  border-radius:0 0 6px 6px;
+  position:relative;
+  overflow:hidden;
+  background:var(--glass);
+}
+:root[data-theme="dark"] .tank-body{
+  border-color:var(--brand-secondary);
+}
+.tank-fill{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg, var(--brand-secondary), var(--brand-primary));
+  border-radius:0 0 4px 4px;
+  transition:height .5s ease;
+  box-shadow:0 0 20px rgba(64,205,36,.4);
+}
+.tank-level-lines{
+  position:absolute;inset:0;pointer-events:none;
+}
+.tank-line{
+  position:absolute;left:0;right:0;
+  height:1px;background:rgba(0,94,96,.2);
+}
+:root[data-theme="dark"] .tank-line{
+  background:rgba(255,255,255,.15);
+}
+.tank-percent{
+  font-family:'Roboto Mono',monospace;
+  font-size:clamp(20px,2.5vw,32px);
+  font-weight:800;
+  color:var(--text-primary);
+  line-height:1;
+}
+
+/* ── THERMAL METER ──────────────────────────── */
+.thermal-wrap{
+  display:flex;justify-content:center;
+}
+.thermal-body{
+  display:flex;align-items:flex-end;
+  gap:8px;
+  position:relative;
+}
+.thermal-stem{
+  width:clamp(14px,1.6vw,20px);
+  height:clamp(90px,11vh,130px);
+  border:2px solid var(--brand-primary);
+  border-radius:10px 10px 4px 4px;
+  position:relative;
+  overflow:hidden;
+  background:var(--glass);
+  margin-bottom: 0;
+}
+:root[data-theme="dark"] .thermal-stem{
+  border-color:var(--brand-secondary);
+}
+.thermal-fill{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,#f97316,var(--brand-primary));
+  border-radius:0 0 2px 2px;
+  transition:height .5s ease;
+  box-shadow:0 0 20px rgba(0,94,96,.3);
+}
+:root[data-theme="dark"] .thermal-fill{
+  background:linear-gradient(180deg,#f97316,var(--brand-secondary));
+}
+.thermal-bulb{
+  width:clamp(18px,2.2vw,18px);
+  height:clamp(18px,2.2vw,18px);
+  border-radius:50%;
+  background:var(--brand-primary);
+  border:2px solid var(--brand-primary);
+  box-shadow:0 0 15px rgba(0,94,96,.4);
+  position:absolute;
+  bottom:-6px;
+  left:20%;
+  transform:translateX(-50%);
+  z-index: 2;
+}
+:root[data-theme="dark"] .thermal-bulb{
+  background:var(--brand-secondary);
+  border-color:var(--brand-secondary);
+  box-shadow:0 0 15px rgba(64,205,36,.5);
+}
+.thermal-ticks{
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  height:clamp(90px,11vh,130px);
+  margin-bottom: 6px;
+}
+.thermal-tick{
+  font-family:'Roboto Mono',monospace;
+  font-size:clamp(9px,1vw,11px);
+  color:var(--text-dim);
+  text-align:left;
+  line-height:1;
+}
+.thermal-value{
+  font-family:'Roboto Mono',monospace;
+  font-size:clamp(20px,2.5vw,32px);
+  font-weight:800;
+  color:var(--text-primary);
+  line-height:1;
+  display:flex;align-items:flex-start;gap:2px;
+}
+.thermal-unit{
+  font-size:clamp(12px,1.3vw,16px);
+  font-weight:600;
+  color:var(--text-secondary);
+}
+.gauge-label{
+  font-size:clamp(13px,1.3vw,16px);
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--brand-primary);
+}
+:root[data-theme="dark"] .gauge-label{
+  color:var(--brand-secondary);
+}
+.gauge-sublabel{
+  font-size:clamp(12px,1.1vw,14px);
+  color:var(--text-dim);
+  font-family:'Roboto Mono',monospace;
+}
+
+.left-cluster{
+  top:40%;
+  left:clamp(12px,1.5vw,20px);
+  transform:translateY(-50%);
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.right-cluster{
+  top:35%;
+  right:clamp(12px,1.5vw,20px);
+  transform:translateY(-50%);
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.left-cluster::-webkit-scrollbar,
+.right-cluster::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+/* ── BOTTOM DASH BAR ─────────────────────────── */
+.dash-bar{
+  position:absolute;
+  bottom:clamp(0px,0vw,20px);
+  left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;
+  gap:clamp(8px,1vw,14px);
+  padding:clamp(10px,1.2vw,14px) clamp(18px,2.2vw,28px);
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border-color);
+  border-radius:clamp(12px,1.5vw,18px);
+  box-shadow:0 8px 32px rgba(0,94,96,.12);
+  transition:background .3s;
+  z-index: 10;
+}
+:root[data-theme="dark"] .dash-bar{
+  background:rgba(2,24,25,.9);
+  border:1px solid var(--border-color);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+}
+.dash-item{
+  display:flex;flex-direction:column;align-items:center;
+  gap:4px;min-width:clamp(60px,7vw,90px);
+}
+.dash-item .dash-dot{
+  width:clamp(8px,.6vw,10px);height:clamp(8px,.6vw,10px);
+  border-radius:50%;
+}
+.dash-item .dash-label{
+  font-size:clamp(10px,1vw,12px);
+  font-weight:600;letter-spacing:1px;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.dash-item .dash-val{
+  font-family:'Roboto Mono',monospace;
+  font-size:clamp(14px,1.5vw,18px);
+  font-weight:700;color:var(--text-primary);
+}
+.dash-sep{
+  width:1px;height:clamp(24px,3vh,36px);
+  background:var(--border-color);
+}
+
+/* ── HYDRAULIC LEVEL BAR ────────────────────── */
+.hyd-bar-wrap{
+  position:absolute;
+  bottom:clamp(90px,11vh,120px);
+  left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  width:clamp(180px,24vw,300px);
+  z-index: 5;
+}
+.hyd-bar-label{
+  display:flex;justify-content:space-between;width:100%;
+  font-size:clamp(11px,1.1vw,13px);color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:1px;
+}
+.hyd-bar-label span:last-child{
+  font-family:'Roboto Mono',monospace;color:var(--brand-secondary);
+}
+.hyd-bar-track{
+  width:100%;height:clamp(6px,.7vw,8px);
+  background:var(--glass-strong);
+  border-radius:4px;overflow:hidden;
+  border:1px solid var(--border-color);
+}
+.hyd-bar-fill{
+  height:100%;width:65%;
+  background:linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+  border-radius:4px;
+  box-shadow:0 0 12px rgba(64,205,36,.4);
+  transition:width .5s ease;
+}
+
+/* ── CAMERA PANEL (40%) ─────────────────────── */
+.cam-panel{
+  flex:0 0 45%;
+  display:flex;flex-direction:column;gap:1px;
+}
+.cam-card{
+  flex:1;
+  background:#ffffff;
+  border:1px solid var(--border-color);
+  border-radius:16px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  min-height:0;
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+}
+:root[data-theme="dark"] .cam-card{
+  background:#021213;
+  box-shadow:inset 0 0 40px rgba(0,0,0,.5);
+}
+.cam-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;
+  background:var(--glass-strong);
+  border-bottom:1px solid var(--border-color);flex-shrink:0;
+}
+.cam-hl{display:flex;align-items:center;gap:10px}
+.cam-live{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(239,68,68,.12);color:#f87171;
+  font-size:10px;font-weight:800;letter-spacing:1px;
+  padding:3px 10px;border-radius:20px;
+  border:1px solid rgba(239,68,68,.25);
+  box-shadow:0 0 12px rgba(239,68,68,.15);
+}
+.cam-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--brand-primary)}
+:root[data-theme="dark"] .cam-title{color:var(--brand-secondary)}
+.cam-expand{
+  width:30px;height:30px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text-secondary);transition:.15s;
+}
+.cam-expand:hover{color:var(--brand-secondary);border-color:var(--brand-secondary)}
+.cam-frame{flex:1;background:var(--surface-elevated);position:relative;min-height:0}
+.cam-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.cam-fallback{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;
+  color:var(--text-dim);font-size:13px;
+}
+
+/* ── ALERTS ─────────────────────────────────── */
+.alerts-panel{
+  background:#ffffff;border:1px solid var(--border-color);
+  border-radius:12px;
+  padding:10px 18px;
+  display:flex;align-items:center;gap:12px;flex-shrink:0;overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+  margin-top:1px;
+  transition:background .3s;
+}
+:root[data-theme="dark"] .alerts-panel{
+  background:rgba(2,24,25,.9);
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+}
+.alerts-head{
+  font-size:13px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--brand-primary);white-space:nowrap;flex-shrink:0;
+}
+:root[data-theme="dark"] .alerts-head{color:var(--brand-secondary)}
+.alerts-pills{flex:1;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;align-items:stretch}
+.alerts-pills::-webkit-scrollbar{height:3px}
+.alerts-pills::-webkit-scrollbar-thumb{background:rgba(64,205,36,.3);border-radius:2px}
+.alert-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;
+  border-radius:10px;border:1px solid;
+  flex:1;min-width:140px;
+}
+.alert-pill svg{flex-shrink:0}
+.a-warn{background:rgba(234,179,8,.08);border-color:rgba(234,179,8,.2);box-shadow:0 0 10px rgba(234,179,8,.05)}
+.a-ok  {background:rgba(64,205,36,.08); border-color:rgba(64,205,36,.25); box-shadow:0 0 10px rgba(64,205,36,.08)}
+.alert-body{flex:1;min-width:0}
+.alert-msg{font-size:14px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alert-sub{font-size:12px;color:var(--text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── FULLSCREEN MODAL ───────────────────────── */
+.cam-modal{position:fixed;inset:0;background:rgba(2,18,19,.95);display:none;align-items:center;justify-content:center;z-index:1000;padding:3vw}
+.cam-modal.open{display:flex}
+.cam-modal-box{position:relative;width:100%;max-width:92vw;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 0 1px var(--brand-secondary)}
+.cam-modal-box img{width:100%;height:100%;object-fit:contain;display:block}
+.cam-close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.7);border:1px solid var(--border-color);color:var(--text-primary);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:.15s}
+.cam-close:hover{background:var(--brand-primary);color:#fff}
+
+/* ── ANIMATIONS ─────────────────────────────── */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.blink{animation:blink 2s infinite}
+
+/* ── CELL DETAIL LIST ───────────────────────── */
+.cell-list{
+  display:flex;flex-direction:column;gap:3px;
+  margin-top:2px;
+  padding-top:2px;
+  border-top:1px solid var(--border-color);
+}
+.cell-item{
+  display:grid;grid-template-columns:28px 1fr 1fr;gap:8px;
+  align-items:center;
+  font-size:clamp(12px,1.1vw,14px);
+}
+.cell-item .cell-name{color:var(--text-secondary);font-weight:600}
+.cell-item .cell-volt{font-family:'Roboto Mono',monospace;color:var(--text-primary)}
+.cell-item .cell-temp{font-family:'Roboto Mono',monospace;color:var(--text-dim)}
+
+/* ── MOTOR DATA ROWS ────────────────────────── */
+.motor-data-rows{
+  display:flex;flex-direction:column;gap:4px;
+  margin-top:8px;
+  padding-top:8px;
+  align-items:center;
+  border-top:1px solid var(--border-color);
+}
+.motor-data-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:clamp(12px,1.2vw,14px);
+}
+.motor-data-row .md-label{color:var(--text-secondary)}
+.motor-data-row .md-val{font-family:'Roboto Mono',monospace;color:var(--text-primary)}
+</style>
 </head>
 <body>
 
@@ -20,9 +596,9 @@
         <rect x="18" y="18" width="10" height="6" rx="2" fill="#fff" opacity=".9"/>
         <rect x="4" y="8" width="3" height="12" rx="1" fill="#fff" opacity=".9"/>
         <rect x="4" y="8" width="14" height="3" rx="1" fill="#fff" opacity=".7"/>
-        <circle cx="6" cy="26" r="3" fill="#0a0e1a"/>
+        <circle cx="6" cy="26" r="3" fill="#021213"/>
         <circle cx="6" cy="26" r="1.5" fill="#fff" opacity=".7"/>
-        <circle cx="22" cy="26" r="3" fill="#0a0e1a"/>
+        <circle cx="22" cy="26" r="3" fill="#021213"/>
         <circle cx="22" cy="26" r="1.5" fill="#fff" opacity=".7"/>
       </svg>
     </div>
@@ -81,25 +657,6 @@
 
       <canvas id="three-canvas"></canvas>
 
-      <!-- Center Info Pills (top) -->
-      <!-- <div class="center-info" id="centerInfo">
-        <div class="info-pill">
-          <span class="pill-dot" style="background:#a855f7;box-shadow:0 0 8px rgba(168,85,247,.5)"></span>
-          <span>Battery</span>
-          <span class="pill-val" id="center-battery">--%</span>
-        </div>
-        <div class="info-pill">
-          <span class="pill-dot" style="background:#2dd4bf;box-shadow:0 0 8px rgba(45,212,191,.5)"></span>
-          <span>Motor</span>
-          <span class="pill-val" id="center-motor">--°C</span>
-        </div>
-        <div class="info-pill">
-          <span class="pill-dot" style="background:#f472b6;box-shadow:0 0 8px rgba(244,114,182,.5)"></span>
-          <span>Hydraulic</span>
-          <span class="pill-val" id="center-hydraulic">--%</span>
-        </div>
-      </div> -->
-
       <!-- LEFT: Battery Tank -->
       <div class="gauge-container left-cluster" id="batteryGauge">
         <div class="tank-wrap">
@@ -124,7 +681,7 @@
           <div class="cell-item"><span class="cell-name">B3</span><span class="cell-volt" id="bat3">-- V</span><span class="cell-temp" id="bat3tmp">-- °C</span></div>
           <div class="cell-item"><span class="cell-name">B4</span><span class="cell-volt" id="bat4">-- V</span><span class="cell-temp" id="bat4tmp">-- °C</span></div>
         </div>
-        <div class="cell-list" style="border-top:1px solid rgba(255,255,255,.06);margin-top:6px;padding-top:6px;">
+        <div class="cell-list" style="border-top:1px solid var(--border-color);margin-top:6px;padding-top:6px;">
           <div class="cell-item"><span class="cell-name">Pwr</span><span class="cell-volt" id="bat-power">-- W</span></div>
           <div class="cell-item"><span class="cell-name">Eng</span><span class="cell-volt" id="bat-energy">-- Wh</span></div>
         </div>
@@ -151,7 +708,6 @@
           <span id="motor-gauge-val">--</span><span class="thermal-unit">°C</span>
         </div>
         <div class="gauge-label">Motor</div>
-        <!-- <div class="gauge-sublabel" id="motor-gauge-health">Health --/100</div> -->
 
         <!-- Motor data -->
         <div class="motor-data-rows">
@@ -159,7 +715,6 @@
           <div class="motor-data-row"><span class="md-val" id="motor-vib-total">-- mm/s</span></div>
           <div class="motor-data-row"><span class="md-label">X · Y · Z</span></div>
           <div class="motor-data-row"><span class="md-val" id="motor-velocity">-·-·- mm/s</span></div>
-
         </div>
       </div>
 
@@ -173,57 +728,33 @@
           <div class="hyd-bar-fill" id="hyd-fill" style="width:0%"></div>
         </div>
         <div class="hyd-bar-label" style="margin-top:2px;">
-          <span style="font-size:9px;color:rgba(255,255,255,.4)">Temp</span>
-          <span style="font-size:9px;color:#f472b6;font-family:'Roboto Mono',monospace;" id="hyd-temp">-- °C</span>
+          <span style="font-size:9px;color:var(--text-dim)">Temp</span>
+          <span style="font-size:9px;color:var(--brand-secondary);font-family:'Roboto Mono',monospace;" id="hyd-temp">-- °C</span>
         </div>
       </div>
 
       <!-- BOTTOM DASH BAR -->
       <div class="dash-bar" id="dashBar">
-        <!-- <div class="dash-item">
-          <span class="dash-dot" style="background:#2dd4bf;box-shadow:0 0 8px rgba(45,212,191,.5)"></span>
-          <span class="dash-label">Motor</span>
-          <span class="dash-val" id="statusMotorVal">--</span>
-        </div>
-        <div class="dash-sep"></div>
         <div class="dash-item">
-          <span class="dash-dot" style="background:#a855f7;box-shadow:0 0 8px rgba(168,85,247,.5)"></span>
-          <span class="dash-label">Battery</span>
-          <span class="dash-val" id="statusBatteryVal">--</span>
-        </div>
-        <div class="dash-sep"></div>
-        <div class="dash-item">
-          <span class="dash-dot" style="background:#f472b6;box-shadow:0 0 8px rgba(244,114,182,.5)"></span>
-          <span class="dash-label">Hydraulic</span>
-          <span class="dash-val" id="statusHydraulicVal">--</span>
-        </div> -->
-        <!-- <div class="dash-sep"></div>
-        <div class="dash-item">
-          <span class="dash-dot" style="background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.5)"></span>
-          <span class="dash-label">System</span>
-          <span class="dash-val" id="statusSystemVal">--</span>
-        </div> -->
-        <div class="dash-sep"></div>
-        <div class="dash-item">
-          <span class="dash-dot" style="background:#a855f7;box-shadow:0 0 8px rgba(168,85,247,.5)"></span>
+          <span class="dash-dot" style="background:#005e60;box-shadow:0 0 8px rgba(0,94,96,.5)"></span>
           <span class="dash-label">Op Time</span>
           <span class="dash-val" id="kpi-optime">--</span>
         </div>
         <div class="dash-sep"></div>
         <div class="dash-item">
-          <span class="dash-dot" style="background:#2dd4bf;box-shadow:0 0 8px rgba(45,212,191,.5)"></span>
+          <span class="dash-dot" style="background:#40cd24;box-shadow:0 0 8px rgba(64,205,36,.5)"></span>
           <span class="dash-label">Idle</span>
           <span class="dash-val" id="kpi-idletime">--</span>
         </div>
         <div class="dash-sep"></div>
         <div class="dash-item">
-          <span class="dash-dot" style="background:#f472b6;box-shadow:0 0 8px rgba(244,114,182,.5)"></span>
+          <span class="dash-dot" style="background:#14b8a6;box-shadow:0 0 8px rgba(20,184,166,.5)"></span>
           <span class="dash-label">Cycles</span>
           <span class="dash-val" id="kpi-cycles">--</span>
         </div>
         <div class="dash-sep"></div>
         <div class="dash-item">
-          <span class="dash-dot" style="background:#fb923c;box-shadow:0 0 8px rgba(251,146,60,.5)"></span>
+          <span class="dash-dot" style="background:#f97316;box-shadow:0 0 8px rgba(251,146,60,.5)"></span>
           <span class="dash-label">Energy</span>
           <span class="dash-val" id="kpi-energy">--</span>
         </div>
@@ -301,12 +832,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ═════════════════════════════════════════════════
-// THREE.JS 3D FORKLIFT SCENE
+// THREE.JS CANVAS SCENE — OPTION B (IMAGE SPRITE)
 // ═════════════════════════════════════════════════
 
 let scene, camera, renderer, forkliftGroup;
-let batteryMesh, motorMesh, hydraulicMesh;
-let batteryGlow, motorGlow, hydraulicGlow;
 let animationId;
 let time = 0;
 
@@ -316,50 +845,37 @@ function initThreeJS() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(isDark ? 0xf8fafc : 0xffffff);
-  scene.fog = new THREE.Fog(isDark ? 0xf8fafc : 0xffffff, 8, 25);
+  scene.background = new THREE.Color(isDark ? 0x021213 : 0xedf4f4);
+  scene.fog = new THREE.Fog(isDark ? 0x021213 : 0xedf4f4, 8, 25);
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-  camera.position.set(5, 4, 6);
-  camera.lookAt(0, 0.5, 0);
+  camera.position.set(0, 1.5, 5); // Positioned directly facing the vehicle sprite
+  camera.lookAt(0, 1.0, 0);
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.6 : 0.8);
+  const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.8 : 1.0);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, isDark ? 0.8 : 1.0);
-  dirLight.position.set(5, 8, 5);
-  dirLight.castShadow = true;
-  dirLight.shadow.mapSize.width = 1024;
-  dirLight.shadow.mapSize.height = 1024;
-  scene.add(dirLight);
-
-  const spotLight = new THREE.SpotLight(isDark ? 0x00d4ff : 0x0ea5e9, isDark ? 0.5 : 0.3);
-  spotLight.position.set(-3, 6, 3);
-  spotLight.angle = Math.PI / 6;
-  spotLight.penumbra = 0.5;
-  scene.add(spotLight);
-
+  // Floor Grid
   const floorGeo = new THREE.PlaneGeometry(30, 30);
   const floorMat = new THREE.MeshStandardMaterial({ 
-    color: isDark ? 0xf1f5f9 : 0xe2e8f0, 
+    color: isDark ? 0x041f20 : 0xdbe8e8, 
     roughness: 0.8, 
     metalness: 0.1 
   });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -0.01;
+  floor.position.y = 0;
   floor.receiveShadow = true;
   scene.add(floor);
 
   const gridHelper = new THREE.GridHelper(30, 30, 
-    isDark ? 0xcbd5e1 : 0xffffff, 
-    isDark ? 0xe2e8f0 : 0xffffff
+    isDark ? 0x083335 : 0xb5d0d0, 
+    isDark ? 0x062829 : 0xcbd5e1
   );
   gridHelper.position.y = 0.01;
   scene.add(gridHelper);
@@ -369,7 +885,7 @@ function initThreeJS() {
 
   setTimeout(() => {
     document.getElementById('loadingOverlay').classList.add('hidden');
-  }, 1500);
+  }, 1000);
 
   window.addEventListener('resize', onWindowResize);
 }
@@ -377,214 +893,44 @@ function initThreeJS() {
 function buildForklift() {
   forkliftGroup = new THREE.Group();
 
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3, metalness: 0.4 });
-  const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5, metalness: 0.6 });
-  const metalMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.2, metalness: 0.8 });
-  const tireMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.9, metalness: 0.1 });
-  const glassMat = new THREE.MeshStandardMaterial({ color: 0x60a5fa, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.4 });
-  const seatMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.8, metalness: 0.1 });
+  const textureLoader = new THREE.TextureLoader();
+  
+  // Load the TrailerCaddy PNG image directly
+  textureLoader.load(
+    '../static/powerpusher.png', // Update to your exact image path if different
+    function (texture) {
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide
+      });
 
-  const chassisGeo = new THREE.BoxGeometry(2.2, 0.6, 1.4);
-  const chassis = new THREE.Mesh(chassisGeo, bodyMat);
-  chassis.position.y = 0.5;
-  chassis.castShadow = true;
-  forkliftGroup.add(chassis);
+      // Aspect ratio setup matching the image (approx 1.25:1 width-to-height)
+      const geometry = new THREE.PlaneGeometry(3.2, 2.56);
+      const plane = new THREE.Mesh(geometry, material);
+      
+      // Position plane slightly above ground grid
+      plane.position.set(0, 1.28, 0);
 
-  const cabinGeo = new THREE.BoxGeometry(1.4, 1.6, 1.2);
-  const cabin = new THREE.Mesh(cabinGeo, bodyMat);
-  cabin.position.set(-0.2, 1.6, 0);
-  cabin.castShadow = true;
-  forkliftGroup.add(cabin);
-
-  const roofGeo = new THREE.BoxGeometry(1.5, 0.08, 1.3);
-  const roof = new THREE.Mesh(roofGeo, darkMat);
-  roof.position.set(-0.2, 2.42, 0);
-  forkliftGroup.add(roof);
-
-  const windGeo = new THREE.PlaneGeometry(1.0, 0.8);
-  const windshield = new THREE.Mesh(windGeo, glassMat);
-  windshield.position.set(0.51, 1.8, 0);
-  windshield.rotation.y = Math.PI / 2;
-  forkliftGroup.add(windshield);
-
-  const sideWinGeo = new THREE.PlaneGeometry(0.8, 0.6);
-  const sideWinL = new THREE.Mesh(sideWinGeo, glassMat);
-  sideWinL.position.set(-0.2, 1.8, 0.61);
-  forkliftGroup.add(sideWinL);
-  const sideWinR = new THREE.Mesh(sideWinGeo, glassMat);
-  sideWinR.position.set(-0.2, 1.8, -0.61);
-  sideWinR.rotation.y = Math.PI;
-  forkliftGroup.add(sideWinR);
-
-  const seatGeo = new THREE.BoxGeometry(0.5, 0.6, 0.5);
-  const seat = new THREE.Mesh(seatGeo, seatMat);
-  seat.position.set(-0.3, 1.2, 0);
-  forkliftGroup.add(seat);
-
-  const steerGeo = new THREE.TorusGeometry(0.18, 0.03, 8, 24);
-  const steering = new THREE.Mesh(steerGeo, darkMat);
-  steering.position.set(0.15, 1.5, 0);
-  steering.rotation.x = Math.PI / 2;
-  steering.rotation.y = 0.3;
-  forkliftGroup.add(steering);
-
-  const mastGeo = new THREE.BoxGeometry(0.15, 2.8, 0.12);
-  const mastL = new THREE.Mesh(mastGeo, metalMat);
-  mastL.position.set(1.3, 1.6, 0.35);
-  mastL.castShadow = true;
-  forkliftGroup.add(mastL);
-  const mastR = new THREE.Mesh(mastGeo, metalMat);
-  mastR.position.set(1.3, 1.6, -0.35);
-  mastR.castShadow = true;
-  forkliftGroup.add(mastR);
-
-  for (let i = 0; i < 4; i++) {
-    const crossGeo = new THREE.BoxGeometry(0.12, 0.08, 0.8);
-    const cross = new THREE.Mesh(crossGeo, metalMat);
-    cross.position.set(1.3, 0.6 + i * 0.6, 0);
-    forkliftGroup.add(cross);
-  }
-
-  const forkGeo = new THREE.BoxGeometry(1.0, 0.06, 0.12);
-  const forkL = new THREE.Mesh(forkGeo, metalMat);
-  forkL.position.set(1.8, 0.5, 0.25);
-  forkL.castShadow = true;
-  forkliftGroup.add(forkL);
-  const forkR = new THREE.Mesh(forkGeo, metalMat);
-  forkR.position.set(1.8, 0.5, -0.25);
-  forkR.castShadow = true;
-  forkliftGroup.add(forkR);
-
-  const backplateGeo = new THREE.BoxGeometry(0.08, 0.5, 0.7);
-  const backplate = new THREE.Mesh(backplateGeo, metalMat);
-  backplate.position.set(1.35, 0.7, 0);
-  forkliftGroup.add(backplate);
-
-  function createWheel(x, z) {
-    const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.25, 24);
-    const wheel = new THREE.Mesh(wheelGeo, tireMat);
-    wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(x, 0.35, z);
-    wheel.castShadow = true;
-    const rimGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.26, 16);
-    const rim = new THREE.Mesh(rimGeo, metalMat);
-    rim.rotation.z = Math.PI / 2;
-    rim.position.set(x, 0.35, z);
-    const group = new THREE.Group();
-    group.add(wheel); group.add(rim);
-    return group;
-  }
-  forkliftGroup.add(createWheel(-0.6, 0.7));
-  forkliftGroup.add(createWheel(-0.6, -0.7));
-  forkliftGroup.add(createWheel(0.8, 0.7));
-  forkliftGroup.add(createWheel(0.8, -0.7));
-
-  const batteryGeo = new THREE.BoxGeometry(0.8, 0.4, 0.9);
-  const batteryMat = new THREE.MeshStandardMaterial({ color: 0x8b76e2, roughness: 0.3, metalness: 0.5, emissive: 0x8b76e2, emissiveIntensity: 0.2 });
-  batteryMesh = new THREE.Mesh(batteryGeo, batteryMat);
-  batteryMesh.position.set(-0.5, 0.85, 0);
-  batteryMesh.castShadow = true;
-  forkliftGroup.add(batteryMesh);
-
-  const batteryRingGeo = new THREE.TorusGeometry(0.6, 0.02, 8, 32);
-  const batteryRingMat = new THREE.MeshBasicMaterial({ color: 0x8b76e2, transparent: true, opacity: 0.6 });
-  batteryGlow = new THREE.Mesh(batteryRingGeo, batteryRingMat);
-  batteryGlow.position.set(-0.5, 0.85, 0);
-  batteryGlow.rotation.x = Math.PI / 2;
-  forkliftGroup.add(batteryGlow);
-
-  const batteryIndGeo = new THREE.SphereGeometry(0.06, 8, 8);
-  const batteryIndMat = new THREE.MeshBasicMaterial({ color: 0x8b76e2 });
-  const batteryInd = new THREE.Mesh(batteryIndGeo, batteryIndMat);
-  batteryInd.position.set(-0.5, 1.15, 0);
-  forkliftGroup.add(batteryInd);
-
-  const motorGeo = new THREE.BoxGeometry(0.6, 0.5, 0.7);
-  const motorMat = new THREE.MeshStandardMaterial({ color: 0x2ab8b8, roughness: 0.3, metalness: 0.5, emissive: 0x2ab8b8, emissiveIntensity: 0.2 });
-  motorMesh = new THREE.Mesh(motorGeo, motorMat);
-  motorMesh.position.set(0.4, 0.9, 0);
-  motorMesh.castShadow = true;
-  forkliftGroup.add(motorMesh);
-
-  const motorRingGeo = new THREE.TorusGeometry(0.5, 0.02, 8, 32);
-  const motorRingMat = new THREE.MeshBasicMaterial({ color: 0x2ab8b8, transparent: true, opacity: 0.6 });
-  motorGlow = new THREE.Mesh(motorRingGeo, motorRingMat);
-  motorGlow.position.set(0.4, 0.9, 0);
-  motorGlow.rotation.x = Math.PI / 2;
-  forkliftGroup.add(motorGlow);
-
-  const motorIndGeo = new THREE.SphereGeometry(0.06, 8, 8);
-  const motorIndMat = new THREE.MeshBasicMaterial({ color: 0x2ab8b8 });
-  const motorInd = new THREE.Mesh(motorIndGeo, motorIndMat);
-  motorInd.position.set(0.4, 1.2, 0);
-  forkliftGroup.add(motorInd);
-
-  const hydGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.8, 12);
-  const hydMat = new THREE.MeshStandardMaterial({ color: 0xf0789a, roughness: 0.2, metalness: 0.7, emissive: 0xf0789a, emissiveIntensity: 0.15 });
-  hydraulicMesh = new THREE.Mesh(hydGeo, hydMat);
-  hydraulicMesh.position.set(1.3, 1.8, 0);
-  hydraulicMesh.castShadow = true;
-  forkliftGroup.add(hydraulicMesh);
-
-  const hydRingGeo = new THREE.TorusGeometry(0.15, 0.015, 8, 32);
-  const hydRingMat = new THREE.MeshBasicMaterial({ color: 0xf0789a, transparent: true, opacity: 0.6 });
-  hydraulicGlow = new THREE.Mesh(hydRingGeo, hydRingMat);
-  hydraulicGlow.position.set(1.3, 2.6, 0);
-  hydraulicGlow.rotation.x = Math.PI / 2;
-  forkliftGroup.add(hydraulicGlow);
-
-  const hydIndGeo = new THREE.SphereGeometry(0.06, 8, 8);
-  const hydIndMat = new THREE.MeshBasicMaterial({ color: 0xf0789a });
-  const hydInd = new THREE.Mesh(hydIndGeo, hydIndMat);
-  hydInd.position.set(1.3, 2.75, 0);
-  forkliftGroup.add(hydInd);
-
-  const lightGeo = new THREE.SphereGeometry(0.08, 12, 12);
-  const lightMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, emissive: 0xfef08a, emissiveIntensity: 0.5 });
-  const headLightL = new THREE.Mesh(lightGeo, lightMat);
-  headLightL.position.set(1.11, 0.65, 0.45);
-  forkliftGroup.add(headLightL);
-  const headLightR = new THREE.Mesh(lightGeo, lightMat);
-  headLightR.position.set(1.11, 0.65, -0.45);
-  forkliftGroup.add(headLightR);
-
-  const tailMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444, emissiveIntensity: 0.3 });
-  const tailLightL = new THREE.Mesh(lightGeo, tailMat);
-  tailLightL.position.set(-1.11, 0.65, 0.45);
-  forkliftGroup.add(tailLightL);
-  const tailLightR = new THREE.Mesh(lightGeo, tailMat);
-  tailLightR.position.set(-1.11, 0.65, -0.45);
-  forkliftGroup.add(tailLightR);
-
-  const ventGeo = new THREE.BoxGeometry(0.3, 0.05, 0.4);
-  const vent = new THREE.Mesh(ventGeo, darkMat);
-  vent.position.set(-1.12, 0.7, 0);
-  forkliftGroup.add(vent);
-
-  scene.add(forkliftGroup);
+      forkliftGroup.add(plane);
+      scene.add(forkliftGroup);
+    },
+    undefined,
+    function (err) {
+      console.error('Error loading TrailerCaddy image texture:', err);
+    }
+  );
 }
 
 function animate() {
   animationId = requestAnimationFrame(animate);
   time += 0.016;
-  if (forkliftGroup) forkliftGroup.rotation.y += 0.003;
-  if (batteryGlow) {
-    batteryGlow.material.opacity = 0.4 + Math.sin(time * 2) * 0.2;
-    batteryGlow.scale.setScalar(1 + Math.sin(time * 2) * 0.05);
+
+  // Gentle floating animation to give the plane dynamic presence
+  if (forkliftGroup) {
+    forkliftGroup.position.y = Math.sin(time * 1.5) * 0.04;
   }
-  if (motorGlow) {
-    motorGlow.material.opacity = 0.4 + Math.sin(time * 2.5 + 1) * 0.2;
-    motorGlow.scale.setScalar(1 + Math.sin(time * 2.5 + 1) * 0.05);
-  }
-  if (hydraulicGlow) {
-    hydraulicGlow.material.opacity = 0.4 + Math.sin(time * 1.8 + 2) * 0.2;
-    hydraulicGlow.scale.setScalar(1 + Math.sin(time * 1.8 + 2) * 0.05);
-  }
-  if (camera) {
-    camera.position.x = 5 + Math.sin(time * 0.3) * 0.5;
-    camera.position.z = 6 + Math.cos(time * 0.3) * 0.5;
-    camera.lookAt(0, 0.5, 0);
-  }
+
   renderer.render(scene, camera);
 }
 
@@ -613,27 +959,24 @@ document.getElementById('themeToggle').addEventListener('click',function(){
     document.documentElement.setAttribute('data-theme','dark');
     try{localStorage.setItem('geariq-theme','dark');}catch(e){}
   }
-  // Update Three.js scene colors
   updateSceneTheme();
 });
 
 function updateSceneTheme() {
   if(!scene) return;
   var isDark=document.documentElement.getAttribute('data-theme')==='dark';
-  scene.background = new THREE.Color(isDark ? 0xf8fafc : 0xffffff);
-  scene.fog.color = new THREE.Color(isDark ? 0xf8fafc : 0xffffff);
+  scene.background = new THREE.Color(isDark ? 0x021213 : 0xedf4f4);
+  scene.fog.color = new THREE.Color(isDark ? 0x021213 : 0xedf4f4);
 
-  // Update floor color
   scene.traverse(function(child) {
     if(child.isMesh && child.geometry.type === 'PlaneGeometry') {
-      child.material.color.setHex(isDark ? 0xf1f5f9 : 0xe2e8f0);
+      child.material.color.setHex(isDark ? 0x041f20 : 0xdbe8e8);
     }
   });
 
-  // Update grid
   scene.traverse(function(child) {
     if(child.type === 'GridHelper') {
-      child.material.color.setHex(isDark ? 0xcbd5e1 : 0x94a3b8);
+      child.material.color.setHex(isDark ? 0x083335 : 0x228082);
     }
   });
 }
@@ -656,7 +999,3 @@ window.addEventListener('DOMContentLoaded', function() {
 <script src="../static/script.js"></script>
 </body>
 </html>
-
-
-
-
