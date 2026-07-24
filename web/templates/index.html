@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../static/style.css">
 <base target="_blank">
-<base target="_blank">
 <style>
 /* ═══════════════════════════════════════════════
    GEAR IQ — Automotive Instrument Cluster Dashboard
@@ -41,7 +40,7 @@ html,body{width:100%;height:100%;overflow:hidden}
   --brand-primary:      #005e60;
   --brand-secondary:    #40cd24;
 
-  /* Neon accents adjusted to align with new palette */
+  /* Neon accents */
   --neon-blue:          #005e60;
   --neon-purple:        #005e60;
   --neon-teal:          #14b8a6;
@@ -358,11 +357,15 @@ body{
   font-family:'Roboto Mono',monospace;
 }
 
-.left-cluster {
-  top: 38%;
-  left: clamp(14px, 1.8vw, 24px);
-  transform: translateY(-50%);
-  z-index: 10; /* Ensure text layers OVER 3D canvas background grid */
+/* ── LEFT CLUSTER (LEFT ALIGNED CELL VALUES) ── */
+.left-cluster{
+  top:38%;
+  left:clamp(14px,1.8vw,24px);
+  transform:translateY(-50%);
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 10;
 }
 .right-cluster{
   top:35%;
@@ -376,6 +379,47 @@ body{
 .right-cluster::-webkit-scrollbar {
   width: 0;
   display: none;
+}
+
+.cell-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-color);
+  width: 100%;
+}
+
+.cell-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  font-size: clamp(12px, 1.1vw, 14px);
+  text-align: left;
+}
+
+.cell-item .cell-name {
+  width: 24px;
+  color: var(--brand-primary);
+  font-weight: 700;
+  text-align: left;
+}
+
+.cell-item .cell-volt {
+  width: 48px;
+  font-family: 'Roboto Mono', monospace;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+}
+
+.cell-item .cell-temp {
+  font-family: 'Roboto Mono', monospace;
+  color: var(--text-dim);
+  font-weight: 500;
+  text-align: left;
 }
 
 /* ── BOTTOM DASH BAR ─────────────────────────── */
@@ -422,40 +466,58 @@ body{
   background:var(--border-color);
 }
 
-/* ── HYDRAULIC LEVEL BAR ────────────────────── */
+/* ── HYDRAULIC LEVEL BAR — COMPACT TOP CENTER ── */
 .hyd-bar-wrap {
-  position: absolute;
-  bottom: clamp(75px, 9vh, 95px); /* Moved down slightly */
-  left: 50%;
-  transform: translateX(-50%);
+  position: absolute !important;
+  top: clamp(12px, 1.5vw, 20px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  
+  /* Strict sizing constraints to eliminate the giant vertical box */
+  width: clamp(200px, 22vw, 280px);
+  max-width: 280px;
+  height: auto !important;
+  max-height: 80px !important;
+  align-self: flex-start !important;
+  
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  z-index: 20;
+  padding: 10px 16px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.hyd-bar-label {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 4px;
-  width: clamp(160px, 20vw, 240px);
-  z-index: 10;
-}
-.hyd-bar-label{
-  display:flex;justify-content:space-between;width:100%;
-  font-size:clamp(11px,1.1vw,13px);color:var(--text-dim);
-  text-transform:uppercase;letter-spacing:1px;
-}
-.hyd-bar-label span:last-child {
+  width: 100%;
+  font-size: 11px;
   font-weight: 700;
-  color: #005e60; /* Darker primary color for clear readability on light background */
+  color: var(--brand-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
-.hyd-bar-track{
-  width:100%;height:clamp(6px,.7vw,8px);
-  background:var(--glass-strong);
-  border-radius:4px;overflow:hidden;
-  border:1px solid var(--border-color);
+
+.hyd-bar-track {
+  width: 100%;
+  height: 8px;
+  background: var(--glass-strong);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
 }
-.hyd-bar-fill{
-  height:100%;width:65%;
-  background:linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
-  border-radius:4px;
-  box-shadow:0 0 12px rgba(64,205,36,.4);
-  transition:width .5s ease;
+
+.hyd-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+  border-radius: 4px;
+  transition: width 0.5s ease;
 }
 
 /* ── CAMERA PANEL (40%) ─────────────────────── */
@@ -555,44 +617,6 @@ body{
 /* ── ANIMATIONS ─────────────────────────────── */
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .blink{animation:blink 2s infinite}
-
-/* ── CELL DETAIL LIST ───────────────────────── */
-.cell-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
-  padding-top: 4px;
-}
-.cell-item{
-  display:grid;grid-template-columns:28px 1fr 1fr;gap:8px;
-  align-items:center;
-  font-size:clamp(12px,1.1vw,14px);
-}
-.cell-item .cell-name {
-  color: var(--brand-primary); /* #005e60 */
-  font-weight: 700;
-}
-.cell-item .cell-volt,
-.cell-item .cell-temp {
-  font-family: 'Roboto Mono', monospace;
-  color: #002b2c; /* Deep rich dark tone for high contrast */
-  font-weight: 600;
-}
-/* ── MOTOR DATA ROWS ────────────────────────── */
-.motor-data-rows{
-  display:flex;flex-direction:column;gap:4px;
-  margin-top:8px;
-  padding-top:8px;
-  align-items:center;
-  border-top:1px solid var(--border-color);
-}
-.motor-data-row{
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:clamp(12px,1.2vw,14px);
-}
-.motor-data-row .md-label{color:var(--text-secondary)}
-.motor-data-row .md-val{font-family:'Roboto Mono',monospace;color:var(--text-primary)}
 </style>
 </head>
 <body>
@@ -667,6 +691,21 @@ body{
 
       <canvas id="three-canvas"></canvas>
 
+<!-- SLEEK HYDRAULIC BAR -->
+<div class="hyd-bar-wrap" id="hydBar">
+  <div class="hyd-bar-label">
+    <span>Hydraulic Level</span>
+    <span id="hyd-level" style="color:var(--brand-secondary); font-family:'Roboto Mono',monospace;">--%</span>
+  </div>
+  <div class="hyd-bar-track">
+    <div class="hyd-bar-fill" id="hyd-fill" style="width:0%"></div>
+  </div>
+  <div class="hyd-bar-label" style="font-size:10px; color:var(--text-dim); text-transform:none;">
+    <span>Fluid Temp</span>
+    <span id="hyd-temp" style="font-family:'Roboto Mono',monospace; color:var(--text-primary);">-- °C</span>
+  </div>
+</div>
+
       <!-- LEFT: Battery Tank -->
       <div class="gauge-container left-cluster" id="batteryGauge">
         <div class="tank-wrap">
@@ -684,7 +723,7 @@ body{
         <div class="gauge-label">Battery</div>
         <div class="gauge-sublabel" id="battery-status">-- A</div>
 
-        <!-- Cell details -->
+        <!-- Cell details (Left-Aligned) -->
         <div class="cell-list">
           <div class="cell-item"><span class="cell-name">B1</span><span class="cell-volt" id="bat1">-- V</span><span class="cell-temp" id="bat1tmp">-- °C</span></div>
           <div class="cell-item"><span class="cell-name">B2</span><span class="cell-volt" id="bat2">-- V</span><span class="cell-temp" id="bat2tmp">-- °C</span></div>
@@ -725,21 +764,6 @@ body{
           <div class="motor-data-row"><span class="md-val" id="motor-vib-total">-- mm/s</span></div>
           <div class="motor-data-row"><span class="md-label">X · Y · Z</span></div>
           <div class="motor-data-row"><span class="md-val" id="motor-velocity">-·-·- mm/s</span></div>
-        </div>
-      </div>
-
-      <!-- HYDRAULIC LEVEL BAR -->
-      <div class="hyd-bar-wrap" id="hydBar">
-        <div class="hyd-bar-label">
-          <span>Hydraulic Level</span>
-          <span id="hyd-level">--%</span>
-        </div>
-        <div class="hyd-bar-track">
-          <div class="hyd-bar-fill" id="hyd-fill" style="width:0%"></div>
-        </div>
-        <div class="hyd-bar-label" style="margin-top:2px;">
-          <span style="font-size:9px;color:var(--text-dim)">Temp</span>
-          <span style="font-size:9px;color:var(--brand-secondary);font-family:'Roboto Mono',monospace;" id="hyd-temp">-- °C</span>
         </div>
       </div>
 
@@ -841,10 +865,6 @@ body{
 <!-- THREE.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ═════════════════════════════════════════════════
-// THREE.JS CANVAS SCENE — OPTION B (IMAGE SPRITE)
-// ═════════════════════════════════════════════════
-
 let scene, camera, renderer, forkliftGroup;
 let animationId;
 let time = 0;
@@ -859,8 +879,8 @@ function initThreeJS() {
   scene.fog = new THREE.Fog(isDark ? 0x021213 : 0xedf4f4, 8, 25);
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-  camera.position.set(0, 1.5, 5); // Positioned directly facing the vehicle sprite
-  camera.lookAt(0, 1.0, 0);
+  camera.position.set(0, 1.2, 5);
+  camera.lookAt(0, 0.9, 0);
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
@@ -870,7 +890,6 @@ function initThreeJS() {
   const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.8 : 1.0);
   scene.add(ambientLight);
 
-  // Floor Grid
   const floorGeo = new THREE.PlaneGeometry(30, 30);
   const floorMat = new THREE.MeshStandardMaterial({ 
     color: isDark ? 0x041f20 : 0xdbe8e8, 
@@ -905,8 +924,9 @@ function buildForklift() {
 
   const textureLoader = new THREE.TextureLoader();
   
-  textureLoader.load(
-    '../static/powerpusher.png', // Update to your exact path
+  // Load Trailer Caddy image texture
+  textureLoader.load( 
+    '../static/powerpusher.png', // Replace with your exact image path if needed
     function (texture) {
       const material = new THREE.MeshBasicMaterial({
         map: texture,
@@ -914,11 +934,11 @@ function buildForklift() {
         side: THREE.DoubleSide
       });
 
-      // Medium size: bigger than before, but won't block the side text
+      // Medium size: balanced to avoid overlapping gauges
       const geometry = new THREE.PlaneGeometry(2.4, 1.92);
       const plane = new THREE.Mesh(geometry, material);
       
-      // Lifted higher so wheels sit above the Hydraulic Bar and B1-B4 list
+      // Positioned cleanly above floor grid
       plane.position.set(0.1, 1.05, 0);
 
       forkliftGroup.add(plane);
@@ -935,9 +955,8 @@ function animate() {
   animationId = requestAnimationFrame(animate);
   time += 0.016;
 
-  // Gentle floating animation to give the plane dynamic presence
   if (forkliftGroup) {
-    forkliftGroup.position.y = Math.sin(time * 1.5) * 0.04;
+    forkliftGroup.position.y = Math.sin(time * 1.5) * 0.03;
   }
 
   renderer.render(scene, camera);
