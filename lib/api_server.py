@@ -3,11 +3,11 @@
 # FORKLIFT MONITOR - API SERVER (Multi-voltage)
 # ============================================
 from cloud_sync import build_payload, enqueue
-from kpi_logic  import calculate_kpi_today
+from kpi_logic import calculate_kpi_today
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import psycopg2
-from db import delete_old_vibration_records, delete_old_voltage_records, get_db_connection
+from db import delete_old_current_sensor_records, delete_old_oil_records, delete_old_status_details_records, delete_old_status_details_records, delete_old_temperature_records, delete_old_vibration_records, delete_old_voltage_records, get_db_connection,delete_old_alert_records
 from datetime import datetime, timedelta
 from config import DEVICE_ID, HOSTNAME, LOCATION
 from constants import VERSION
@@ -32,14 +32,13 @@ DB_CONFIG = {
 MAX_OIL_VOLUME_L = 10.0   # ← set your tank max capacity in litres
 
 
-
 # ════════════════════════════════════════════════════════════════
 #  COLORED LOGGER
 # ════════════════════════════════════════════════════════════════
 
 class ColorFormatter(logging.Formatter):
-    RESET  = '\033[0m'
-    BOLD   = '\033[1m'
+    RESET = '\033[0m'
+    BOLD = '\033[1m'
     COLORS = {
         logging.DEBUG:    '\033[36m',
         logging.INFO:     '\033[32m',
@@ -47,10 +46,12 @@ class ColorFormatter(logging.Formatter):
         logging.ERROR:    '\033[31m',
         logging.CRITICAL: '\033[35m',
     }
+
     def format(self, record):
         color = self.COLORS.get(record.levelno, self.RESET)
         record.levelname = f'{color}{self.BOLD}{record.levelname:<8}{self.RESET}'
         return super().format(record)
+
 
 def setup_logger():
     logger = logging.getLogger('api_server')
@@ -74,6 +75,7 @@ def setup_logger():
     logger.addHandler(fh)
     return logger
 
+
 log = setup_logger()
 
 
@@ -93,9 +95,11 @@ def get_latest_vibration():
         FROM vibration_sensor_data ORDER BY id DESC LIMIT 1
     """)
     row = cur.fetchone()
-    cur.close(); conn.close()
+    cur.close()
+    conn.close()
     if row:
-        log.debug(f'🔍  vibration fetched  →  vib={row[0]}  temp={row[1]}°C  ts={row[5]}')
+        log.debug(
+            f'🔍  vibration fetched  →  vib={row[0]}  temp={row[1]}°C  ts={row[5]}')
         return {
             'total_vibration': row[0],
             'temperature': row[1],
@@ -160,10 +164,12 @@ def get_latest_voltages():
             ORDER BY v.sensor_id;
             """)
     rows = cur.fetchall()
-    cur.close(); conn.close()
+    cur.close()
+    conn.close()
     log.debug(f'🔍  voltages fetched  →  {len(rows)} sensor(s)')
     for r in rows:
-        log.debug(f'    sensor_id={r[0]}  voltage={r[1]:.2f}V  current={r[2]:.2f}A  power={r[3]:.1f}W  temperature={r[6]}°C  status={r[7]}  ts={r[5]}  temp_ts={r[8]}')
+        log.debug(
+            f'    sensor_id={r[0]}  voltage={r[1]:.2f}V  current={r[2]:.2f}A  power={r[3]:.1f}W  temperature={r[6]}°C  status={r[7]}  ts={r[5]}  temp_ts={r[8]}')
     return [{
         'sensor_id': r[0], 'voltage': r[1], 'current': r[2],
         'power': r[3],     'energy':  r[4], 'timestamp': r[5], 'temperature': r[6], 'status': r[7], 'temp_timestamp': r[8]
@@ -203,6 +209,7 @@ def get_latest_temperatures():
 
 # ── Hydraulic oil config ──────────────────────────────────────────
 
+
 def get_latest_hydraulic():
     log.debug('🛢️   get_latest_hydraulic  →  querying DB ...')
     conn = get_db_connection()
@@ -224,7 +231,7 @@ def get_latest_hydraulic():
             log.warning('🛢️   get_latest_hydraulic  →  no rows found')
             return None
 
-        volume_l  = float(row[5] or 0)
+        volume_l = float(row[5] or 0)
         level_pct = round(min(100, (volume_l / MAX_OIL_VOLUME_L) * 100), 1)
 
         log.debug(f'🛢️   hydraulic fetched  →  '
@@ -250,7 +257,6 @@ def get_latest_hydraulic():
         return None
     finally:
         conn.close()
-
 
 
 # ════════════════════════════════════════════════════════════════
@@ -280,7 +286,7 @@ def vibration():
     log.info('─' * 45)
     log.info('📡  GET /api/vibration  →  processing ...')
 
-    rec  = get_latest_vibration()
+    rec = get_latest_vibration()
     volt = get_latest_voltages()
     data = calculate_kpi_today()
     oilData = get_latest_hydraulic()
@@ -305,10 +311,10 @@ def vibration():
         try:
             log.debug('☁️   building cloud payload ...')
             payload = build_payload(
-                vib_rows  = [rec],
-                volt_rows = volt,
-                oil_rows  = oilData,
-                kpi       = data
+                vib_rows=[rec],
+                volt_rows=volt,
+                oil_rows=oilData,
+                kpi=data
             )
             enqueue(payload)
             log.info('☁️   payload queued  →  ✅')
@@ -322,7 +328,8 @@ def vibration():
             log.warning('📡  sensor OFFLINE  →  no records in DB')
         else:
             age = (datetime.now() - rec['timestamp']).total_seconds()
-            log.warning(f'📡  sensor OFFLINE  →  last record {age:.1f}s old (threshold=10s)')
+            log.warning(
+                f'📡  sensor OFFLINE  →  last record {age:.1f}s old (threshold=10s)')
         return jsonify({
             'status': 'offline',
             'total_vibration': 0,
@@ -335,16 +342,17 @@ def vibration():
 def voltages():
     log.info('🔋  GET /api/voltages  →  processing ...')
     recs = get_latest_voltages()
-    now  = datetime.now()
+    now = datetime.now()
     result = []
     for r in recs:
-        age      = (now - r['timestamp']).total_seconds()
+        age = (now - r['timestamp']).total_seconds()
         r['status'] = 'online' if age < 10 else 'offline'
         log.debug(f'🔋  sensor_id={r["sensor_id"]}  voltage={r["voltage"]:.2f}V  '
                   f'status={r["status"]}  age={age:.1f}s')
         result.append(r)
     online = sum(1 for r in result if r['status'] == 'online')
-    log.info(f'🔋  response  →  {len(result)} sensor(s)  online={online}  offline={len(result)-online}')
+    log.info(
+        f'🔋  response  →  {len(result)} sensor(s)  online={online}  offline={len(result)-online}')
     return jsonify(result)
 
 
@@ -354,7 +362,7 @@ def voltage_sensor(sensor_id):
     recs = get_latest_voltages()
     for r in recs:
         if r['sensor_id'] == sensor_id:
-            age    = (datetime.now() - r['timestamp']).total_seconds()
+            age = (datetime.now() - r['timestamp']).total_seconds()
             online = age < 10
             status = 'online' if online else 'offline'
             log.info(f'🔋  sensor_id={sensor_id}  voltage={r["voltage"]:.2f}V  '
@@ -378,7 +386,8 @@ def kpi():
 
 @app.route('/api/device')
 def device_info():
-    log.info(f'📟  GET /api/device  →  device_id={DEVICE_ID}  location={LOCATION}  version={VERSION}')
+    log.info(
+        f'📟  GET /api/device  →  device_id={DEVICE_ID}  location={LOCATION}  version={VERSION}')
     return jsonify({
         'device_id': DEVICE_ID,
         'location':  LOCATION,
@@ -390,15 +399,16 @@ def device_info():
 @app.route('/api/temperature')
 def temperature():
     log.info('🌡️   GET /api/temperature  →  processing ...')
-    recs   = get_latest_temperatures()
-    now    = datetime.now()
+    recs = get_latest_temperatures()
+    now = datetime.now()
     result = []
     for r in recs:
-        age    = (now - r['timestamp']).total_seconds()
+        age = (now - r['timestamp']).total_seconds()
         status = 'online' if age < 10 else 'offline'
         log.debug(f'🌡️   sensor_id={r["sensor_id"]}  temp={r["temperature"]}°C  '
                   f'status={status}  age={age:.1f}s')
-        result.append({**r, 'status': status, 'timestamp': r['timestamp'].isoformat()})
+        result.append(
+            {**r, 'status': status, 'timestamp': r['timestamp'].isoformat()})
     online = sum(1 for r in result if r['status'] == 'online')
     log.info(f'🌡️   response  →  {len(result)} sensor(s)  online={online}')
     return jsonify(result)
@@ -408,12 +418,12 @@ def temperature():
 def faults():
     log.info('⚠️   GET /api/faults  →  running detection ...')
 
-    vib_data  = get_latest_vibration()
+    vib_data = get_latest_vibration()
     volt_data = get_latest_voltages()
 
     active_faults = detect_faults(
-        vib_data  = vib_data,
-        volt_data = volt_data,
+        vib_data=vib_data,
+        volt_data=volt_data,
     )
 
     summary = fault_summary(active_faults)
@@ -425,7 +435,8 @@ def faults():
 
     if active_faults:
         for f in active_faults:
-            log.warning(f'    [{f["severity"]}] {f["code"]}  {f["oem_desc"]}  →  {f["value"]}')
+            log.warning(
+                f'    [{f["severity"]}] {f["code"]}  {f["oem_desc"]}  →  {f["value"]}')
     else:
         log.info('⚠️   no active faults  →  all systems normal')
 
@@ -441,7 +452,8 @@ def hydraulic():
         return jsonify({'status': 'offline', 'level_pct': 0,
                         'temperature': 0, 'volume_l': 0})
 
-    age    = (datetime.now() - datetime.fromisoformat(rec['timestamp'])).total_seconds()
+    age = (datetime.now() -
+           datetime.fromisoformat(rec['timestamp'])).total_seconds()
     online = age < 10
     rec['status'] = 'online' if online else 'offline'
 
@@ -465,15 +477,22 @@ if __name__ == '__main__':
     log.info(f'    Location   : {LOCATION}')
     log.info(f'    Hostname   : {HOSTNAME}')
     log.info(f'    Version    : {VERSION}')
-    log.info(f'    DB         : {DB_CONFIG["dbname"]}@{DB_CONFIG["host"]}:{DB_CONFIG["port"]}')
+    log.info(
+        f'    DB         : {DB_CONFIG["dbname"]}@{DB_CONFIG["host"]}:{DB_CONFIG["port"]}')
     log.info(f'    Host       : 0.0.0.0:5000')
     log.info('=' * 55)
 
     log.info('[Startup] Cleaning old records ...')
     delete_old_voltage_records()
     delete_old_vibration_records()
+    delete_old_temperature_records()
+    delete_old_oil_records()
+    delete_old_alert_records()
+    delete_old_current_sensor_records()
+    delete_old_status_details_records()
+
     log.info('[Startup] Cleanup done ✅')
 
-    register_device()      
+    register_device()
 
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)

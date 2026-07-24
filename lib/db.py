@@ -76,3 +76,93 @@ def delete_old_vibration_records():
         print(f'[DB] delete_old_vibration_records ERROR → {e}')
     finally:
         conn.close()
+
+def delete_old_temperature_records():
+    """Keep only today's records in temperature_data."""
+    conn = get_db_connection()
+    if not conn: return
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM temperature_data WHERE timestamp < CURRENT_DATE")
+        old_count = cur.fetchone()[0]
+        cur.execute("DELETE FROM temperature_data WHERE timestamp < CURRENT_DATE")
+        conn.commit()
+        cur.close()
+        print(f'[DB] delete_old_temperature_records → deleted {old_count} record(s) ✅')
+    except Exception as e:
+        conn.rollback()
+        print(f'[DB] delete_old_temperature_records ERROR → {e}')
+    finally:
+        conn.close()
+
+def delete_old_oil_records():
+    """Keep only today's records in fuel_level_sensor_data."""
+    conn = get_db_connection()
+    if not conn: return
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM fuel_level_sensor_data WHERE timestamp < CURRENT_DATE")
+        old_count = cur.fetchone()[0]
+        cur.execute("DELETE FROM fuel_level_sensor_data WHERE timestamp < CURRENT_DATE")
+        conn.commit()
+        cur.close()
+        print(f'[DB] delete_old_oil_records → deleted {old_count} record(s) ✅')
+    except Exception as e:
+        conn.rollback()
+        print(f'[DB] delete_old_oil_records ERROR → {e}')
+    finally:
+        conn.close()
+
+def delete_old_alert_records():
+    """Keep only today's records in alert_data."""
+    conn = get_db_connection()
+    if not conn: return
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM alerts WHERE timestamp < CURRENT_DATE")
+        old_count = cur.fetchone()[0]
+        cur.execute("DELETE FROM alerts WHERE timestamp < CURRENT_DATE")
+        conn.commit()
+        cur.close()
+        print(f'[DB] delete_old_alert_records → deleted {old_count} record(s) ✅')
+    except Exception as e:
+        conn.rollback()
+        print(f'[DB] delete_old_alert_records ERROR → {e}')
+    finally:
+        conn.close()
+
+def delete_old_current_sensor_records():
+    """Keep only today's records in current_sensor_data."""
+    conn = get_db_connection()
+    if not conn: return
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM current_sensor_data WHERE timestamp < CURRENT_DATE")
+        old_count = cur.fetchone()[0]
+        cur.execute("DELETE FROM current_sensor_data WHERE timestamp < CURRENT_DATE")
+        conn.commit()
+        cur.close()
+        print(f'[DB] delete_old_current_sensor_records → deleted {old_count} record(s) ✅')
+    except Exception as e:
+        conn.rollback()
+        print(f'[DB] delete_old_current_sensor_records ERROR → {e}')
+    finally:
+        conn.close()
+
+def delete_old_status_details_records():
+    """Keep only today's records in status_details."""
+    conn = get_db_connection()
+    if not conn: return
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM status_details WHERE timestamp < CURRENT_DATE")
+        old_count = cur.fetchone()[0]
+        cur.execute("DELETE FROM status_details WHERE timestamp < CURRENT_DATE")
+        conn.commit()
+        cur.close()
+        print(f'[DB] delete_old_status_details_records → deleted {old_count} record(s) ✅')
+    except Exception as e:
+        conn.rollback()
+        print(f'[DB] delete_old_status_details_records ERROR → {e}')
+    finally:
+        conn.close()
