@@ -924,22 +924,22 @@ function buildForklift() {
 
   const textureLoader = new THREE.TextureLoader();
   
-  // Load Trailer Caddy image texture
-  textureLoader.load( 
-    '../static/powerpusher.png', // Replace with your exact image path if needed
+  textureLoader.load(
+    'powerpusher.png', // Update to your image path if needed
     function (texture) {
       const material = new THREE.MeshBasicMaterial({
         map: texture,
         transparent: true,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide, // Ensures texture renders from both back and front
+        alphaTest: 0.1
       });
 
-      // Medium size: balanced to avoid overlapping gauges
+      // Machine plane geometry
       const geometry = new THREE.PlaneGeometry(2.4, 1.92);
       const plane = new THREE.Mesh(geometry, material);
       
-      // Positioned cleanly above floor grid
-      plane.position.set(0.1, 1.05, 0);
+      // Center origin for balanced rotation
+      plane.position.set(0, 0.95, 0);
 
       forkliftGroup.add(plane);
       scene.add(forkliftGroup);
@@ -956,7 +956,14 @@ function animate() {
   time += 0.016;
 
   if (forkliftGroup) {
-    forkliftGroup.position.y = Math.sin(time * 1.5) * 0.03;
+    // 1. Smooth 3D Y-Axis Rotation (oscillates back & forth across -45° to +45° to keep image readable)
+    forkliftGroup.rotation.y = Math.sin(time * 0.8) * 0.6;
+
+    // 2. Subtle 3D Pitching (X-axis tilt for perspective depth)
+    forkliftGroup.rotation.x = Math.sin(time * 0.5) * 0.08;
+
+    // 3. Gentle Vertical Floating Effect
+    forkliftGroup.position.y = Math.sin(time * 1.5) * 0.04;
   }
 
   renderer.render(scene, camera);
