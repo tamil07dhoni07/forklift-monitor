@@ -358,13 +358,11 @@ body{
   font-family:'Roboto Mono',monospace;
 }
 
-.left-cluster{
-  top:40%;
-  left:clamp(12px,1.5vw,20px);
-  transform:translateY(-50%);
-  max-height: calc(100% - 140px);
-  overflow-y: auto;
-  overflow-x: hidden;
+.left-cluster {
+  top: 38%;
+  left: clamp(14px, 1.8vw, 24px);
+  transform: translateY(-50%);
+  z-index: 10; /* Ensure text layers OVER 3D canvas background grid */
 }
 .right-cluster{
   top:35%;
@@ -425,21 +423,26 @@ body{
 }
 
 /* ── HYDRAULIC LEVEL BAR ────────────────────── */
-.hyd-bar-wrap{
-  position:absolute;
-  bottom:clamp(90px,11vh,120px);
-  left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-  width:clamp(180px,24vw,300px);
-  z-index: 5;
+.hyd-bar-wrap {
+  position: absolute;
+  bottom: clamp(75px, 9vh, 95px); /* Moved down slightly */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: clamp(160px, 20vw, 240px);
+  z-index: 10;
 }
 .hyd-bar-label{
   display:flex;justify-content:space-between;width:100%;
   font-size:clamp(11px,1.1vw,13px);color:var(--text-dim);
   text-transform:uppercase;letter-spacing:1px;
 }
-.hyd-bar-label span:last-child{
-  font-family:'Roboto Mono',monospace;color:var(--brand-secondary);
+.hyd-bar-label span:last-child {
+  font-weight: 700;
+  color: #005e60; /* Darker primary color for clear readability on light background */
 }
 .hyd-bar-track{
   width:100%;height:clamp(6px,.7vw,8px);
@@ -554,21 +557,28 @@ body{
 .blink{animation:blink 2s infinite}
 
 /* ── CELL DETAIL LIST ───────────────────────── */
-.cell-list{
-  display:flex;flex-direction:column;gap:3px;
-  margin-top:2px;
-  padding-top:2px;
-  border-top:1px solid var(--border-color);
+.cell-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  padding-top: 4px;
 }
 .cell-item{
   display:grid;grid-template-columns:28px 1fr 1fr;gap:8px;
   align-items:center;
   font-size:clamp(12px,1.1vw,14px);
 }
-.cell-item .cell-name{color:var(--text-secondary);font-weight:600}
-.cell-item .cell-volt{font-family:'Roboto Mono',monospace;color:var(--text-primary)}
-.cell-item .cell-temp{font-family:'Roboto Mono',monospace;color:var(--text-dim)}
-
+.cell-item .cell-name {
+  color: var(--brand-primary); /* #005e60 */
+  font-weight: 700;
+}
+.cell-item .cell-volt,
+.cell-item .cell-temp {
+  font-family: 'Roboto Mono', monospace;
+  color: #002b2c; /* Deep rich dark tone for high contrast */
+  font-weight: 600;
+}
 /* ── MOTOR DATA ROWS ────────────────────────── */
 .motor-data-rows{
   display:flex;flex-direction:column;gap:4px;
@@ -895,9 +905,8 @@ function buildForklift() {
 
   const textureLoader = new THREE.TextureLoader();
   
-  // Load the TrailerCaddy image
   textureLoader.load(
-    '../static/powerpusher.png', // Or '../static/powerpusher.png' depending on your path
+    'powerpusher.png', // Update to your exact path
     function (texture) {
       const material = new THREE.MeshBasicMaterial({
         map: texture,
@@ -905,12 +914,12 @@ function buildForklift() {
         side: THREE.DoubleSide
       });
 
-      // Scaled down dimensions to avoid overlapping side gauges
-      const geometry = new THREE.PlaneGeometry(2.0, 1.6);
+      // Medium size: bigger than before, but won't block the side text
+      const geometry = new THREE.PlaneGeometry(2.4, 1.92);
       const plane = new THREE.Mesh(geometry, material);
       
-      // Positioned lower so it sits comfortably above the floor grid
-      plane.position.set(0, 0.8, 0);
+      // Lifted higher so wheels sit above the Hydraulic Bar and B1-B4 list
+      plane.position.set(0.1, 1.05, 0);
 
       forkliftGroup.add(plane);
       scene.add(forkliftGroup);
