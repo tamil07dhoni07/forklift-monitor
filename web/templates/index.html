@@ -3,437 +3,330 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gear IQ — Instrument Cluster</title>
-<!-- High-Visibility Automotive Cockpit Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../static/style.css">
-<base target="_blank">
+<title>GE Vernova — Instrument Cluster (RK3568 Edition)</title>
+<!-- EXCLUSIVELY ROBOTO & ROBOTO MONO FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700;800;900&family=Roboto:ital,wght@0,500;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════
-   GEAR IQ — Automotive Instrument Cluster Dashboard
-   Custom Theme: Primary #005e60 | Secondary #40cd24 | Accent Cyan #00f2fe
-   ═══════════════════════════════════════════════ */
+/* ═════════════════════════════════════════════════════════════════════
+   RK3568 EMBEDDED OPTIMIZED THEME (HIGH VISIBILITY 7-INCH EDITION)
+   ═════════════════════════════════════════════════════════════════════ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100vw; height: 100vh; overflow: hidden; }
 
-/* ── THEME VARIABLES ───────────────────────── */
 :root {
-  --bg:                 #080e14;
-  --panel-bg:           rgba(11, 20, 32, 0.92);
-  --glass:              rgba(0, 242, 254, 0.05);
-  --glass-border:       rgba(0, 242, 254, 0.25);
-  --glass-strong:       rgba(0, 242, 254, 0.12);
-  --text-primary:       #ffffff;
-  --text-secondary:     #cbd5e1;
-  --text-dim:           #94a3b8;
-  --text-muted:         #64748b;
-  --surface:            #0b1420;
-  --surface-elevated:   #0f1d2f;
-  --border-color:       rgba(0, 242, 254, 0.2);
-  --shadow-color:       rgba(0, 0, 0, 0.6);
-  --grid-color:         #0f2838;
-  --cam-bg:             #04080e;
-  --alert-bg:           rgba(11, 20, 32, 0.95);
+  --bg-gradient:        #dcfce7;
+  
+  /* Solid Glass Look for Maximum Legibility */
+  --glass-panel:        rgba(255, 255, 255, 0.96);
+  --glass-border:       #93c5fd;
+  --glass-shadow:       0 4px 12px rgba(2, 44, 34, 0.12);
 
-  /* Theme Primary & Secondary Branding Accents */
-  --brand-primary:      #00f2fe;
-  --brand-secondary:    #40cd24;
+  --text-primary:       #011e1b;
+  --text-secondary:     #047857;
+  --text-dim:           #334155;
 
-  /* Automotive Fonts */
-  --font-speedo:        'Orbitron', sans-serif;
-  --font-main:          'Rajdhani', sans-serif;
-  --font-mono:          'JetBrains Mono', monospace;
+  /* GE Vernova Branding Accents */
+  --brand-primary:      #047857;
+  --brand-secondary:    #65a30d;
+  --brand-dark:         #011e1b;
 
-  /* Neon accents */
-  --neon-blue:          #00f2fe;
-  --neon-purple:        #3b82f6;
-  --neon-teal:          #14b8a6;
-  --neon-pink:          #ec4899;
-  --neon-orange:        #f97316;
-  --neon-green:         #40cd24;
-  --neon-red:           #ef4444;
-  --neon-yellow:        #eab308;
+  /* Fonts */
+  --font-main:          'Roboto', sans-serif;
+  --font-mono:          'Roboto Mono', monospace;
 
   --nav: 48px;
 }
 
-/* Dark theme override */
-:root[data-theme="dark"] {
-  --bg:                 #02080a;
-  --panel-bg:           rgba(2, 18, 20, 0.94);
-  --glass:              rgba(64, 205, 36, 0.08);
-  --glass-border:       rgba(64, 205, 36, 0.3);
-  --glass-strong:       rgba(64, 205, 36, 0.18);
-  --text-primary:       #ffffff;
-  --text-secondary:     #e2e8f0;
-  --text-dim:           #94a3b8;
-  --text-muted:         #64748b;
-  --surface:            #041d1e;
-  --surface-elevated:   #062829;
-  --border-color:       rgba(64, 205, 36, 0.3);
-  --shadow-color:       rgba(0, 0, 0, 0.8);
-  --grid-color:         #083335;
-  --cam-bg:             #021213;
-  --alert-bg:           rgba(2, 24, 25, 0.95);
-
-  --neon-blue:          #40cd24;
-  --neon-purple:        #40cd24;
-}
-
 body {
   font-family: var(--font-main);
-  background: var(--bg);
+  background: var(--bg-gradient);
   color: var(--text-primary);
-  transition: background .3s, color .3s;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── TOPNAV ─────────────────────────────────── */
+/* ── OPTIMIZED TOPNAV ─────────────────────────────────────────────── */
 .topnav {
   width: 100%; height: var(--nav);
-  background: rgba(8, 14, 20, 0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-color);
+  background: #ffffff;
+  border-bottom: 2px solid #94a3b8;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 16px; gap: 12px;
   position: relative; z-index: 100;
-  transition: background .3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-:root[data-theme="dark"] .topnav {
-  background: rgba(2, 18, 20, 0.95);
-  border-bottom: 1px solid var(--border-color);
-}
-.brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.brand-logo {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-}
-.brand-logo svg { width: 60%; height: 60%; }
-.brand-txt { display: flex; flex-direction: column; line-height: 1.1; }
-.brand-name { font-family: var(--font-speedo); font-size: 14px; font-weight: 900; color: var(--text-primary); letter-spacing: 1px; }
-.brand-sub { font-family: var(--font-mono); font-size: 9px; color: var(--brand-primary); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
 
-.nav-meta { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 13px; color: var(--text-secondary); font-weight: 700; }
-.nav-id { font-family: var(--font-speedo); font-weight: 800; color: var(--brand-primary); font-size: 13px; letter-spacing: 1px; }
-.nav-sep { color: var(--text-dim); }
-.nav-tz { font-size: 11px; color: var(--brand-primary); font-family: var(--font-mono); letter-spacing: .5px; font-weight: 800; }
-.nav-clock { font-family: var(--font-mono); font-size: 14px; font-weight: 800; color: #ffffff; text-shadow: 0 0 10px rgba(0,242,254,0.3); }
+.brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.ge-monogram-img { width: 34px; height: 34px; object-fit: contain; }
+.brand-txt { display: flex; flex-direction: column; line-height: 1; }
+.brand-name { 
+  font-family: var(--font-main); font-size: 16px; font-weight: 900; 
+  color: #011e1b; letter-spacing: 1.5px; text-transform: uppercase; 
+}
+.powered-by {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 800;
+  color: var(--brand-primary); text-transform: uppercase; letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+.powered-by span { color: #011e1b; font-weight: 900; }
+
+.nav-meta { 
+  flex: 1; display: flex; align-items: center; justify-content: center; 
+  gap: 12px; font-size: 13px; color: #1e293b; font-weight: 900; 
+}
+.nav-id { font-family: var(--font-main); font-weight: 900; color: #011e1b; font-size: 14px; }
+.nav-sep { color: #94a3b8; font-weight: 700; }
+.nav-tz { font-size: 12px; color: var(--brand-primary); font-family: var(--font-mono); letter-spacing: .5px; font-weight: 800; }
+.nav-clock { font-family: var(--font-mono); font-size: 16px; font-weight: 900; color: #011e1b; }
 
 .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.theme-btn {
-  width: 32px; height: 32px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: .15s;
-}
-.theme-btn:hover { color: var(--brand-primary); background: var(--glass-strong); box-shadow: 0 0 10px var(--brand-primary); }
-.icon-moon { display: none; }
-
 .net-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .net-pill {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 4px 12px; border-radius: 20px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 20px;
   font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: .5px;
-  border: 1px solid; transition: .3s; white-space: nowrap; text-transform: uppercase;
+  background: #ffffff; border: 1.5px solid #94a3b8;
+  white-space: nowrap; text-transform: uppercase; color: #065f46;
 }
-.net-pill.online  { background: rgba(64,205,36,.15); color: var(--brand-secondary); border-color: rgba(64,205,36,.5); box-shadow: 0 0 12px rgba(64,205,36,.3); }
-.net-pill.offline { background: rgba(239,68,68,.15); color: var(--neon-red); border-color: rgba(239,68,68,.4); box-shadow: 0 0 12px rgba(239,68,68,.25); }
-.net-pill.checking{ background: rgba(234,179,8,.15); color: var(--neon-yellow); border-color: rgba(234,179,8,.4); box-shadow: 0 0 12px rgba(234,179,8,.2); }
-.net-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
-.net-pill.online .net-dot { animation: blink 2s infinite; }
-.net-pill.checking .net-dot { animation: blink .8s infinite; }
+.net-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; display: inline-block; }
 
 .sensor-chips { display: flex; gap: 6px; }
 .sensor-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-mono); font-size: 11px; color: var(--text-primary); font-weight: 700;
-  padding: 4px 10px; border-radius: 8px;
-  border: 1px solid var(--glass-border); background: rgba(11,20,32,0.8); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 11px; color: #011e1b; font-weight: 800;
+  padding: 4px 8px; border-radius: 8px;
+  border: 1.5px solid #94a3b8; background: #ffffff; white-space: nowrap;
 }
-.sensor-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); display: inline-block; transition: background .3s; }
-.sensor-dot.online { background: var(--brand-secondary); box-shadow: 0 0 8px rgba(64,205,36,.9); animation: blink 2s infinite; }
-.sensor-dot.offline{ background: var(--neon-red); box-shadow: 0 0 8px rgba(239,68,68,.8); }
+.sensor-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand-primary); display: inline-block; }
 
-/* ── MAIN LAYOUT ────────────────────────────── */
+/* ── MAIN LAYOUT GRID ─────────────────────────────────────────────── */
 .layout {
   width: 100vw; height: calc(100vh - var(--nav));
   display: flex; flex-direction: column; padding: 6px; gap: 6px;
 }
-.main-content {
-  display: flex; flex: 1; min-height: 0; gap: 8px;
-}
+.main-content { display: flex; flex: 1; min-height: 0; gap: 6px; }
 
-/* ── 3D VIEWPORT (58%) ──────────────────────── */
+/* ── 3D VIEWPORT (58%) ────────────────────────────────────────────── */
 .viewport-3d {
   flex: 0 0 58%;
   position: relative;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  background: radial-gradient(ellipse at center, #0c1827 0%, #04080e 80%);
-  border: 1px solid var(--border-color);
-  box-shadow: inset 0 0 60px rgba(0,242,254,.08), 0 4px 24px rgba(0,0,0,.6);
-  transition: background .3s;
-}
-:root[data-theme="dark"] .viewport-3d {
-  background: radial-gradient(ellipse at center, #041f20 0%, #021213 80%);
-  box-shadow: inset 0 0 60px rgba(64,205,36,.08), 0 4px 24px rgba(0,0,0,.8);
+  background: #dbeae4;
+  border: 2px solid #94a3b8;
+  box-shadow: var(--glass-shadow);
 }
 #three-canvas { width: 100%; height: 100%; display: block; }
 
-/* ── LOADING OVERLAY ────────────────────────── */
 .loading-overlay {
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse at center, #0c1827 0%, #04080e 100%);
+  background: #ffffff;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 50; transition: opacity .5s;
-}
-:root[data-theme="dark"] .loading-overlay {
-  background: radial-gradient(ellipse at center, #041f20 0%, #021213 100%);
+  z-index: 50; transition: opacity .3s;
 }
 .loading-overlay.hidden { opacity: 0; pointer-events: none; }
 .loading-text {
-  font-size: 13px; color: var(--brand-primary);
-  font-family: var(--font-speedo); letter-spacing: 4px;
-  margin-top: 16px; font-weight: 900;
-  text-shadow: 0 0 20px rgba(0,242,254,.6);
+  font-size: 14px; color: #011e1b;
+  font-family: var(--font-main); letter-spacing: 2px;
+  margin-top: 14px; font-weight: 900; text-transform: uppercase;
 }
 .loading-spinner {
-  width: 40px; height: 40px;
-  border: 3px solid rgba(0,242,254,.2);
-  border-top-color: var(--brand-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  box-shadow: 0 0 20px rgba(0,242,254,.3);
+  width: 38px; height: 38px;
+  border: 4px solid #dbeae4; border-top-color: var(--brand-primary);
+  border-radius: 50%; animation: spin 1s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── GAUGE CLUSTER CONTAINERS (EXTENDED HEIGHTS) ── */
+/* ── HIGH PERFORMANCE OVERLAY GAUGE CARDS ────────────────────────── */
 .left-cluster {
-  position: absolute;
-  top: 50%; left: 16px;
-  transform: translateY(-55%);
-  display: flex; flex-direction: column; gap: 8px;
-  width: 175px;
-  height: 360px; /* Increased Height for Taller Gauges */
-  z-index: 10;
+  position: absolute; top: 6px; left: 8px; bottom: 6px;
+  display: flex; flex-direction: column; gap: 6px;
+  width: 180px; z-index: 10;
 }
 
 .right-cluster {
-  position: absolute;
-  top: 50%; right: 16px;
-  transform: translateY(-55%);
-  display: flex; flex-direction: column; justify-content: space-between;
-  width: 195px;
-  height: 360px; /* Matched Extended Height */
-  background: rgba(8, 14, 24, 0.85);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--border-color);
-  border-radius: 12px; padding: 12px 14px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 10;
+  position: absolute; top: 6px; right: 8px; bottom: 6px;
+  display: flex; flex-direction: column; gap: 6px;
+  width: 195px; z-index: 10;
 }
 
 .gauge-card {
-  flex: 1; /* Splits top/bottom height 50/50 evenly */
-  background: rgba(8, 14, 24, 0.85);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--border-color);
-  border-radius: 12px; padding: 10px 12px;
+  flex: 1;
+  background: var(--glass-panel);
+  border: 2px solid #64748b;
+  border-radius: 12px; padding: 8px 10px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 
-/* ── HYDRAULIC GAUGE (INCREASED STEM HEIGHT) ── */
+/* ── HYDRAULIC GAUGE (INCREASED HEIGHT FIX) ───────────────────────── */
 .hyd-stem-body {
-  width: 26px; height: 70px; /* Taller Stem */
-  border: 2px solid var(--brand-primary);
-  border-radius: 5px; position: relative; overflow: hidden; background: rgba(0,0,0,0.5);
+  width: 28px; height: 75px; /* Matched to Thermometer stem height */
+  border: 2px solid #011e1b;
+  border-radius: 8px; position: relative; overflow: hidden; background: #f8fafc;
 }
 .hyd-stem-fill {
   position: absolute; bottom: 0; left: 0; right: 0;
-  background: linear-gradient(180deg, var(--neon-purple), var(--brand-primary));
-  border-radius: 0 0 3px 3px; transition: height .5s ease;
-  box-shadow: 0 0 10px var(--brand-primary);
+  background: linear-gradient(180deg, var(--brand-secondary), var(--brand-primary));
+  border-radius: 0 0 6px 6px; transition: height .3s ease;
 }
 .hyd-val-text {
-  font-family: var(--font-speedo); font-size: 18px; font-weight: 900;
-  color: #ffffff; line-height: 1; text-shadow: 0 0 10px var(--brand-primary);
+  font-family: var(--font-main); font-size: 20px; font-weight: 900; color: #011e1b; line-height: 1;
 }
 
-/* ── MOTOR THERMAL GAUGE (INCREASED STEM HEIGHT) ── */
-.thermal-wrap { display: flex; justify-content: center; }
-.thermal-body { display: flex; align-items: flex-end; gap: 6px; position: relative; }
-.thermal-stem {
-  width: 14px; height: 70px; /* Taller Thermal Stem */
-  border: 2px solid var(--brand-primary); border-radius: 5px;
-  position: relative; overflow: hidden; background: rgba(0,0,0,0.5);
+/* ── MOTOR THERMOMETER (PERFECT CENTERED BULB FIX) ───────────────── */
+.thermal-wrap { 
+  display: flex; justify-content: center; width: 100%; margin: 2px 0 10px 0; 
 }
-:root[data-theme="dark"] .thermal-stem { border-color: var(--brand-secondary); }
+.thermal-body { 
+  display: flex; align-items: flex-start; gap: 8px; position: relative; 
+}
+.thermal-stem-container {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+}
+.thermal-stem {
+  width: 18px; height: 75px;
+  border: 2.5px solid #011e1b; border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  position: relative; overflow: hidden; background: #f8fafc; z-index: 1;
+}
 .thermal-fill {
   position: absolute; bottom: 0; left: 0; right: 0;
-  background: linear-gradient(180deg,#f97316,var(--brand-primary));
-  border-radius: 0 0 2px 2px; transition: height .5s ease;
-  box-shadow: 0 0 12px rgba(0,242,254,.5);
+  background: linear-gradient(180deg, #ea580c, var(--brand-primary));
+  transition: height .4s ease;
 }
-:root[data-theme="dark"] .thermal-fill { background: linear-gradient(180deg,#f97316,var(--brand-secondary)); }
 .thermal-bulb {
-  width: 16px; height: 16px; border-radius: 50%;
-  background: var(--brand-primary); border: 2px solid var(--brand-primary);
-  box-shadow: 0 0 8px var(--brand-primary);
-  position: absolute; bottom: -4px; left: 16%; transform: translateX(-50%); z-index: 2;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #011e1b; border: 2.5px solid #011e1b;
+  margin-top: -8px; z-index: 2; /* Sits perfectly centered at the base of the stem */
 }
-:root[data-theme="dark"] .thermal-bulb { background: var(--brand-secondary); border-color: var(--brand-secondary); box-shadow: 0 0 8px var(--brand-secondary); }
-.thermal-ticks { display: flex; flex-direction: column; justify-content: space-between; height: 70px; }
-.thermal-tick { font-family: var(--font-mono); font-size: 9px; font-weight: 700; color: var(--text-secondary); line-height: 1; }
+.thermal-ticks { 
+  display: flex; flex-direction: column; justify-content: space-between; height: 75px; 
+}
+.thermal-tick { font-family: var(--font-mono); font-size: 10px; font-weight: 800; color: #334155; line-height: 1; }
 .thermal-value {
-  font-family: var(--font-speedo); font-size: 20px; font-weight: 900;
-  color: #ffffff; line-height: 1; display: flex; align-items: flex-start; gap: 2px;
+  font-family: var(--font-main); font-size: 22px; font-weight: 900;
+  color: #011e1b; line-height: 1; display: flex; align-items: flex-start; gap: 2px;
 }
-.thermal-unit { font-size: 13px; font-weight: 700; color: var(--brand-primary); }
+.thermal-unit { font-size: 14px; font-weight: 900; color: var(--brand-primary); }
 
-/* ── BATTERY TANK (INCREASED HEIGHT) ────────── */
-.tank-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+/* ── BATTERY TANK & CELLS ─────────────────────────────────────────── */
+.tank-wrap { display: flex; flex-direction: column; align-items: center; }
 .tank-cap {
-  width: 22px; height: 5px; background: var(--brand-primary);
-  border-radius: 3px 3px 0 0; border: 2px solid var(--brand-primary); border-bottom: none;
-  box-shadow: 0 0 8px var(--brand-primary); order: -1;
+  width: 22px; height: 4px; background: #011e1b;
+  border-radius: 3px 3px 0 0; border: 2px solid #011e1b; border-bottom: none; order: -1;
 }
-:root[data-theme="dark"] .tank-cap { background: var(--brand-secondary); border-color: var(--brand-secondary); box-shadow: 0 0 8px var(--brand-secondary); }
 .tank-body {
-  width: 38px; height: 100px; /* Taller Battery Body */
-  border: 2px solid var(--brand-primary);
-  border-radius: 0 0 6px 6px; position: relative; overflow: hidden; background: rgba(0,0,0,0.5);
+  width: 36px; height: 46px; border: 2px solid #011e1b;
+  border-radius: 0 0 6px 6px; position: relative; overflow: hidden; background: #f8fafc;
 }
-:root[data-theme="dark"] .tank-body { border-color: var(--brand-secondary); }
 .tank-fill {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(180deg, var(--brand-secondary), var(--brand-primary));
-  border-radius: 0 0 4px 4px; transition: height .5s ease;
-  box-shadow: 0 0 16px rgba(0,242,254,.6);
+  border-radius: 0 0 4px 4px; transition: height .3s ease;
 }
 .tank-level-lines { position: absolute; inset: 0; pointer-events: none; }
-.tank-line { position: absolute; left: 0; right: 0; height: 1px; background: rgba(255,255,255,.2); }
+.tank-line { position: absolute; left: 0; right: 0; height: 1px; background: rgba(1, 30, 27, 0.2); }
 .tank-percent {
-  font-family: var(--font-speedo); font-size: 24px; font-weight: 900;
-  color: #ffffff; line-height: 1; text-shadow: 0 0 12px var(--brand-primary);
+  font-family: var(--font-main); font-size: 20px; font-weight: 900; color: #011e1b; line-height: 1;
 }
 
 .gauge-label {
-  font-family: var(--font-speedo); font-size: 11px; font-weight: 800;
-  letter-spacing: 1.5px; text-transform: uppercase; color: var(--brand-primary);
+  font-family: var(--font-main); font-size: 12px; font-weight: 900;
+  letter-spacing: 1px; text-transform: uppercase; color: #011e1b;
 }
-:root[data-theme="dark"] .gauge-label { color: var(--brand-secondary); }
-.gauge-sublabel { font-size: 10px; color: var(--text-secondary); font-family: var(--font-mono); font-weight: 700; }
+.gauge-sublabel { font-size: 11px; color: var(--brand-primary); font-family: var(--font-mono); font-weight: 800; }
 
-/* CELL LIST ALIGNMENTS */
-.cell-list {
-  display: flex; flex-direction: column; gap: 3px;
-  width: 100%; padding-top: 4px; border-top: 1px solid var(--border-color);
-}
-.cell-item {
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 10px; width: 100%;
-}
-.cell-item .cell-name { width: 22px; color: var(--brand-primary); font-family: var(--font-speedo); font-weight: 800; }
-.cell-item .cell-volt { width: 48px; font-family: var(--font-mono); color: #ffffff; font-weight: 700; text-align: right; }
-.cell-item .cell-temp { font-family: var(--font-mono); color: var(--text-secondary); font-weight: 600; text-align: right; }
+.cell-list { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+.cell-item { display: flex; justify-content: space-between; align-items: center; font-size: 11px; width: 100%; }
+.cell-item .cell-name { width: 24px; color: #011e1b; font-family: var(--font-main); font-weight: 900; }
+.cell-item .cell-volt { width: 50px; font-family: var(--font-mono); color: var(--brand-primary); font-weight: 800; text-align: right; }
+.cell-item .cell-temp { font-family: var(--font-mono); color: #334155; font-weight: 800; text-align: right; }
 
-.motor-data-rows { display: flex; flex-direction: column; gap: 2px; width: 100%; margin-top: 2px; }
+.motor-data-rows { display: flex; flex-direction: column; gap: 2px; width: 100%; margin-top: 1px; }
 .motor-data-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-.md-label { font-size: 9px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
-.md-val { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: #ffffff; }
+.md-label { font-size: 9px; font-weight: 800; color: #334155; text-transform: uppercase; }
+.md-val { font-family: var(--font-mono); font-size: 10px; font-weight: 800; color: #011e1b; }
 
-/* ── KPI SINGLE LINE BOTTOM DASH BAR ─────────── */
-.dash-bar {
-  position: absolute; bottom: 10px; left: 50%;
-  transform: translateX(-50%);
-  display: flex; align-items: center; flex-direction: row; flex-wrap: nowrap;
-  gap: 16px; padding: 8px 24px;
-  background: rgba(8, 14, 24, 0.88); backdrop-filter: blur(18px);
-  border: 1px solid var(--border-color); border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.6); z-index: 20;
-  white-space: nowrap;
-}
-.dash-item { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.dash-item .dash-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dash-item .dash-label { font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
-.dash-item .dash-val { font-family: var(--font-mono); font-size: 13px; font-weight: 800; color: #ffffff; }
-.dash-sep { width: 1px; height: 22px; background: var(--border-color); flex-shrink: 0; }
+/* ── RIGHT PANEL (CAMERA + KPI CARD BELOW) ────────────────────────── */
+.right-panel-stack { flex: 0 0 42%; display: flex; flex-direction: column; gap: 6px; }
 
-/* ── CAMERA PANEL (42%) ─────────────────────── */
-.cam-panel { flex: 0 0 42%; display: flex; flex-direction: column; gap: 6px; }
 .cam-card {
-  flex: 1; background: #080e14; border: 1px solid var(--border-color);
-  border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;
-  min-height: 0; box-shadow: 0 4px 20px rgba(0,0,0,.5);
+  flex: 1; background: #ffffff; border: 2px solid #64748b;
+  border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: var(--glass-shadow);
 }
 .cam-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 14px; background: rgba(15,29,47,0.6);
-  border-bottom: 1px solid var(--border-color); flex-shrink: 0;
+  padding: 6px 10px; background: #f1f7f5;
+  border-bottom: 2px solid #64748b; flex-shrink: 0;
 }
-.cam-hl { display: flex; align-items: center; gap: 10px; }
+.cam-hl { display: flex; align-items: center; gap: 8px; }
 .cam-live {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(239,68,68,.15); color: #f87171;
-  font-family: var(--font-mono); font-size: 10px; font-weight: 800; letter-spacing: 1px;
-  padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(239,68,68,.4);
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #fef2f2; color: #dc2626;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+  padding: 2px 8px; border-radius: 10px; border: 1px solid #fca5a5;
 }
-.cam-title { font-family: var(--font-speedo); font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--brand-primary); }
+.cam-title { font-family: var(--font-main); font-size: 12px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #011e1b; }
 .cam-expand {
-  width: 28px; height: 28px; background: var(--glass); border: 1px solid var(--glass-border);
+  width: 26px; height: 26px; background: #ffffff; border: 1.5px solid #64748b;
   border-radius: 6px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--text-secondary); transition: .15s;
+  cursor: pointer; color: #011e1b; transition: .15s;
 }
-.cam-expand:hover { color: var(--brand-primary); border-color: var(--brand-primary); }
-.cam-frame { flex: 1; background: var(--surface-elevated); position: relative; min-height: 0; }
+.cam-expand:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+.cam-frame { flex: 1; background: #e2eee8; position: relative; min-height: 0; }
 .cam-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.cam-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-dim); font-size: 12px; font-weight: 700; }
+.cam-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #334155; font-size: 12px; font-weight: 800; }
 
-/* ── ALERTS PANEL ───────────────────────────── */
-.alerts-panel {
-  background: #080e14; border: 1px solid var(--border-color); border-radius: 10px;
-  padding: 8px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+/* ── KPI CARD DISPLAYED DIRECTLY BELOW CAMERA ─────────────────────── */
+.kpi-card-panel {
+  background: #ffffff;
+  border: 2px solid #64748b;
+  border-radius: 12px; padding: 8px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: var(--glass-shadow); flex-shrink: 0;
 }
-.alerts-head { font-family: var(--font-speedo); font-size: 11px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: var(--brand-primary); white-space: nowrap; }
+.kpi-item { display: flex; flex-direction: column; gap: 1px; }
+.kpi-label { font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; color: #334155; }
+.kpi-val { font-family: var(--font-mono); font-size: 14px; font-weight: 900; color: #011e1b; }
+.kpi-sep { width: 2px; height: 22px; background: #cbd5e1; }
+
+/* ── FIXED BOTTOM ALERTS PANEL ────────────────────────────────────── */
+.alerts-panel {
+  background: #ffffff; border: 2px solid #64748b; border-radius: 10px;
+  padding: 6px 12px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.alerts-head { font-family: var(--font-main); font-size: 11px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #011e1b; white-space: nowrap; }
 .alerts-pills { flex: 1; display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; align-items: center; }
-.alert-pill { display: flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 8px; border: 1px solid; flex: 1; min-width: 150px; }
-.a-warn { background: rgba(234,179,8,.12); border-color: rgba(234,179,8,.35); }
-.a-ok   { background: rgba(64,205,36,.12); border-color: rgba(64,205,36,.35); }
-.alert-msg { font-size: 12px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.alert-sub { font-size: 10px; font-family: var(--font-mono); color: var(--text-secondary); margin-top: 1px; }
+.alert-pill { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; border: 1.5px solid; flex: 1; min-width: 140px; }
+.a-warn { background: #fffbeb; border-color: #fde047; }
+.a-ok   { background: #f0fdf4; border-color: #86efac; }
+.alert-msg { font-size: 11px; font-weight: 900; color: #011e1b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alert-sub { font-size: 10px; font-family: var(--font-mono); color: #334155; font-weight: 700; margin-top: 1px; }
 
-/* ── FULLSCREEN MODAL ───────────────────────── */
-.cam-modal { position: fixed; inset: 0; background: rgba(2,18,19,.95); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 3vw; }
+/* ── FULLSCREEN MODAL ─────────────────────────────────────────────── */
+.cam-modal { position: fixed; inset: 0; background: rgba(1, 30, 27, 0.85); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 3vw; }
 .cam-modal.open { display: flex; }
-.cam-modal-box { position: relative; width: 100%; max-width: 92vw; aspect-ratio: 16/9; background: #000; border-radius: 14px; overflow: hidden; border: 1px solid var(--brand-primary); }
-.cam-close { position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,.7); border: 1px solid var(--border-color); color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; }
-
-@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-.blink { animation: blink 2s infinite; }
+.cam-modal-box { position: relative; width: 100%; max-width: 92vw; aspect-ratio: 16/9; background: #000; border-radius: 16px; overflow: hidden; border: 2px solid var(--brand-secondary); }
+.cam-close { position: absolute; top: 16px; right: 16px; width: 38px; height: 38px; border-radius: 50%; background: rgba(0,0,0,.7); border: 1px solid #ffffff; color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; }
 </style>
 </head>
 <body>
 
-<!-- TOPNAV -->
+<!-- GE VERNOVA TOPNAV -->
 <nav class="topnav">
   <div class="brand">
-    <div class="brand-logo">
-      <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
-        <rect x="2" y="14" width="16" height="10" rx="2" fill="#fff" opacity=".9"/>
-        <rect x="18" y="18" width="10" height="6" rx="2" fill="#fff" opacity=".9"/>
-        <rect x="4" y="8" width="3" height="12" rx="1" fill="#fff" opacity=".9"/>
-        <rect x="4" y="8" width="14" height="3" rx="1" fill="#fff" opacity=".7"/>
-        <circle cx="6" cy="26" r="3" fill="#021213"/>
-        <circle cx="6" cy="26" r="1.5" fill="#fff" opacity=".7"/>
-        <circle cx="22" cy="26" r="3" fill="#021213"/>
-        <circle cx="22" cy="26" r="1.5" fill="#fff" opacity=".7"/>
-      </svg>
-    </div>
+    <img src="../static/gelogonew.png" alt="GE Logo" class="ge-monogram-img" onerror="this.style.display='none'; document.getElementById('ge-svg-fallback').style.display='block';">
+    <svg id="ge-svg-fallback" class="ge-monogram-img" style="display:none;" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="48" fill="#005e60"/>
+      <text x="50" y="62" font-family="Roboto, sans-serif" font-size="38" font-style="italic" font-weight="900" fill="#ffffff" text-anchor="middle">GE</text>
+    </svg>
+    
     <div class="brand-txt">
-      <span class="brand-name">GEAR IQ</span>
-      <span class="brand-sub" id="version">v1.0.0</span>
+      <span class="brand-name">GE VERNOVA</span>
+      <span class="powered-by">POWERED BY <span>BONBLOC</span></span>
     </div>
   </div>
 
@@ -448,9 +341,9 @@ body {
 
   <div class="nav-right">
     <div class="net-group">
-      <div class="net-pill checking" id="netPill">
+      <div class="net-pill online" id="netPill">
         <span class="net-dot" id="netDot"></span>
-        <span id="netLabel">Connecting…</span>
+        <span id="netLabel">System Online</span>
       </div>
       <div class="sensor-chips">
         <span class="sensor-chip"><span class="sensor-dot" id="dotMotor"></span>Motor</span>
@@ -458,18 +351,6 @@ body {
         <span class="sensor-chip"><span class="sensor-dot" id="cloudDot"></span><span id="cloudLabel">Cloud</span></span>
       </div>
     </div>
-    <button class="theme-btn" id="themeToggle" title="Toggle theme">
-      <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <circle cx="12" cy="12" r="5"/>
-        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-      </svg>
-      <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-    </button>
   </div>
 </nav>
 
@@ -481,12 +362,12 @@ body {
     <div class="viewport-3d" id="viewport3d">
       <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text">INITIALIZING SYSTEMS</div>
+        <div class="loading-text">GE VERNOVA SYSTEMS INITIALIZING</div>
       </div>
 
       <canvas id="three-canvas"></canvas>
 
-      <!-- LEFT SIDE: HYDRAULIC & MOTOR DISPLAY STACK (TALLER HEIGHTS) -->
+      <!-- LEFT SIDE: HYDRAULIC & MOTOR DISPLAY STACK -->
       <div class="left-cluster">
         
         <!-- Hydraulic Gauge Card -->
@@ -499,14 +380,16 @@ body {
           <div class="gauge-sublabel" id="hyd-temp">38 °C</div>
         </div>
 
-        <!-- Motor Gauge Card -->
+        <!-- Motor Gauge Card (Perfectly Centered Bulb Structure) -->
         <div class="gauge-card" id="motorGauge">
           <div class="thermal-wrap">
             <div class="thermal-body">
-              <div class="thermal-stem">
-                <div class="thermal-fill" id="motor-thermal-fill" style="height:35%"></div>
+              <div class="thermal-stem-container">
+                <div class="thermal-stem">
+                  <div class="thermal-fill" id="motor-thermal-fill" style="height:35%"></div>
+                </div>
+                <div class="thermal-bulb"></div>
               </div>
-              <div class="thermal-bulb"></div>
               <div class="thermal-ticks">
                 <div class="thermal-tick"><span>120</span></div>
                 <div class="thermal-tick"><span>90</span></div>
@@ -523,73 +406,57 @@ body {
 
           <div class="motor-data-rows">
             <div class="motor-data-row"><span class="md-label">Vib</span><span class="md-val" id="motor-vib-total">1.2 mm/s</span></div>
+            <div class="motor-data-row"><span class="md-label">X·Y·Z</span><span class="md-val" id="motor-velocity">0.7·0.8·0.5</span></div>
             <div class="motor-data-row"><span class="md-label">Draw</span><span class="md-val" id="motor-current">18.2 A</span></div>
           </div>
         </div>
 
       </div>
 
-      <!-- RIGHT SIDE: BATTERY DISPLAY (TALLER HEIGHT) -->
+      <!-- RIGHT SIDE: BATTERY DISPLAY -->
       <div class="right-cluster" id="batteryGauge">
-        <div class="tank-wrap">
-          <div class="tank-cap"></div>
-          <div class="tank-body">
-            <div class="tank-fill" id="battery-fill" style="height:94%"></div>
-            <div class="tank-level-lines">
-              <div class="tank-line" style="bottom:25%"></div>
-              <div class="tank-line" style="bottom:50%"></div>
-              <div class="tank-line" style="bottom:75%"></div>
+        
+        <!-- Card 1: Battery Tank -->
+        <div class="gauge-card">
+          <div class="tank-wrap">
+            <div class="tank-cap"></div>
+            <div class="tank-body">
+              <div class="tank-fill" id="battery-fill" style="height:94%"></div>
+              <div class="tank-level-lines">
+                <div class="tank-line" style="bottom:25%"></div>
+                <div class="tank-line" style="bottom:50%"></div>
+                <div class="tank-line" style="bottom:75%"></div>
+              </div>
             </div>
           </div>
+          <div class="tank-percent" id="battery-percent">94%</div>
+          <div class="gauge-label">Battery</div>
+          <div class="gauge-sublabel" id="battery-status">12.4 A Draw</div>
         </div>
-        <div class="tank-percent" id="battery-percent">94%</div>
-        <div class="gauge-label">Battery</div>
-        <div class="gauge-sublabel" id="battery-status">12.4 A Draw</div>
 
-        <!-- Cell Voltage Details -->
-        <div class="cell-list">
-          <div class="cell-item"><span class="cell-name">B1</span><span class="cell-volt" id="bat1">3.32 V</span><span class="cell-temp" id="bat1tmp">28 °C</span></div>
-          <div class="cell-item"><span class="cell-name">B2</span><span class="cell-volt" id="bat2">3.31 V</span><span class="cell-temp" id="bat2tmp">28 °C</span></div>
-          <div class="cell-item"><span class="cell-name">B3</span><span class="cell-volt" id="bat3">3.33 V</span><span class="cell-temp" id="bat3tmp">29 °C</span></div>
-          <div class="cell-item"><span class="cell-name">B4</span><span class="cell-volt" id="bat4">3.32 V</span><span class="cell-temp" id="bat4tmp">28 °C</span></div>
+        <!-- Card 2: Cell Diagnostics -->
+        <div class="gauge-card">
+          <div class="gauge-label" style="font-size:11px;">Cell Diagnostics</div>
+          <div class="cell-list">
+            <div class="cell-item"><span class="cell-name">B1</span><span class="cell-volt" id="bat1">3.32 V</span><span class="cell-temp" id="bat1tmp">28 °C</span></div>
+            <div class="cell-item"><span class="cell-name">B2</span><span class="cell-volt" id="bat2">3.31 V</span><span class="cell-temp" id="bat2tmp">28 °C</span></div>
+            <div class="cell-item"><span class="cell-name">B3</span><span class="cell-volt" id="bat3">3.33 V</span><span class="cell-temp" id="bat3tmp">29 °C</span></div>
+            <div class="cell-item"><span class="cell-name">B4</span><span class="cell-volt" id="bat4">3.32 V</span><span class="cell-temp" id="bat4tmp">28 °C</span></div>
+          </div>
+          <div class="cell-list" style="margin-top:2px;">
+            <div class="cell-item"><span class="cell-name" style="width:36px;">Pwr</span><span class="cell-volt" id="bat-power">658 W</span></div>
+            <div class="cell-item"><span class="cell-name" style="width:36px;">Eng</span><span class="cell-volt" id="bat-energy">18.4 kWh</span></div>
+          </div>
         </div>
-        <div class="cell-list">
-          <div class="cell-item"><span class="cell-name" style="width:36px;">Pwr</span><span class="cell-volt" id="bat-power">658 W</span></div>
-          <div class="cell-item"><span class="cell-name" style="width:36px;">Eng</span><span class="cell-volt" id="bat-energy">18.4 kWh</span></div>
-        </div>
-      </div>
 
-      <!-- BOTTOM DASH BAR: SINGLE LINE KPI -->
-      <div class="dash-bar" id="dashBar">
-        <div class="dash-item">
-          <span class="dash-dot" style="background:var(--brand-primary);box-shadow:0 0 8px var(--brand-primary)"></span>
-          <span class="dash-label">Op Time:</span>
-          <span class="dash-val" id="kpi-optime">04:12:35</span>
-        </div>
-        <div class="dash-sep"></div>
-        <div class="dash-item">
-          <span class="dash-dot" style="background:var(--brand-secondary);box-shadow:0 0 8px var(--brand-secondary)"></span>
-          <span class="dash-label">Idle:</span>
-          <span class="dash-val" id="kpi-idletime">00:48:12</span>
-        </div>
-        <div class="dash-sep"></div>
-        <div class="dash-item">
-          <span class="dash-dot" style="background:#14b8a6;box-shadow:0 0 8px #14b8a6"></span>
-          <span class="dash-label">Cycles:</span>
-          <span class="dash-val" id="kpi-cycles">142</span>
-        </div>
-        <div class="dash-sep"></div>
-        <div class="dash-item">
-          <span class="dash-dot" style="background:#f97316;box-shadow:0 0 8px #f97316"></span>
-          <span class="dash-label">Energy:</span>
-          <span class="dash-val" id="kpi-energy">18.4 kWh</span>
-        </div>
       </div>
 
     </div>
 
-    <!-- CAMERA PANEL (42%) -->
-    <div class="cam-panel">
+    <!-- RIGHT PANEL STACK: CAMERA FEED + KPI CARD DIRECTLY BELOW -->
+    <div class="right-panel-stack">
+      
+      <!-- Camera Card Panel -->
       <div class="cam-card">
         <div class="cam-header">
           <div class="cam-hl">
@@ -616,21 +483,45 @@ body {
           </div>
         </div>
       </div>
+
+      <!-- KPI Telemetry Card Positioned Directly Below Camera -->
+      <div class="kpi-card-panel" id="dashBar">
+        <div class="kpi-item">
+          <span class="kpi-label">Op Time</span>
+          <span class="kpi-val" id="kpi-optime">04:12:35</span>
+        </div>
+        <div class="kpi-sep"></div>
+        <div class="kpi-item">
+          <span class="kpi-label">Idle</span>
+          <span class="kpi-val" id="kpi-idletime">00:48:12</span>
+        </div>
+        <div class="kpi-sep"></div>
+        <div class="kpi-item">
+          <span class="kpi-label">Cycles</span>
+          <span class="kpi-val" id="kpi-cycles">142</span>
+        </div>
+        <div class="kpi-sep"></div>
+        <div class="kpi-item">
+          <span class="kpi-label">Energy</span>
+          <span class="kpi-val" id="kpi-energy" style="color:var(--brand-primary);">18.4 kWh</span>
+        </div>
+      </div>
+
     </div>
 
   </div>
 
-  <!-- ALERTS PANEL -->
+  <!-- FIXED BOTTOM ALERTS PANEL -->
   <div class="alerts-panel">
-    <div class="alerts-head">⚡ Active Alerts</div>
+    <div class="alerts-head">⚡ Alerts</div>
     <div class="alerts-pills" id="alerts-pills">
       <div class="alert-pill a-warn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="#eab308"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/></svg>
-        <div class="alert-body"><div class="alert-msg">Hydraulic Filter Service Due</div><div class="alert-sub">Check filter · 10:06 am</div></div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#d97706"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="#fff" stroke-width="2"/></svg>
+        <div class="alert-body"><div class="alert-msg">Hydraulic Filter Service Due</div><div class="alert-sub">Check filter · Maintenance Bay 04</div></div>
       </div>
       <div class="alert-pill a-ok">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="#40cd24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        <div class="alert-body"><div class="alert-msg">BMS Telemetry Online</div><div class="alert-sub">Syncing pack status · 10:06 am</div></div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#16a34a"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div class="alert-body"><div class="alert-msg">BMS Telemetry Online</div><div class="alert-sub">Cell balancing active · Status Normal</div></div>
       </div>
     </div>
   </div>
@@ -640,11 +531,7 @@ body {
 <div class="cam-modal" id="camModal">
   <div class="cam-modal-box">
     <span class="cam-live" style="position:absolute;top:16px;left:16px;z-index:2"><span class="live-dot blink"></span>LIVE HD</span>
-    <button class="cam-close" id="camClose">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
+    <button class="cam-close" id="camClose">&times;</button>
     <img id="camVideoLarge" style="width:100%;height:100%;object-fit:contain;display:block">
     <div class="cam-fallback" id="camFallbackLarge">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
@@ -655,50 +542,51 @@ body {
   </div>
 </div>
 
-<!-- THREE.JS ENGINE -->
+<!-- THREE.JS & NATIVE .GLB LOADER LIBRARIES -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 let scene, camera, renderer, forkliftGroup;
 let animationId;
-let time = 0;
 
 function initThreeJS() {
   const container = document.getElementById('viewport3d');
   const canvas = document.getElementById('three-canvas');
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(isDark ? 0x021213 : 0x04080e);
-  scene.fog = new THREE.Fog(isDark ? 0x021213 : 0x04080e, 8, 25);
+  scene.background = new THREE.Color(0xdbeae4);
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-  camera.position.set(0, 1.2, 5);
-  camera.lookAt(0, 0.9, 0);
+  camera.position.set(2.8, 2.8, 4.2);
+  camera.lookAt(0, 0.6, 0);
 
-  renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  // Hardware optimized for Linaro RK3568 Mali-G52 GPU
+  renderer = new THREE.WebGLRenderer({ 
+    canvas: canvas, 
+    antialias: false,
+    powerPreference: "high-performance",
+    precision: "mediump"
+  });
+  
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
+  renderer.setPixelRatio(1.0);
+  renderer.shadowMap.enabled = false;
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.8 : 1.2);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
   scene.add(ambientLight);
 
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  dirLight.position.set(5, 10, 5);
+  scene.add(dirLight);
+
   const floorGeo = new THREE.PlaneGeometry(30, 30);
-  const floorMat = new THREE.MeshStandardMaterial({ 
-    color: isDark ? 0x041f20 : 0x08121e, 
-    roughness: 0.8, 
-    metalness: 0.1 
-  });
+  const floorMat = new THREE.MeshBasicMaterial({ color: 0xd2e3de });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = 0;
-  floor.receiveShadow = true;
   scene.add(floor);
 
-  const gridHelper = new THREE.GridHelper(30, 30, 
-    isDark ? 0x083335 : 0x0f2838, 
-    isDark ? 0x062829 : 0x091828
-  );
+  const gridHelper = new THREE.GridHelper(30, 30, 0xa8c8c0, 0xbfdad2);
   gridHelper.position.y = 0.01;
   scene.add(gridHelper);
 
@@ -707,7 +595,7 @@ function initThreeJS() {
 
   setTimeout(() => {
     document.getElementById('loadingOverlay').classList.add('hidden');
-  }, 1000);
+  }, 800);
 
   window.addEventListener('resize', onWindowResize);
 }
@@ -715,38 +603,46 @@ function initThreeJS() {
 function buildForklift() {
   forkliftGroup = new THREE.Group();
 
-  const textureLoader = new THREE.TextureLoader();
+  const loader = new THREE.GLTFLoader();
   
-  textureLoader.load( 
-    '../static/powerpusher.png',
-    function (texture) {
-      const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        side: THREE.DoubleSide
-      });
+  loader.load(
+    '../static/powerpusher.glb',
+    function (gltf) {
+      const model = gltf.scene;
+      model.scale.set(2.2, 2.2, 2.2);
+      model.position.set(0, 0, 0);
 
-      const geometry = new THREE.PlaneGeometry(2.4, 1.92);
-      const plane = new THREE.Mesh(geometry, material);
-      
-      plane.position.set(0.1, 1.05, 0);
-
-      forkliftGroup.add(plane);
+      forkliftGroup.add(model);
       scene.add(forkliftGroup);
     },
     undefined,
-    function (err) {
-      console.error('Error loading image:', err);
+    function (error) {
+      console.warn('.glb model path not found, using low-poly fallback mesh:', error);
+      
+      const chassis = new THREE.Mesh(
+        new THREE.BoxGeometry(2.0, 0.6, 1.1),
+        new THREE.MeshLambertMaterial({ color: 0x059669 })
+      );
+      chassis.position.set(0, 0.4, 0);
+      forkliftGroup.add(chassis);
+
+      const cabin = new THREE.Mesh(
+        new THREE.BoxGeometry(0.8, 0.8, 1.0),
+        new THREE.MeshLambertMaterial({ color: 0x011e1b })
+      );
+      cabin.position.set(0.4, 0.9, 0);
+      forkliftGroup.add(cabin);
+
+      scene.add(forkliftGroup);
     }
   );
 }
 
 function animate() {
   animationId = requestAnimationFrame(animate);
-  time += 0.016;
 
   if (forkliftGroup) {
-    forkliftGroup.position.y = Math.sin(time * 1.5) * 0.03;
+    forkliftGroup.rotation.y += 0.02; // Continuous smooth rotation
   }
 
   renderer.render(scene, camera);
@@ -760,46 +656,24 @@ function onWindowResize() {
   renderer.setSize(container.clientWidth, container.clientHeight);
 }
 
-// Clock
+/* DYNAMIC SENSOR DATA UPDATE FUNCTIONS */
+function updateMotorTemperature(tempCelsius) {
+  const tempText = document.getElementById('motor-gauge-val');
+  const fillBar = document.getElementById('motor-thermal-fill');
+  
+  if (tempText) tempText.textContent = Math.round(tempCelsius);
+  if (fillBar) {
+    const percentage = Math.min(Math.max((tempCelsius / 120) * 100, 0), 100);
+    fillBar.style.height = percentage + '%';
+  }
+}
+
 (function tick(){
   var e=document.getElementById('navTime');
   if(e)e.textContent=new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour12:true,hour:'numeric',minute:'2-digit',second:'2-digit'});
   setTimeout(tick,1000);
 })();
 
-// Theme toggle
-document.getElementById('themeToggle').addEventListener('click',function(){
-  var isDark=document.documentElement.getAttribute('data-theme')==='dark';
-  if(isDark){
-    document.documentElement.setAttribute('data-theme','light');
-    try{localStorage.setItem('geariq-theme','light');}catch(e){}
-  }else{
-    document.documentElement.setAttribute('data-theme','dark');
-    try{localStorage.setItem('geariq-theme','dark');}catch(e){}
-  }
-  updateSceneTheme();
-});
-
-function updateSceneTheme() {
-  if(!scene) return;
-  var isDark=document.documentElement.getAttribute('data-theme')==='dark';
-  scene.background = new THREE.Color(isDark ? 0x021213 : 0x04080e);
-  scene.fog.color = new THREE.Color(isDark ? 0x021213 : 0x04080e);
-
-  scene.traverse(function(child) {
-    if(child.isMesh && child.geometry.type === 'PlaneGeometry') {
-      child.material.color.setHex(isDark ? 0x041f20 : 0x08121e);
-    }
-  });
-
-  scene.traverse(function(child) {
-    if(child.type === 'GridHelper') {
-      child.material.color.setHex(isDark ? 0x083335 : 0x0f2838);
-    }
-  });
-}
-
-// Camera fullscreen
 document.getElementById('camExpand').addEventListener('click',function(){
   document.getElementById('camModal').classList.add('open');
   var src=document.getElementById('camVideo').src;
@@ -809,7 +683,6 @@ document.getElementById('camClose').addEventListener('click',function(){
   document.getElementById('camModal').classList.remove('open');
 });
 
-// Initialize
 window.addEventListener('DOMContentLoaded', function() {
   initThreeJS();
 });
