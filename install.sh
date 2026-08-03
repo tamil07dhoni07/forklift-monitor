@@ -235,7 +235,7 @@ PYTHON_PACKAGES=(
     psutil
     pyserial
     minimalmodbus
-    psycopg2-binary
+    psycopg2
     smbus
 	PyQt5
 )
