@@ -3,27 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GE Vernova — Liquid Glass Instrument Cluster</title>
+<title>GE Vernova — Liquid Glass Instrument Cluster (RK3568 Fast Edition)</title>
 <!-- EXCLUSIVELY ROBOTO & ROBOTO MONO FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700;800&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,700&display=swap" rel="stylesheet">
 <style>
 /* ═════════════════════════════════════════════════════════════════════
-   LIQUID GLASS (GLASSMORPHISM) INDUSTRIAL UI THEME
-   Palette: Fluid Mint (#dcfce7) | Frosted White Glass | Vibrant Emerald (#059669)
+   RK3568 EMBEDDED OPTIMIZED THEME
+   Removed backdrop-filter blurs to guarantee 60 FPS on Mali-G52 GPU
    ═════════════════════════════════════════════════════════════════════ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100vw; height: 100vh; overflow: hidden; }
 
 :root {
-  --bg-gradient:        radial-gradient(ellipse at top left, #f0fdf4 0%, #e2eee8 40%, #cbd5e1 100%);
+  --bg-gradient:        #dcfce7;
   
-  /* Liquid Glass Layer Properties */
-  --glass-panel:        rgba(255, 255, 255, 0.45);
-  --glass-panel-hover:  rgba(255, 255, 255, 0.65);
-  --glass-border:       rgba(255, 255, 255, 0.7);
-  --glass-shadow:       0 12px 32px 0 rgba(2, 44, 34, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
-  --glass-glow:         0 0 20px rgba(163, 230, 53, 0.35);
+  /* Lightweight Solid Glass Look (No expensive GPU Blurs) */
+  --glass-panel:        rgba(255, 255, 255, 0.88);
+  --glass-border:       #bbf7d0;
+  --glass-shadow:       0 4px 12px rgba(2, 44, 34, 0.08);
 
   --text-primary:       #022c22;
   --text-secondary:     #166534;
@@ -38,7 +36,7 @@ html, body { width: 100vw; height: 100vh; overflow: hidden; }
   --font-main:          'Roboto', sans-serif;
   --font-mono:          'Roboto Mono', monospace;
 
-  --nav: 58px;
+  --nav: 54px;
 }
 
 body {
@@ -48,29 +46,23 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── LIQUID GLASS TOPNAV ─────────────────────────────────────────── */
+/* ── OPTIMIZED TOPNAV ─────────────────────────────────────────────── */
 .topnav {
   width: 100%; height: var(--nav);
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--glass-border);
+  background: #ffffff;
+  border-bottom: 2px solid var(--glass-border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px; gap: 16px;
+  padding: 0 20px; gap: 16px;
   position: relative; z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.ge-monogram-img {
-  width: 38px; height: 38px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 6px rgba(2, 44, 34, 0.12));
-}
+.ge-monogram-img { width: 36px; height: 36px; object-fit: contain; }
 .brand-txt { display: flex; flex-direction: column; line-height: 1; }
 .brand-name { 
   font-family: var(--font-main); font-size: 16px; font-weight: 900; 
-  color: #022c22; letter-spacing: 2.5px; text-transform: uppercase; 
+  color: #022c22; letter-spacing: 2px; text-transform: uppercase; 
 }
 .powered-by {
   font-family: var(--font-mono); font-size: 10px; font-weight: 700;
@@ -92,56 +84,46 @@ body {
 .net-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .net-pill {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 14px; border-radius: 30px;
+  padding: 5px 12px; border-radius: 20px;
   font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: .5px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  backdrop-filter: blur(10px);
+  background: #ffffff; border: 1px solid var(--glass-border);
   white-space: nowrap; text-transform: uppercase; color: #166534;
 }
-.net-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 8px #16a34a; display: inline-block; }
-.net-pill.online .net-dot { animation: blink 2s infinite; }
+.net-dot { width: 7px; height: 7px; border-radius: 50%; background: #16a34a; display: inline-block; }
 
 .sensor-chips { display: flex; gap: 6px; }
 .sensor-chip {
   display: inline-flex; align-items: center; gap: 6px;
   font-family: var(--font-mono); font-size: 11px; color: #022c22; font-weight: 700;
-  padding: 5px 12px; border-radius: 20px;
-  border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px); white-space: nowrap;
+  padding: 4px 10px; border-radius: 8px;
+  border: 1px solid var(--glass-border); background: #ffffff; white-space: nowrap;
 }
 .sensor-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-primary); display: inline-block; }
 
 /* ── MAIN LAYOUT GRID ─────────────────────────────────────────────── */
 .layout {
   width: 100vw; height: calc(100vh - var(--nav));
-  display: flex; flex-direction: column; padding: 12px; gap: 12px;
+  display: flex; flex-direction: column; padding: 10px; gap: 10px;
 }
-.main-content {
-  display: flex; flex: 1; min-height: 0; gap: 12px;
-}
+.main-content { display: flex; flex: 1; min-height: 0; gap: 10px; }
 
 /* ── 3D VIEWPORT (58%) ────────────────────────────────────────────── */
 .viewport-3d {
   flex: 0 0 58%;
   position: relative;
-  border-radius: 24px;
+  border-radius: 16px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
+  background: #e2eee8;
+  border: 2px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
 }
 #three-canvas { width: 100%; height: 100%; display: block; }
 
 .loading-overlay {
   position: absolute; inset: 0;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
+  background: #ffffff;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 50; transition: opacity .5s;
+  z-index: 50; transition: opacity .3s;
 }
 .loading-overlay.hidden { opacity: 0; pointer-events: none; }
 .loading-text {
@@ -150,94 +132,74 @@ body {
   margin-top: 16px; font-weight: 900; text-transform: uppercase;
 }
 .loading-spinner {
-  width: 44px; height: 44px;
-  border: 3px solid rgba(5, 150, 105, 0.15);
-  border-top-color: var(--brand-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  width: 36px; height: 36px;
+  border: 3px solid #e2eee8; border-top-color: var(--brand-primary);
+  border-radius: 50%; animation: spin 1s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── LIQUID GLASS OVERLAY GAUGE CARDS ─────────────────────────────── */
+/* ── HIGH PERFORMANCE OVERLAY GAUGE CARDS ────────────────────────── */
 .left-cluster {
-  position: absolute;
-  top: 50%; left: 18px;
+  position: absolute; top: 50%; left: 16px;
   transform: translateY(-50%);
-  display: flex; flex-direction: column; gap: 12px;
-  width: 175px; height: 380px;
-  z-index: 10;
+  display: flex; flex-direction: column; gap: 10px;
+  width: 175px; height: 370px; z-index: 10;
 }
 
 .right-cluster {
-  position: absolute;
-  top: 50%; right: 18px;
+  position: absolute; top: 50%; right: 16px;
   transform: translateY(-50%);
   display: flex; flex-direction: column; justify-content: space-between;
-  width: 195px; height: 380px;
+  width: 195px; height: 370px;
   background: var(--glass-panel);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px; padding: 14px 16px;
+  border: 2px solid var(--glass-border);
+  border-radius: 16px; padding: 12px 14px;
   box-shadow: var(--glass-shadow); z-index: 10;
-  transition: background 0.3s ease;
 }
 
 .gauge-card {
   flex: 1;
   background: var(--glass-panel);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px; padding: 12px 14px;
+  border: 2px solid var(--glass-border);
+  border-radius: 16px; padding: 10px 12px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   box-shadow: var(--glass-shadow);
-  transition: all 0.3s ease;
-}
-.gauge-card:hover, .right-cluster:hover {
-  background: var(--glass-panel-hover);
 }
 
-/* ── FLUID HYDRAULIC GAUGE ────────────────────────────────────────── */
+/* ── HYDRAULIC GAUGE ──────────────────────────────────────────────── */
 .hyd-stem-body {
-  width: 28px; height: 80px;
+  width: 26px; height: 75px;
   border: 2px solid rgba(2, 44, 34, 0.7);
-  border-radius: 14px; position: relative; overflow: hidden;
-  background: rgba(255, 255, 255, 0.4);
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 10px; position: relative; overflow: hidden; background: #ffffff;
 }
 .hyd-stem-fill {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(180deg, var(--brand-secondary), var(--brand-primary));
-  border-radius: 0 0 10px 10px; transition: height .5s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 12px rgba(163, 230, 53, 0.6);
+  border-radius: 0 0 8px 8px; transition: height .3s ease;
 }
 .hyd-val-text {
-  font-family: var(--font-main); font-size: 20px; font-weight: 900;
-  color: #022c22; line-height: 1;
+  font-family: var(--font-main); font-size: 20px; font-weight: 900; color: #022c22; line-height: 1;
 }
 
-/* ── FLUID MOTOR THERMAL GAUGE ────────────────────────────────────── */
+/* ── MOTOR THERMAL GAUGE ─────────────────────────────────────────── */
 .thermal-wrap { display: flex; justify-content: center; }
 .thermal-body { display: flex; align-items: flex-end; gap: 6px; position: relative; }
 .thermal-stem {
-  width: 14px; height: 80px;
-  border: 2px solid rgba(2, 44, 34, 0.7); border-radius: 8px;
-  position: relative; overflow: hidden; background: rgba(255, 255, 255, 0.4);
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+  width: 14px; height: 75px;
+  border: 2px solid rgba(2, 44, 34, 0.7); border-radius: 6px;
+  position: relative; overflow: hidden; background: #ffffff;
 }
 .thermal-fill {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(180deg, #f97316, var(--brand-primary));
-  border-radius: 0 0 4px 4px; transition: height .5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0 0 4px 4px; transition: height .3s ease;
 }
 .thermal-bulb {
-  width: 18px; height: 18px; border-radius: 50%;
+  width: 16px; height: 16px; border-radius: 50%;
   background: #022c22; border: 2px solid #022c22;
   position: absolute; bottom: -4px; left: 16%; transform: translateX(-50%); z-index: 2;
-  box-shadow: 0 0 8px rgba(2, 44, 34, 0.3);
 }
-.thermal-ticks { display: flex; flex-direction: column; justify-content: space-between; height: 80px; }
+.thermal-ticks { display: flex; flex-direction: column; justify-content: space-between; height: 75px; }
 .thermal-tick { font-family: var(--font-mono); font-size: 9px; font-weight: 700; color: var(--text-dim); line-height: 1; }
 .thermal-value {
   font-family: var(--font-main); font-size: 20px; font-weight: 900;
@@ -245,29 +207,25 @@ body {
 }
 .thermal-unit { font-size: 13px; font-weight: 800; color: var(--brand-primary); }
 
-/* ── FLUID BATTERY TANK ───────────────────────────────────────────── */
+/* ── BATTERY TANK ─────────────────────────────────────────────────── */
 .tank-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .tank-cap {
-  width: 24px; height: 6px; background: #022c22;
-  border-radius: 4px 4px 0 0; border: 2px solid #022c22; border-bottom: none; order: -1;
+  width: 22px; height: 5px; background: #022c22;
+  border-radius: 3px 3px 0 0; border: 2px solid #022c22; border-bottom: none; order: -1;
 }
 .tank-body {
-  width: 40px; height: 110px; border: 2px solid rgba(2, 44, 34, 0.7);
-  border-radius: 0 0 10px 10px; position: relative; overflow: hidden;
-  background: rgba(255, 255, 255, 0.4);
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+  width: 38px; height: 100px; border: 2px solid rgba(2, 44, 34, 0.7);
+  border-radius: 0 0 8px 8px; position: relative; overflow: hidden; background: #ffffff;
 }
 .tank-fill {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(180deg, var(--brand-secondary), var(--brand-primary));
-  border-radius: 0 0 8px 8px; transition: height .5s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 16px rgba(163, 230, 53, 0.5);
+  border-radius: 0 0 6px 6px; transition: height .3s ease;
 }
 .tank-level-lines { position: absolute; inset: 0; pointer-events: none; }
 .tank-line { position: absolute; left: 0; right: 0; height: 1px; background: rgba(2, 44, 34, 0.15); }
 .tank-percent {
-  font-family: var(--font-main); font-size: 26px; font-weight: 900;
-  color: #022c22; line-height: 1;
+  font-family: var(--font-main); font-size: 24px; font-weight: 900; color: #022c22; line-height: 1;
 }
 
 .gauge-label {
@@ -278,7 +236,7 @@ body {
 
 .cell-list {
   display: flex; flex-direction: column; gap: 3px;
-  width: 100%; padding-top: 5px; border-top: 1px solid rgba(2, 44, 34, 0.1);
+  width: 100%; padding-top: 4px; border-top: 1px solid rgba(2, 44, 34, 0.12);
 }
 .cell-item { display: flex; justify-content: space-between; align-items: center; font-size: 10px; width: 100%; }
 .cell-item .cell-name { width: 22px; color: #022c22; font-family: var(--font-main); font-weight: 900; }
@@ -290,152 +248,103 @@ body {
 .md-label { font-size: 9px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
 .md-val { font-family: var(--font-mono); font-size: 10px; font-weight: 800; color: #022c22; }
 
-/* ── RIGHT PANEL STACK (LIQUID CAMERA & KPI CARD) ─────────────────── */
-.right-panel-stack { flex: 0 0 42%; display: flex; flex-direction: column; gap: 12px; }
+/* ── RIGHT PANEL (CAMERA + KPI CARD BELOW) ────────────────────────── */
+.right-panel-stack { flex: 0 0 42%; display: flex; flex-direction: column; gap: 10px; }
 
 .cam-card {
-  flex: 1;
-  background: var(--glass-panel);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px; overflow: hidden; display: flex; flex-direction: column;
+  flex: 1; background: #ffffff; border: 2px solid var(--glass-border);
+  border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
   min-height: 0; box-shadow: var(--glass-shadow);
 }
 .cam-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 18px; background: rgba(255, 255, 255, 0.4);
-  border-bottom: 1px solid var(--glass-border); flex-shrink: 0;
+  padding: 10px 16px; background: #f1f7f5;
+  border-bottom: 2px solid var(--glass-border); flex-shrink: 0;
 }
 .cam-hl { display: flex; align-items: center; gap: 10px; }
 .cam-live {
   display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(220, 38, 38, 0.1); color: #dc2626;
+  background: #fef2f2; color: #dc2626;
   font-family: var(--font-mono); font-size: 10px; font-weight: 800; letter-spacing: 1px;
-  padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 3px 10px; border-radius: 12px; border: 1px solid #fca5a5;
 }
 .cam-title { font-family: var(--font-main); font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #022c22; }
 .cam-expand {
-  width: 32px; height: 32px; background: rgba(255, 255, 255, 0.6);
-  border: 1px solid var(--glass-border);
-  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; background: #ffffff; border: 1px solid var(--glass-border);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
   cursor: pointer; color: #022c22; transition: .15s;
 }
-.cam-expand:hover { background: #ffffff; border-color: var(--brand-primary); color: var(--brand-primary); }
-.cam-frame { flex: 1; background: rgba(226, 238, 232, 0.5); position: relative; min-height: 0; }
+.cam-expand:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+.cam-frame { flex: 1; background: #e2eee8; position: relative; min-height: 0; }
 .cam-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cam-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-dim); font-size: 12px; font-weight: 700; }
 
-/* ── LIQUID GLASS KPI CARD BELOW CAMERA ───────────────────────────── */
+/* ── KPI CARD DISPLAYED DIRECTLY BELOW CAMERA ─────────────────────── */
 .kpi-card-panel {
-  background: var(--glass-panel);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px; padding: 14px 20px;
+  background: #ffffff;
+  border: 2px solid var(--glass-border);
+  border-radius: 16px; padding: 12px 18px;
   display: flex; align-items: center; justify-content: space-between;
   box-shadow: var(--glass-shadow); flex-shrink: 0;
 }
 .kpi-item { display: flex; flex-direction: column; gap: 2px; }
 .kpi-label { font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
 .kpi-val { font-family: var(--font-mono); font-size: 14px; font-weight: 800; color: #022c22; }
-.kpi-sep { width: 1px; height: 28px; background: rgba(2, 44, 34, 0.12); }
+.kpi-sep { width: 1px; height: 28px; background: var(--glass-border); }
 
-/* ── LIQUID GLASS TOAST POPUP NOTIFICATIONS ───────────────────────── */
+/* ── POPUP TOAST NOTIFICATIONS (TOP RIGHT) ────────────────────────── */
 .toast-container {
-  position: fixed;
-  top: 72px; right: 24px;
-  display: flex; flex-direction: column; gap: 12px;
-  z-index: 9999; pointer-events: none;
-  width: 330px;
+  position: fixed; top: 66px; right: 20px;
+  display: flex; flex-direction: column; gap: 10px;
+  z-index: 9999; pointer-events: none; width: 320px;
 }
 
 .toast-card {
   pointer-events: auto;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--glass-border);
+  background: #ffffff;
+  border: 2px solid var(--glass-border);
   border-left: 6px solid var(--brand-primary);
-  border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(2, 44, 34, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.9);
-  position: relative;
-  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(2, 44, 34, 0.15);
+  position: relative; overflow: hidden;
   display: flex; flex-direction: column;
-  animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  animation: slideIn 0.3s ease forwards;
 }
 
 .toast-card.alert-warning { border-left-color: #d97706; }
 .toast-card.alert-success { border-left-color: #16a34a; }
 
-.toast-card.hide {
-  animation: slideOut 0.35s ease forwards;
-}
+.toast-card.hide { animation: slideOut 0.3s ease forwards; }
 
-.toast-body {
-  padding: 12px 16px 14px 16px;
-  display: flex; align-items: flex-start; gap: 12px;
-}
+.toast-body { padding: 10px 14px 12px 14px; display: flex; align-items: flex-start; gap: 12px; }
 .toast-icon { flex-shrink: 0; margin-top: 2px; }
 .toast-content { flex: 1; min-width: 0; }
-.toast-title {
-  font-family: var(--font-main); font-size: 13px; font-weight: 900;
-  color: #022c22; margin-bottom: 2px;
-}
-.toast-sub {
-  font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
-  line-height: 1.3;
-}
-.toast-close {
-  background: none; border: none; font-size: 16px; color: var(--text-dim);
-  cursor: pointer; padding: 0 2px; line-height: 1; font-weight: 700;
-}
+.toast-title { font-family: var(--font-main); font-size: 13px; font-weight: 900; color: #022c22; margin-bottom: 2px; }
+.toast-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); line-height: 1.3; }
+.toast-close { background: none; border: none; font-size: 16px; color: var(--text-dim); cursor: pointer; padding: 0 2px; }
 
-/* 5-SECOND COUNTDOWN STATUS BAR AT BOTTOM OF TOAST */
-.toast-progress-bar {
-  width: 100%; height: 4px;
-  background: rgba(0, 0, 0, 0.05);
-  position: relative; overflow: hidden;
-}
-.toast-progress-fill {
-  height: 100%;
-  width: 100%;
-  background: var(--brand-primary);
-  animation: countdown 5s linear forwards;
-}
+/* 5-SECOND COUNTDOWN STATUS BAR */
+.toast-progress-bar { width: 100%; height: 4px; background: #e2eee8; position: relative; overflow: hidden; }
+.toast-progress-fill { height: 100%; width: 100%; background: var(--brand-primary); animation: countdown 5s linear forwards; }
 .toast-card.alert-warning .toast-progress-fill { background: #d97706; }
 .toast-card.alert-success .toast-progress-fill { background: #16a34a; }
 
-@keyframes countdown {
-  from { width: 100%; }
-  to   { width: 0%; }
-}
-@keyframes slideIn {
-  from { transform: translateX(120%); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
-}
-@keyframes slideOut {
-  from { transform: translateX(0); opacity: 1; }
-  to   { transform: translateX(120%); opacity: 0; }
-}
+@keyframes countdown { from { width: 100%; } to { width: 0%; } }
+@keyframes slideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(110%); opacity: 0; } }
 
 /* ── FULLSCREEN MODAL ─────────────────────────────────────────────── */
-.cam-modal { position: fixed; inset: 0; background: rgba(2, 44, 34, 0.7); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 3vw; backdrop-filter: blur(16px); }
+.cam-modal { position: fixed; inset: 0; background: rgba(2, 44, 34, 0.85); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 3vw; }
 .cam-modal.open { display: flex; }
-.cam-modal-box { position: relative; width: 100%; max-width: 92vw; aspect-ratio: 16/9; background: #000; border-radius: 24px; overflow: hidden; border: 2px solid var(--brand-secondary); box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+.cam-modal-box { position: relative; width: 100%; max-width: 92vw; aspect-ratio: 16/9; background: #000; border-radius: 16px; overflow: hidden; border: 2px solid var(--brand-secondary); }
 .cam-close { position: absolute; top: 16px; right: 16px; width: 38px; height: 38px; border-radius: 50%; background: rgba(0,0,0,.7); border: 1px solid #ffffff; color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; }
-
-@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-.blink { animation: blink 2s infinite; }
 </style>
 </head>
 <body>
 
-<!-- LIQUID GLASS TOPNAV -->
+<!-- GE VERNOVA TOPNAV -->
 <nav class="topnav">
   <div class="brand">
-    <!-- SVG Monogram Logo (gelogo.svg with inline SVG fallback) -->
     <img src="../static/gelogonew.png" alt="GE Logo" class="ge-monogram-img" onerror="this.style.display='none'; document.getElementById('ge-svg-fallback').style.display='block';">
     <svg id="ge-svg-fallback" class="ge-monogram-img" style="display:none;" viewBox="0 0 100 100">
       <circle cx="50" cy="50" r="48" fill="#005e60"/>
@@ -485,7 +394,7 @@ body {
 
       <canvas id="three-canvas"></canvas>
 
-      <!-- LEFT SIDE: LIQUID GLASS HYDRAULIC & MOTOR DISPLAY STACK -->
+      <!-- LEFT SIDE: HYDRAULIC & MOTOR DISPLAY STACK -->
       <div class="left-cluster">
         
         <!-- Hydraulic Gauge Card -->
@@ -528,7 +437,7 @@ body {
 
       </div>
 
-      <!-- RIGHT SIDE: LIQUID GLASS BATTERY DISPLAY -->
+      <!-- RIGHT SIDE: BATTERY DISPLAY -->
       <div class="right-cluster" id="batteryGauge">
         <div class="tank-wrap">
           <div class="tank-cap"></div>
@@ -591,7 +500,7 @@ body {
         </div>
       </div>
 
-      <!-- Liquid Glass KPI Telemetry Card Positioned Directly Below Camera -->
+      <!-- KPI Telemetry Card Positioned Directly Below Camera -->
       <div class="kpi-card-panel" id="dashBar">
         <div class="kpi-item">
           <span class="kpi-label">Op Time</span>
@@ -619,18 +528,14 @@ body {
   </div>
 </div>
 
-<!-- DYNAMIC LIQUID GLASS NOTIFICATION TOAST CONTAINER -->
+<!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- FULLSCREEN MODAL -->
 <div class="cam-modal" id="camModal">
   <div class="cam-modal-box">
     <span class="cam-live" style="position:absolute;top:16px;left:16px;z-index:2"><span class="live-dot blink"></span>LIVE HD</span>
-    <button class="cam-close" id="camClose">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
+    <button class="cam-close" id="camClose">&times;</button>
     <img id="camVideoLarge" style="width:100%;height:100%;object-fit:contain;display:block">
     <div class="cam-fallback" id="camFallbackLarge">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
@@ -647,7 +552,6 @@ body {
 <script>
 let scene, camera, renderer, forkliftGroup;
 let animationId;
-let time = 0;
 
 function initThreeJS() {
   const container = document.getElementById('viewport3d');
@@ -655,36 +559,36 @@ function initThreeJS() {
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xe2eee8);
-  scene.fog = new THREE.Fog(0xe2eee8, 8, 25);
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-  camera.position.set(2.8, 1.8, 4.2);
+  camera.position.set(2.8, 2.8, 4.2);
   camera.lookAt(0, 0.6, 0);
 
-  renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  // ⚡ HARDWARE OPTIMIZED FOR LINARO RK3568 (MALI-G52 GPU)
+  renderer = new THREE.WebGLRenderer({ 
+    canvas: canvas, 
+    antialias: false,               // Turn off anti-aliasing for massive FPS boost
+    powerPreference: "high-performance",
+    precision: "mediump"
+  });
+  
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
+  renderer.setPixelRatio(1.0);      // Lock to 1.0 to prevent 4K/2K resolution lag
+  renderer.shadowMap.enabled = false; // Disable heavy dynamic shadows for embedded GPU
 
-  // Studio Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+  // Fast Ambient Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
   dirLight.position.set(5, 10, 5);
-  dirLight.castShadow = true;
   scene.add(dirLight);
 
   const floorGeo = new THREE.PlaneGeometry(30, 30);
-  const floorMat = new THREE.MeshStandardMaterial({ 
-    color: 0xd2e3de, 
-    roughness: 0.8, 
-    metalness: 0.1 
-  });
+  const floorMat = new THREE.MeshBasicMaterial({ color: 0xd2e3de });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = 0;
-  floor.receiveShadow = true;
   scene.add(floor);
 
   const gridHelper = new THREE.GridHelper(30, 30, 0xa8c8c0, 0xbfdad2);
@@ -697,12 +601,12 @@ function initThreeJS() {
   setTimeout(() => {
     document.getElementById('loadingOverlay').classList.add('hidden');
     
-    // Trigger initial liquid notification alert toasts
+    // Dynamic toast notification alerts
     showNotificationAlert('Hydraulic Filter Service Due', 'Check filter status · Maintenance Bay 04', 'warning');
     setTimeout(() => {
       showNotificationAlert('BMS Telemetry Online', 'Cell balancing active · Pack status normal', 'success');
     }, 2000);
-  }, 1000);
+  }, 800);
 
   window.addEventListener('resize', onWindowResize);
 }
@@ -720,34 +624,25 @@ function buildForklift() {
       model.scale.set(2.2, 2.2, 2.2);
       model.position.set(0, 0, 0);
 
-      model.traverse((node) => {
-        if (node.isMesh) {
-          node.castShadow = true;
-          node.receiveShadow = true;
-        }
-      });
-
       forkliftGroup.add(model);
       scene.add(forkliftGroup);
     },
     undefined,
     function (error) {
-      console.warn('.glb model not found, falling back to 3D geometric assembly:', error);
+      console.warn('.glb model path not found, using low-poly fallback mesh:', error);
       
       const chassis = new THREE.Mesh(
         new THREE.BoxGeometry(2.0, 0.6, 1.1),
-        new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.3 })
+        new THREE.MeshLambertMaterial({ color: 0x059669 })
       );
       chassis.position.set(0, 0.4, 0);
-      chassis.castShadow = true;
       forkliftGroup.add(chassis);
 
       const cabin = new THREE.Mesh(
         new THREE.BoxGeometry(0.8, 0.8, 1.0),
-        new THREE.MeshStandardMaterial({ color: 0x022c22, roughness: 0.2 })
+        new THREE.MeshLambertMaterial({ color: 0x022c22 })
       );
       cabin.position.set(0.4, 0.9, 0);
-      cabin.castShadow = true;
       forkliftGroup.add(cabin);
 
       scene.add(forkliftGroup);
@@ -755,13 +650,13 @@ function buildForklift() {
   );
 }
 
+/* 🔄 FAST CONTINUOUS 360-DEGREE ROTATION LOOP FOR RK3568 */
 function animate() {
   animationId = requestAnimationFrame(animate);
-  time += 0.016;
 
   if (forkliftGroup) {
-    forkliftGroup.rotation.y = Math.sin(time * 0.5) * 0.4;
-    forkliftGroup.position.y = Math.sin(time * 1.5) * 0.02;
+    // Smooth, Fast Continuous 360° Y-Axis Spinning
+    forkliftGroup.rotation.y += 0.035; 
   }
 
   renderer.render(scene, camera);
@@ -775,9 +670,7 @@ function onWindowResize() {
   renderer.setSize(container.clientWidth, container.clientHeight);
 }
 
-/* ═════════════════════════════════════════════════════════════════════
-   DYNAMIC NOTIFICATION TOAST POPUP SYSTEM (5-SECOND COUNTDOWN STATUS BAR)
-   ═════════════════════════════════════════════════════════════════════ */
+/* DYNAMIC NOTIFICATION TOAST POPUP SYSTEM */
 function showNotificationAlert(title, message, type = 'warning') {
   const container = document.getElementById('toastContainer');
   if (!container) return;
@@ -805,10 +698,7 @@ function showNotificationAlert(title, message, type = 'warning') {
 
   container.appendChild(toast);
 
-  // Auto-dismiss popup after 5 seconds
-  setTimeout(() => {
-    dismissToast(toast);
-  }, 5000);
+  setTimeout(() => { dismissToast(toast); }, 5000);
 }
 
 function dismissToast(toastElement) {
@@ -818,7 +708,7 @@ function dismissToast(toastElement) {
     if (toastElement.parentNode) {
       toastElement.parentNode.removeChild(toastElement);
     }
-  }, 350);
+  }, 300);
 }
 
 // Clock
