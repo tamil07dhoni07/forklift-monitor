@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700;800;900&family=Roboto:ital,wght@0,500;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
 <style>
 /* ═════════════════════════════════════════════════════════════════════
-   RK3568 EMBEDDED OPTIMIZED THEME (HIGH VISIBILITY 7-INCH EDITION)
+   RK3568 EMBEDDED OPTIMIZED THEME (LARGE FONT 7-INCH EDITION)
    ═════════════════════════════════════════════════════════════════════ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,7 +35,7 @@ html, body { width: 100vw; height: 100vh; overflow: hidden; }
   --font-main:          'Roboto', sans-serif;
   --font-mono:          'Roboto Mono', monospace;
 
-  --nav: 48px;
+  --nav: 52px;
 }
 
 body {
@@ -45,7 +45,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── OPTIMIZED TOPNAV ─────────────────────────────────────────────── */
+/* ── OPTIMIZED TOPNAV (SCALED FONTS) ──────────────────────────────── */
 .topnav {
   width: 100%; height: var(--nav);
   background: #ffffff;
@@ -57,14 +57,14 @@ body {
 }
 
 .brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.ge-monogram-img { width: 34px; height: 34px; object-fit: contain; }
+.ge-monogram-img { width: 36px; height: 36px; object-fit: contain; }
 .brand-txt { display: flex; flex-direction: column; line-height: 1; }
 .brand-name { 
-  font-family: var(--font-main); font-size: 16px; font-weight: 900; 
+  font-family: var(--font-main); font-size: 17px; font-weight: 900; 
   color: #011e1b; letter-spacing: 1.5px; text-transform: uppercase; 
 }
 .powered-by {
-  font-family: var(--font-mono); font-size: 10px; font-weight: 800;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 800;
   color: var(--brand-primary); text-transform: uppercase; letter-spacing: 0.5px;
   margin-top: 2px;
 }
@@ -72,19 +72,19 @@ body {
 
 .nav-meta { 
   flex: 1; display: flex; align-items: center; justify-content: center; 
-  gap: 12px; font-size: 13px; color: #1e293b; font-weight: 900; 
+  gap: 12px; font-size: 14px; color: #1e293b; font-weight: 900; 
 }
-.nav-id { font-family: var(--font-main); font-weight: 900; color: #011e1b; font-size: 14px; }
+.nav-id { font-family: var(--font-main); font-weight: 900; color: #011e1b; font-size: 15px; }
 .nav-sep { color: #94a3b8; font-weight: 700; }
-.nav-tz { font-size: 12px; color: var(--brand-primary); font-family: var(--font-mono); letter-spacing: .5px; font-weight: 800; }
-.nav-clock { font-family: var(--font-mono); font-size: 16px; font-weight: 900; color: #011e1b; }
+.nav-tz { font-size: 13px; color: var(--brand-primary); font-family: var(--font-mono); letter-spacing: .5px; font-weight: 800; }
+.nav-clock { font-family: var(--font-mono); font-size: 18px; font-weight: 900; color: #011e1b; }
 
 .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .net-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .net-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px; border-radius: 20px;
-  font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: .5px;
+  padding: 5px 12px; border-radius: 20px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 900; letter-spacing: .5px;
   background: #ffffff; border: 1.5px solid #94a3b8;
   white-space: nowrap; text-transform: uppercase; color: #065f46;
 }
@@ -93,8 +93,8 @@ body {
 .sensor-chips { display: flex; gap: 6px; }
 .sensor-chip {
   display: inline-flex; align-items: center; gap: 5px;
-  font-family: var(--font-mono); font-size: 11px; color: #011e1b; font-weight: 800;
-  padding: 4px 8px; border-radius: 8px;
+  font-family: var(--font-mono); font-size: 12px; color: #011e1b; font-weight: 900;
+  padding: 5px 10px; border-radius: 8px;
   border: 1.5px solid #94a3b8; background: #ffffff; white-space: nowrap;
 }
 .sensor-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand-primary); display: inline-block; }
@@ -126,12 +126,12 @@ body {
 }
 .loading-overlay.hidden { opacity: 0; pointer-events: none; }
 .loading-text {
-  font-size: 14px; color: #011e1b;
+  font-size: 15px; color: #011e1b;
   font-family: var(--font-main); letter-spacing: 2px;
   margin-top: 14px; font-weight: 900; text-transform: uppercase;
 }
 .loading-spinner {
-  width: 38px; height: 38px;
+  width: 40px; height: 40px;
   border: 4px solid #dbeae4; border-top-color: var(--brand-primary);
   border-radius: 50%; animation: spin 1s linear infinite;
 }
@@ -141,51 +141,47 @@ body {
 .left-cluster {
   position: absolute; top: 6px; left: 8px; bottom: 6px;
   display: flex; flex-direction: column; gap: 6px;
-  width: 180px; z-index: 10;
+  width: 185px; z-index: 10;
 }
 
 .right-cluster {
   position: absolute; top: 6px; right: 8px; bottom: 6px;
   display: flex; flex-direction: column; gap: 6px;
-  width: 195px; z-index: 10;
+  width: 200px; z-index: 10;
 }
 
 .gauge-card {
   flex: 1;
   background: var(--glass-panel);
   border: 2px solid #64748b;
-  border-radius: 12px; padding: 8px 10px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  border-radius: 12px; padding: 6px 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 
-/* ── HYDRAULIC GAUGE (INCREASED HEIGHT FIX) ───────────────────────── */
+/* ── HYDRAULIC GAUGE ──────────────────────────────────────────────── */
 .hyd-stem-body {
-  width: 28px; height: 75px; /* Matched to Thermometer stem height */
+  width: 28px; height: 65px;
   border: 2px solid #011e1b;
-  border-radius: 8px; position: relative; overflow: hidden; background: #f8fafc;
+  border-radius: 6px; position: relative; overflow: hidden; background: #f8fafc;
 }
 .hyd-stem-fill {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(180deg, var(--brand-secondary), var(--brand-primary));
-  border-radius: 0 0 6px 6px; transition: height .3s ease;
+  border-radius: 0 0 4px 4px; transition: height .3s ease;
 }
 .hyd-val-text {
-  font-family: var(--font-main); font-size: 20px; font-weight: 900; color: #011e1b; line-height: 1;
+  font-family: var(--font-main); font-size: 24px; font-weight: 900; color: #011e1b; line-height: 1;
 }
 
-/* ── MOTOR THERMOMETER (PERFECT CENTERED BULB FIX) ───────────────── */
-.thermal-wrap { 
-  display: flex; justify-content: center; width: 100%; margin: 2px 0 10px 0; 
-}
-.thermal-body { 
-  display: flex; align-items: flex-start; gap: 8px; position: relative; 
-}
+/* ── MOTOR THERMOMETER ────────────────────────────────────────────── */
+.thermal-wrap { display: flex; justify-content: center; width: 100%; margin: 2px 0 8px 0; }
+.thermal-body { display: flex; align-items: flex-start; gap: 8px; position: relative; }
 .thermal-stem-container {
   position: relative; display: flex; flex-direction: column; align-items: center;
 }
 .thermal-stem {
-  width: 18px; height: 75px;
+  width: 18px; height: 65px;
   border: 2.5px solid #011e1b; border-bottom: none;
   border-radius: 10px 10px 0 0;
   position: relative; overflow: hidden; background: #f8fafc; z-index: 1;
@@ -198,26 +194,25 @@ body {
 .thermal-bulb {
   width: 26px; height: 26px; border-radius: 50%;
   background: #011e1b; border: 2.5px solid #011e1b;
-  margin-top: -8px; z-index: 2; /* Sits perfectly centered at the base of the stem */
+  margin-top: -8px; z-index: 2;
 }
-.thermal-ticks { 
-  display: flex; flex-direction: column; justify-content: space-between; height: 75px; 
-}
-.thermal-tick { font-family: var(--font-mono); font-size: 10px; font-weight: 800; color: #334155; line-height: 1; }
+.thermal-ticks { display: flex; flex-direction: column; justify-content: space-between; height: 65px; }
+.thermal-tick { font-family: var(--font-mono); font-size: 11px; font-weight: 900; color: #1e293b; line-height: 1; }
 .thermal-value {
-  font-family: var(--font-main); font-size: 22px; font-weight: 900;
+  font-family: var(--font-main); font-size: 26px; font-weight: 900;
   color: #011e1b; line-height: 1; display: flex; align-items: flex-start; gap: 2px;
 }
-.thermal-unit { font-size: 14px; font-weight: 900; color: var(--brand-primary); }
+.thermal-unit { font-size: 16px; font-weight: 900; color: var(--brand-primary); }
 
-/* ── BATTERY TANK & CELLS ─────────────────────────────────────────── */
-.tank-wrap { display: flex; flex-direction: column; align-items: center; }
+/* ── BATTERY TANK ─────────────────────────────────────────────────── */
+.tank-wrap { display: flex; flex-direction: column; align-items: center; margin: 2px 0; }
 .tank-cap {
-  width: 22px; height: 4px; background: #011e1b;
+  width: 26px; height: 5px; background: #011e1b;
   border-radius: 3px 3px 0 0; border: 2px solid #011e1b; border-bottom: none; order: -1;
 }
 .tank-body {
-  width: 36px; height: 46px; border: 2px solid #011e1b;
+  width: 42px; height: 65px;
+  border: 2px solid #011e1b;
   border-radius: 0 0 6px 6px; position: relative; overflow: hidden; background: #f8fafc;
 }
 .tank-fill {
@@ -228,25 +223,26 @@ body {
 .tank-level-lines { position: absolute; inset: 0; pointer-events: none; }
 .tank-line { position: absolute; left: 0; right: 0; height: 1px; background: rgba(1, 30, 27, 0.2); }
 .tank-percent {
-  font-family: var(--font-main); font-size: 20px; font-weight: 900; color: #011e1b; line-height: 1;
+  font-family: var(--font-main); font-size: 24px; font-weight: 900; color: #011e1b; line-height: 1;
 }
 
+/* ── CARD LABELS & DETAILS (SCALED UP) ─────────────────────────────── */
 .gauge-label {
-  font-family: var(--font-main); font-size: 12px; font-weight: 900;
+  font-family: var(--font-main); font-size: 14px; font-weight: 900;
   letter-spacing: 1px; text-transform: uppercase; color: #011e1b;
 }
-.gauge-sublabel { font-size: 11px; color: var(--brand-primary); font-family: var(--font-mono); font-weight: 800; }
+.gauge-sublabel { font-size: 12px; color: var(--brand-primary); font-family: var(--font-mono); font-weight: 900; }
 
 .cell-list { display: flex; flex-direction: column; gap: 2px; width: 100%; }
-.cell-item { display: flex; justify-content: space-between; align-items: center; font-size: 11px; width: 100%; }
-.cell-item .cell-name { width: 24px; color: #011e1b; font-family: var(--font-main); font-weight: 900; }
-.cell-item .cell-volt { width: 50px; font-family: var(--font-mono); color: var(--brand-primary); font-weight: 800; text-align: right; }
-.cell-item .cell-temp { font-family: var(--font-mono); color: #334155; font-weight: 800; text-align: right; }
+.cell-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; width: 100%; }
+.cell-item .cell-name { width: 26px; color: #011e1b; font-family: var(--font-main); font-weight: 900; }
+.cell-item .cell-volt { width: 54px; font-family: var(--font-mono); color: var(--brand-primary); font-weight: 900; text-align: right; }
+.cell-item .cell-temp { font-family: var(--font-mono); color: #1e293b; font-weight: 900; text-align: right; }
 
 .motor-data-rows { display: flex; flex-direction: column; gap: 2px; width: 100%; margin-top: 1px; }
 .motor-data-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-.md-label { font-size: 9px; font-weight: 800; color: #334155; text-transform: uppercase; }
-.md-val { font-family: var(--font-mono); font-size: 10px; font-weight: 800; color: #011e1b; }
+.md-label { font-size: 11px; font-weight: 900; color: #1e293b; text-transform: uppercase; }
+.md-val { font-family: var(--font-mono); font-size: 12px; font-weight: 900; color: #011e1b; }
 
 /* ── RIGHT PANEL (CAMERA + KPI CARD BELOW) ────────────────────────── */
 .right-panel-stack { flex: 0 0 42%; display: flex; flex-direction: column; gap: 6px; }
@@ -265,19 +261,19 @@ body {
 .cam-live {
   display: inline-flex; align-items: center; gap: 5px;
   background: #fef2f2; color: #dc2626;
-  font-family: var(--font-mono); font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 900; letter-spacing: 0.5px;
   padding: 2px 8px; border-radius: 10px; border: 1px solid #fca5a5;
 }
-.cam-title { font-family: var(--font-main); font-size: 12px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #011e1b; }
+.cam-title { font-family: var(--font-main); font-size: 13px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #011e1b; }
 .cam-expand {
-  width: 26px; height: 26px; background: #ffffff; border: 1.5px solid #64748b;
+  width: 28px; height: 28px; background: #ffffff; border: 1.5px solid #64748b;
   border-radius: 6px; display: flex; align-items: center; justify-content: center;
   cursor: pointer; color: #011e1b; transition: .15s;
 }
 .cam-expand:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
 .cam-frame { flex: 1; background: #e2eee8; position: relative; min-height: 0; }
 .cam-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.cam-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #334155; font-size: 12px; font-weight: 800; }
+.cam-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #1e293b; font-size: 13px; font-weight: 900; }
 
 /* ── KPI CARD DISPLAYED DIRECTLY BELOW CAMERA ─────────────────────── */
 .kpi-card-panel {
@@ -288,9 +284,9 @@ body {
   box-shadow: var(--glass-shadow); flex-shrink: 0;
 }
 .kpi-item { display: flex; flex-direction: column; gap: 1px; }
-.kpi-label { font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; color: #334155; }
-.kpi-val { font-family: var(--font-mono); font-size: 14px; font-weight: 900; color: #011e1b; }
-.kpi-sep { width: 2px; height: 22px; background: #cbd5e1; }
+.kpi-label { font-size: 11px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; color: #1e293b; }
+.kpi-val { font-family: var(--font-mono); font-size: 16px; font-weight: 900; color: #011e1b; }
+.kpi-sep { width: 2px; height: 24px; background: #cbd5e1; }
 
 /* ── FIXED BOTTOM ALERTS PANEL ────────────────────────────────────── */
 .alerts-panel {
@@ -298,13 +294,13 @@ body {
   padding: 6px 12px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
-.alerts-head { font-family: var(--font-main); font-size: 11px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #011e1b; white-space: nowrap; }
+.alerts-head { font-family: var(--font-main); font-size: 12px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #011e1b; white-space: nowrap; }
 .alerts-pills { flex: 1; display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; align-items: center; }
 .alert-pill { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; border: 1.5px solid; flex: 1; min-width: 140px; }
 .a-warn { background: #fffbeb; border-color: #fde047; }
 .a-ok   { background: #f0fdf4; border-color: #86efac; }
-.alert-msg { font-size: 11px; font-weight: 900; color: #011e1b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.alert-sub { font-size: 10px; font-family: var(--font-mono); color: #334155; font-weight: 700; margin-top: 1px; }
+.alert-msg { font-size: 12px; font-weight: 900; color: #011e1b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alert-sub { font-size: 11px; font-family: var(--font-mono); color: #1e293b; font-weight: 800; margin-top: 1px; }
 
 /* ── FULLSCREEN MODAL ─────────────────────────────────────────────── */
 .cam-modal { position: fixed; inset: 0; background: rgba(1, 30, 27, 0.85); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 3vw; }
@@ -380,7 +376,7 @@ body {
           <div class="gauge-sublabel" id="hyd-temp">38 °C</div>
         </div>
 
-        <!-- Motor Gauge Card (Perfectly Centered Bulb Structure) -->
+        <!-- Motor Gauge Card -->
         <div class="gauge-card" id="motorGauge">
           <div class="thermal-wrap">
             <div class="thermal-body">
@@ -436,7 +432,7 @@ body {
 
         <!-- Card 2: Cell Diagnostics -->
         <div class="gauge-card">
-          <div class="gauge-label" style="font-size:11px;">Cell Diagnostics</div>
+          <div class="gauge-label" style="font-size:12px;">Cell Diagnostics</div>
           <div class="cell-list">
             <div class="cell-item"><span class="cell-name">B1</span><span class="cell-volt" id="bat1">3.32 V</span><span class="cell-temp" id="bat1tmp">28 °C</span></div>
             <div class="cell-item"><span class="cell-name">B2</span><span class="cell-volt" id="bat2">3.31 V</span><span class="cell-temp" id="bat2tmp">28 °C</span></div>
@@ -687,6 +683,6 @@ window.addEventListener('DOMContentLoaded', function() {
   initThreeJS();
 });
 </script>
-<script src="../static/script.js"></script>
+<!-- <script src="../static/script.js"></script> -->
 </body>
 </html>
