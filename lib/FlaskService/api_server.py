@@ -23,10 +23,15 @@ from lib.FlaskService.fault_codes import detect_faults, fault_summary
 import logging
 from lib.CloudService.device_register import register_device
 
-app = Flask(__name__,
-            static_folder='../web/static',
-            static_url_path='/static',
-            template_folder='../web/templates')
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(
+    __name__,
+    static_folder=os.path.join(BASE_DIR, '../web/static'),
+    static_url_path='/static',
+    template_folder=os.path.join(BASE_DIR, '../web/templates')
+)
 CORS(app)
 
 DB_CONFIG = {
