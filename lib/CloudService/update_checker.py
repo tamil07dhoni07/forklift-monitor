@@ -20,8 +20,6 @@ import logging
 import subprocess
 import requests
 
-import os
-import sys
 
 PROJECT_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../..")
