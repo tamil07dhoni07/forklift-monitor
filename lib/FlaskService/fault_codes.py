@@ -5,7 +5,14 @@
 #    DIRECT     — single sensor threshold breach
 #    INFERRED   — cross-sensor correlation
 # ================================================================
+import os
+import sys
 
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+
+sys.path.insert(0, PROJECT_ROOT)
 from datetime import datetime, timezone, timedelta
 from lib.Utils.constants import FAULT_CATALOG, THRESHOLDS
 

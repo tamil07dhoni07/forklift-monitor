@@ -25,6 +25,11 @@ import traceback
 import logging
 import functools
 from datetime import datetime, timezone, timedelta
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+
+sys.path.insert(0, PROJECT_ROOT)
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from lib.config import DEVICE_ID, LOCATION

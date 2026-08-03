@@ -2,6 +2,14 @@
 # ============================================
 # FORKLIFT MONITOR - API SERVER (Multi-voltage)
 # ============================================
+import os
+import sys
+
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+
+sys.path.insert(0, PROJECT_ROOT)
 from lib.CloudService.cloud_sync import build_payload, enqueue
 from lib.FlaskService.kpi_logic import calculate_kpi_today
 from flask import Flask, jsonify, send_from_directory

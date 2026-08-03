@@ -20,8 +20,14 @@ import logging
 import subprocess
 import requests
 
-# Import local version from constants.py
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import os
+import sys
+
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+
+sys.path.insert(0, PROJECT_ROOT)
 from lib.Utils.constants import VERSION, CLOUD_API_URL, CLOUD_API_KEY
 from lib.config import DEVICE_ID
 from lib.CloudService.device_service import get_device_details

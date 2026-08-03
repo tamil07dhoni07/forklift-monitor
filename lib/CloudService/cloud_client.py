@@ -1,6 +1,13 @@
 import logging
 import requests
+import os
+import sys
 
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+
+sys.path.insert(0, PROJECT_ROOT)
 from lib.CloudService.cloud_auth import get_bearer_token
 
 log = logging.getLogger("cloud_client")

@@ -6,7 +6,14 @@
 # ================================================================
 
 import logging
+import os
+import sys
 
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+
+sys.path.insert(0, PROJECT_ROOT)
 from lib.config import DEVICE_ID
 from lib.Utils.constants import CLOUD_API_URL
 from lib.CloudService.cloud_client import cloud_request
