@@ -9,7 +9,7 @@ import token
 
 import requests
 import logging
-from lib.Utils.config    import DEVICE_ID, LOCATION
+from lib.config    import DEVICE_ID, LOCATION
 from lib.Utils.constants import CLOUD_API_URL, CLOUD_API_KEY
 from lib.CloudService.cloud_auth import get_bearer_token
 from lib.CloudService.cloud_client import cloud_request

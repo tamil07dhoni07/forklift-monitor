@@ -9,7 +9,7 @@ from flask_cors import CORS
 import psycopg2
 from lib.DBConnection.db import delete_old_current_sensor_records, delete_old_oil_records, delete_old_status_details_records, delete_old_status_details_records, delete_old_temperature_records, delete_old_vibration_records, delete_old_voltage_records, get_db_connection,delete_old_alert_records
 from datetime import datetime, timedelta
-from lib.Utils.config import DEVICE_ID, HOSTNAME, LOCATION
+from lib.config import DEVICE_ID, HOSTNAME, LOCATION
 from lib.Utils.constants import VERSION
 from lib.FlaskService.fault_codes import detect_faults, fault_summary
 import logging

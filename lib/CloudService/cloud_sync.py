@@ -10,7 +10,7 @@ import psycopg2
 import requests
 from datetime import datetime, timezone, timedelta
 from lib.DBConnection.db import get_db_connection
-from lib.Utils.config import DEVICE_ID, LOCATION  # ← add
+from lib.config import DEVICE_ID, LOCATION  # ← add
 from lib.Utils.constants import  CLOUD_API_KEY,DB_CONFIG,RETRY_DELAY_SEC,RETRY_MAX,SYNC_INTERVAL_SEC,BATCH_SIZE,CLOUD_API_URL,VERSION  # ← add
 from lib.CloudService.cloud_client import cloud_request
 

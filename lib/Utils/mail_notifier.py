@@ -27,7 +27,7 @@ import functools
 from datetime import datetime, timezone, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from lib.Utils.config import DEVICE_ID, LOCATION
+from lib.config import DEVICE_ID, LOCATION
 
 # ── ① EMAIL CONFIG — fill these ─────────────────────────────────
 SMTP_HOST     = 'smtp.office365.com'

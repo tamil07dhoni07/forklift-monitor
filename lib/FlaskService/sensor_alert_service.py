@@ -7,7 +7,7 @@
 
 import logging
 
-from lib.Utils.config import DEVICE_ID
+from lib.config import DEVICE_ID
 from lib.Utils.constants import CLOUD_API_URL
 from lib.CloudService.cloud_client import cloud_request
 

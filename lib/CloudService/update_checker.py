@@ -23,7 +23,7 @@ import requests
 # Import local version from constants.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lib.Utils.constants import VERSION, CLOUD_API_URL, CLOUD_API_KEY
-from lib.Utils.config import DEVICE_ID
+from lib.config import DEVICE_ID
 from lib.CloudService.device_service import get_device_details
 
 # ── Config ────────────────────────────────────────────────────

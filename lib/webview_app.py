@@ -26,7 +26,7 @@ def start_services():
 
     subprocess.Popen([
         "python3",
-        os.path.join(BASE_DIR, "lib", "api_server.py")
+        os.path.join(BASE_DIR, "lib", "FlaskService", "api_server.py")
     ])
 
     time.sleep(1)
@@ -42,13 +42,13 @@ def start_services():
     print("Starting Cloud Sync...")
     subprocess.Popen([
         "python3",
-        os.path.join(BASE_DIR, "lib", "cloud_sync.py")
+        os.path.join(BASE_DIR, "lib","CloudService", "cloud_sync.py")
     ])
 
     print("Starting version Update...")
     subprocess.Popen([
         "python3",
-        os.path.join(BASE_DIR, "lib", "update_checker.py")
+        os.path.join(BASE_DIR, "lib", "CloudService", "update_checker.py")
     ])
 
 def start_camera():
