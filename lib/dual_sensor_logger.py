@@ -452,7 +452,7 @@ def read_fuel_level_rs232():
 # ============================================================
 
 # ========== RS485 CONFIGURATION ==========
-RS485_PORT = "/dev/ttyUSB0"
+RS485_PORT = "/dev/ttyS4"
 
 # ---- Vibration ----
 VIBRATION_SLAVE = 80
