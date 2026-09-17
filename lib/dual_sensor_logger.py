@@ -498,6 +498,8 @@ WIFI_CHECK_INTERVAL = 2
 # ============================================================
 # SECTION 5: RS485 - STATUS TRACKING (FROM CODE 2)
 # ============================================================
+# ---- RS485 transceiver enable GPIO ----
+RS485_GPIO_ENABLE_PATH = "/sys/external_gpio/jwsioc_gpio0"
 
 class StatusTracker:
     def __init__(self):
@@ -795,6 +797,17 @@ def rs232_thread(tracker, stop_event):
 # ============================================================
 # SECTION 8: RS485 - MAIN FUNCTION (REFACTORED)
 # ============================================================
+def enable_rs485_gpio():
+    """Enable the RS485 transceiver via sysfs GPIO before opening the port."""
+    try:
+        with open(RS485_GPIO_ENABLE_PATH, 'w') as f:
+            f.write('1')
+        print(f"✅ RS485 GPIO enabled at {RS485_GPIO_ENABLE_PATH}")
+        return True
+    except Exception as e:
+        print(f"❌ Failed to enable RS485 GPIO: {e}")
+        return False
+
 
 def rs485_main_loop(tracker, stop_event):
     """Main loop for RS485 multi-sensor logger"""
@@ -804,6 +817,7 @@ def rs485_main_loop(tracker, stop_event):
     print(f"📡 RS485 Voltage slaves: {VOLTAGE_SLAVES}")
     print(f"📡 RS485 PT100 slave: {PT100_SLAVE}, channels: {PT100_CHANNELS}")
     print(f"📡 RS485 Current sensor: ADS1115 on bus {ADS_BUS}, address 0x{ADS_ADDR:02X}\n")
+    enable_rs485_gpio()
 
     # Initialize RS485 sensors
     vib_inst = init_vibration_rs485()
